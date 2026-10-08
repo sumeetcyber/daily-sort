@@ -79,7 +79,7 @@
   }
   .board{
     display:grid;
-    grid-template-columns:240px minmax(420px,1fr) minmax(300px,420px);
+    grid-template-columns:minmax(420px,1fr) minmax(300px,420px);
     gap:18px;
     align-items:start;
   }
@@ -103,24 +103,6 @@
   .count{
     min-width:30px;height:30px;border-radius:50%;
     display:grid;place-items:center;background:#f0ece5;color:var(--muted);font-size:13px
-  }
-  .groups{padding:12px}
-  .group{
-    border:1px solid var(--line);
-    background:#fbfaf7;
-    border-radius:11px;
-    padding:11px 12px;
-    margin-bottom:8px;
-    cursor:pointer;
-    display:flex;align-items:center;gap:9px;
-  }
-  .group.dragover{outline:2px solid #8ebba4;background:var(--accent-soft)}
-  .group-dot{width:10px;height:10px;border-radius:50%;background:#aaa}
-  .group-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .group-num{color:var(--muted);font-size:12px}
-  .add-group{display:flex;gap:7px;padding:12px;border-top:1px solid var(--line)}
-  .add-group input{
-    min-width:0;flex:1;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fff
   }
   .cards{padding:14px;min-height:440px}
   .cards.dragover{background:#f2f7f4}
@@ -383,10 +365,9 @@
     <button class="btn primary" id="addTasks">Add Tasks</button>
   </section>
 
-  <div class="hint">Drag tasks into a group to categorize them. Drag them to <b>Not Today</b> to take them out of today's work. Click a task to expand its details.</div>
+  <div class="hint">Drag tasks to <b>Not Today</b> to take them out of today's work. Click a task to expand its details.</div>
 
   <div class="toolbar">
-    <button class="btn" id="resetToday">Reset today's groups</button>
     <button class="btn" id="clearCompleted">Clear completed</button>
     <button class="btn" id="exportData">Export</button>
     <button class="btn" id="importBtn">Import</button>
@@ -397,22 +378,9 @@
   <main class="board">
     <section class="panel">
       <div class="panel-head">
-        <div class="panel-title">Groups</div>
-        <div class="count" id="groupCount">0</div>
-      </div>
-      <div class="section-note">Groups stay forever. Task grouping resets every day.</div>
-      <div class="groups" id="groups"></div>
-      <div class="add-group">
-        <input id="groupInput" placeholder="New group…">
-        <button class="btn" id="addGroup">+</button>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="panel-head">
         <div>
           <div class="panel-title">Today</div>
-          <div style="color:var(--muted);font-size:12px;margin-top:3px">Your uncategorized + categorized work</div>
+          <div style="color:var(--muted);font-size:12px;margin-top:3px">Everything you are considering for today</div>
         </div>
         <div class="count" id="todayCount">0</div>
       </div>
@@ -437,7 +405,7 @@
 <div class="session-box">
     <div class="new-session-warning" id="newSessionWarning" hidden>
       <div class="warning-title">AREY BRO 😭 — DID YOU SAVE YOUR OLD TOKEN?</div>
-      <div class="warning-text">You're about to start a completely new session. This will wipe your current tasks, groups, Today, and Not Today from this browser. Your old session isn't deleted — you can still bring the whole thing back with your old token. If you didn't save the token, you're fucked.</div>
+      <div class="warning-text">You're about to start a completely new session. This will wipe your current tasks, Today, and Not Today from this browser. Your old session isn't deleted — you can still bring the whole thing back with your old token. If you didn't save the token, you're fucked.</div>
         <div class="warning-actions">
         <button class="btn" id="cancelNewSession">Cancel</button>
         <button class="btn danger" id="confirmNewSession">I SAVED IT — NEW SESSION</button>
@@ -472,7 +440,6 @@ let cloudReady = false;
 let syncingCloud = false;
 
 let state = {
-  groups: [],
   tasks: []
 };
 
@@ -489,10 +456,9 @@ function load(){
   try{
     const raw=localStorage.getItem(STORAGE);
     if(raw) state=JSON.parse(raw);
-    state.groups=Array.isArray(state.groups)?state.groups:[];
     state.tasks=Array.isArray(state.tasks)?state.tasks:[];
-    state.tasks.forEach(t=>{if(!t.zone)t.zone="today";if(!("notes" in t))t.notes="";if(!("open" in t))t.open=false;});
-  }catch(e){state={groups:[],tasks:[]};}
+    state.tasks.forEach(t=>{delete t.groupId;if(!t.zone)t.zone="today";if(!("notes" in t))t.notes="";if(!("open" in t))t.open=false;});
+  }catch(e){state={tasks:[]};}
   dailyResetIfNeeded();
 }
 
@@ -501,23 +467,12 @@ function todayKey(){
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 
-function removeDefaultGroups(){
-  const defaults=new Set(["study","work","personal","errands"]);
-  state.groups=state.groups.filter(g=>!(defaults.has(g.id) && ["Study","Work","Personal","Errands"].includes(g.name)));
-  state.tasks.forEach(t=>{
-    if(!state.groups.some(g=>g.id===t.groupId)) t.groupId=null;
-  });
-  save();
-}
-
 function dailyResetIfNeeded(){
   const key=todayKey();
   const last=localStorage.getItem(LAST_RESET);
   if(last !== key){
     if(last !== null){
-      state.tasks.forEach(t=>{
-        if(t.zone!=="later") t.groupId=null;
-      });
+      state.tasks.forEach(t=>{ delete t.groupId; });
     }
     localStorage.setItem(LAST_RESET,key);
     save();
@@ -528,17 +483,13 @@ function escapeHtml(s){
   return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 }
 
-function groupName(gid){
-  return state.groups.find(g=>g.id===gid)?.name || null;
-}
-
 function addTasksFromText(){
   const box=document.getElementById("bulkInput");
   const lines=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
   if(!lines.length) return;
   lines.forEach(text=>{
     state.tasks.push({
-      id:id(), text, notes:"", groupId:null, zone:"today", done:false, open:false, created:Date.now()
+      id:id(), text, notes:"", zone:"today", done:false, open:false, created:Date.now()
     });
   });
   box.value="";
@@ -546,29 +497,13 @@ function addTasksFromText(){
   toast(lines.length+" task"+(lines.length===1?"":"s")+" added");
 }
 
-function addGroup(){
-  const input=document.getElementById("groupInput");
-  const name=input.value.trim();
-  if(!name)return;
-  if(state.groups.some(g=>g.name.toLowerCase()===name.toLowerCase())){
-    toast("That group already exists"); return;
-  }
-  state.groups.push({id:id(),name});
-  input.value="";
-  save();render();
-}
-
 function taskCard(t){
-  const group=groupName(t.groupId);
   return `
   <article class="card ${t.done?"done":""} ${t.open?"open":""}" draggable="true" data-id="${t.id}">
     <div class="card-main">
       <button class="check" data-action="complete" title="Complete"></button>
       <div class="task-body">
         <input class="task-title-edit" data-action="title" value="${escapeHtml(t.text)}" aria-label="Task title">
-        <div class="meta">
-          ${group?`<span class="pill">${escapeHtml(group)}</span>`:`<span class="pill">Uncategorized</span>`}
-        </div>
       </div>
       <div class="card-tools">
         <button class="icon-btn" data-action="up" title="Move up">↑</button>
@@ -580,25 +515,11 @@ function taskCard(t){
     <div class="details">
       <textarea data-action="notes" placeholder="Notes…">${escapeHtml(t.notes)}</textarea>
       <div class="details-row">
-        <button class="btn" data-action="uncategorize">Remove group</button>
         <button class="btn" data-action="move-later">${t.zone==="later"?"Move to Today":"Not Today"}</button>
         <button class="btn" data-action="delete">Delete</button>
       </div>
     </div>
   </article>`;
-}
-
-function renderGroups(){
-  const el=document.getElementById("groups");
-  document.getElementById("groupCount").textContent=state.groups.length;
-  el.innerHTML=state.groups.map(g=>{
-    const n=state.tasks.filter(t=>t.groupId===g.id).length;
-    return `<div class="group" draggable="true" data-group="${g.id}">
-      <span class="group-dot"></span>
-      <span class="group-name">${escapeHtml(g.name)}</span>
-      <span class="group-num">${n}</span>
-    </div>`;
-  }).join("");
 }
 
 function renderCards(){
@@ -617,7 +538,7 @@ function renderCards(){
 }
 
 function render(){
-  renderGroups(); renderCards(); bindDnD(); bindActions();
+  renderCards(); bindDnD(); bindActions();
 }
 
 
@@ -686,9 +607,6 @@ function bindActions(){
     card.querySelector('[data-action="notes"]').oninput=e=>{
       t.notes=e.target.value; save();
     };
-    card.querySelector('[data-action="uncategorize"]').onclick=()=>{
-      t.groupId=null;save();render();
-    };
     card.querySelectorAll('[data-action="move-later"]').forEach(btn=>{
       btn.onclick=e=>{
         e.stopPropagation();
@@ -701,13 +619,7 @@ function bindActions(){
     };
   });
 
-  document.querySelectorAll(".group").forEach(g=>{
-    g.onclick=()=>{
-      const gid=g.dataset.group;
-      const t=state.tasks.find(x=>x.id===window.dragTaskId);
-      if(t){t.groupId=gid;t.zone="today";save();render();}
-    };
-  });
+
 }
 
 function bindDnD(){
@@ -754,15 +666,7 @@ function bindDnD(){
     });
   });
 
-  document.querySelectorAll(".group").forEach(g=>{
-    g.addEventListener("dragover",e=>{e.preventDefault();g.classList.add("dragover")});
-    g.addEventListener("dragleave",()=>g.classList.remove("dragover"));
-    g.addEventListener("drop",e=>{
-      e.preventDefault();g.classList.remove("dragover");
-      const t=state.tasks.find(x=>x.id===e.dataTransfer.getData("text/plain"));
-      if(t){t.groupId=g.dataset.group;t.zone="today";save();render();toast("Task grouped")}
-    });
-  });
+
 
   document.querySelectorAll(".cards").forEach(zone=>{
     zone.addEventListener("dragover",e=>{e.preventDefault();zone.classList.add("dragover")});
@@ -777,11 +681,6 @@ function bindDnD(){
       }
     });
   });
-}
-
-function resetSorting(){
-  state.tasks.forEach(t=>{if(t.zone!=="later") t.groupId=null;});
-  save();render();toast("Today's groups reset");
 }
 
 function clearCompleted(){
@@ -855,7 +754,9 @@ async function pullCloud(tokenOverride=null){
       if(payload && payload.iv && payload.data){
         const remote=await decryptState(token,payload);
         const importedState=remote?.state || remote;
-        if(!Array.isArray(importedState?.tasks)||!Array.isArray(importedState?.groups)) throw new Error("Invalid session data");
+        if(!Array.isArray(importedState?.tasks)) throw new Error("Invalid session data");
+         importedState={tasks:importedState.tasks};
+         importedState.tasks.forEach(t=>delete t.groupId);
         if(remote?.theme && THEMES[remote.theme]) applyTheme(remote.theme,false);
         state=importedState;
         localStorage.setItem(STORAGE,JSON.stringify(state));
@@ -913,9 +814,6 @@ document.getElementById("addTasks").onclick=addTasksFromText;
 document.getElementById("bulkInput").addEventListener("keydown",e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==="Enter")addTasksFromText();
 });
-document.getElementById("addGroup").onclick=addGroup;
-document.getElementById("groupInput").addEventListener("keydown",e=>{if(e.key==="Enter")addGroup()});
-document.getElementById("resetToday").onclick=resetSorting;
 document.getElementById("clearCompleted").onclick=clearCompleted;
 document.getElementById("exportData").onclick=exportData;
 document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
@@ -934,7 +832,7 @@ document.getElementById("confirmNewSession").onclick=async()=>{
   const newToken=randomToken();
   warning.hidden=true;
   // Clear the current browser session completely, but never delete the old cloud session.
-  state={groups:[],tasks:[]};
+  state={tasks:[]};
   localStorage.setItem(STORAGE,JSON.stringify(state));
   localStorage.setItem(LAST_RESET,todayKey());
   localStorage.setItem(SESSION_KEY,newToken);
@@ -967,7 +865,6 @@ document.getElementById("connectToken").onclick=async()=>{
 };
 
 load();
-removeDefaultGroups();
 applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);
 render();
 pullCloud();
@@ -978,7 +875,7 @@ setInterval(()=>{
   if(localStorage.getItem(LAST_RESET)!==key){
     dailyResetIfNeeded();
     render();
-    toast("New day — Today survived; groups reset");
+    toast("New day — Today survived");
   }
 },60000);
 </script>
