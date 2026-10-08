@@ -313,15 +313,16 @@
   <div class="footer">Saved locally + synced to your private Daily Sort session. · <button id="sessionFooter">Session</button></div>
 </div>
 <div class="session-modal" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="sessionTitle">
-  <div class="session-box">
+<div class="session-box">
     <div class="new-session-warning" id="newSessionWarning" hidden>
-      <div class="warning-title">AREY BRO — DID YOU COPY YOUR PREVIOUS TOKEN?</div>
-      <div class="warning-text">Starting a new session will clear this browser's current tasks, groups, Today, and Not Today. Your old cloud session will stay on Supabase and remain importable until it expires from inactivity.</div>
-      <div class="warning-actions">
+      <div class="warning-title">AREY BRO 😭 — DID YOU SAVE YOUR OLD TOKEN?</div>
+      <div class="warning-text">You're about to start a completely new session. This will wipe your current tasks, groups, Today, and Not Today from this browser. Your old session isn't deleted — you can still bring the whole thing back with your old token. If you didn't save the token, you're fucked.</div>
+        <div class="warning-actions">
         <button class="btn" id="cancelNewSession">Cancel</button>
-        <button class="btn danger" id="confirmNewSession">I COPIED IT — NEW SESSION</button>
+        <button class="btn danger" id="confirmNewSession">I SAVED IT — NEW SESSION</button>
       </div>
     </div>
+  </div>
     <h2 id="sessionTitle">Settings</h2>
     <p>One Daily Sort session, synced through Supabase. Your token is the key to this session. It is never put in the URL.</p>
     <div style="font-size:12px;color:var(--muted);margin-top:12px">Your current session token</div>
