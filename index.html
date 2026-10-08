@@ -693,8 +693,8 @@ function getSessionToken(){let t=localStorage.getItem(SESSION_KEY);if(!t){t=rand
 async function deterministicSalt(token){const b=await crypto.subtle.digest("SHA-256",encoder.encode(SESSION_SALT_PREFIX+token));return new Uint8Array(b).slice(0,16)}
 async function encryptState(token,obj){const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const iv=crypto.getRandomValues(new Uint8Array(12));const plain=encoder.encode(JSON.stringify(obj));const cipher=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,plain));return JSON.stringify({v:1,iv:bytesToB64(iv),data:bytesToB64(cipher)})}
 async function decryptState(token,payload){const x=typeof payload==="string"?JSON.parse(payload):payload;const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(x.iv)},key,b64ToBytes(x.data));return JSON.parse(new TextDecoder().decode(plain))}
-async function pullCloud(){
-  const token=getSessionToken();
+async function pullCloud(tokenOverride=null, createIfMissing=true){
+  const token=tokenOverride || getSessionToken();
   updateCloudStatus("Cloud: connecting…");
   try{
     const {data,error}=await sb.rpc("daily_sort_get_session",{p_token:token});
@@ -702,8 +702,10 @@ async function pullCloud(){
     if(data?.data){
       const remote=await decryptState(token,data.data);
       if(Array.isArray(remote.tasks)&&Array.isArray(remote.groups)){state=remote;localStorage.setItem(STORAGE,JSON.stringify(state));render();toast("Session synced");}
-    }else{
+    }else if(createIfMissing){
       await pushCloud();
+    }else{
+      throw new Error("Session not found or expired");
     }
     cloudReady=true;
     updateCloudStatus("Cloud: connected");
@@ -718,10 +720,6 @@ async function pushCloud(){
     if(error) throw error;
   }catch(e){console.warn("Daily Sort cloud save failed",e)}
   finally{syncingCloud=false;}
-}
-async function deleteCloudSession(token){
-  const {error}=await sb.rpc("daily_sort_delete_session",{p_token:token});
-  if(error) throw error;
 }
 function queueCloudSave(){
   if(!cloudReady)return;
@@ -763,45 +761,44 @@ document.getElementById("revealToken").onclick=()=>{const x=document.getElementB
 document.getElementById("copyToken").onclick=async()=>{await navigator.clipboard.writeText(getSessionToken());toast("Session key copied")};
 document.getElementById("newToken").onclick=async()=>{
   const oldToken=getSessionToken();
-  const ok=confirm("⚠ NEW SESSION
-
-This will permanently delete the current cloud session — including ALL tasks, groups, Today and Not Today data stored in it.
-
-SAVE/COPY YOUR CURRENT SESSION TOKEN FIRST if you may ever need this session again.
-
-After continuing, the old token will no longer work. A completely empty new session will be created.
-
-Continue?");
+  const ok=confirm("AREY BRO 😭 — did you copy/save your previous session token?\n\nIf you continue, this browser will be cleared and you will start with a completely empty session.\n\nYour OLD cloud session is NOT deleted. It stays on the cloud and can be imported later with its token, until it has been inactive for 14 days.\n\nIf you did not save the old token, you may be fucked. Continue?");
   if(!ok)return;
-  try{
-    updateCloudStatus("Cloud: deleting old session…");
-    await deleteCloudSession(oldToken);
-    const newToken=randomToken();
-    localStorage.setItem(SESSION_KEY,newToken);
-    state={groups:[],tasks:[]};
-    localStorage.setItem(STORAGE,JSON.stringify(state));
-    localStorage.removeItem(LAST_RESET);
-    document.getElementById("sessionToken").value=newToken;
-    render();
-    cloudReady=true;
-    await pushCloud();
-    updateCloudStatus("Cloud: connected — new empty session");
-    toast("New empty session created");
-  }catch(e){
-    console.error("Could not replace session",e);
-    updateCloudStatus("Cloud: unavailable");
-    toast("Could not delete the old session — nothing was changed");
-  }
+  state={groups:[],tasks:[]};
+  localStorage.setItem(STORAGE,JSON.stringify(state));
+  localStorage.setItem(SESSION_KEY,randomToken());
+  localStorage.setItem(LAST_RESET,todayKey());
+  cloudReady=true;
+  await pushCloud();
+  document.getElementById("sessionToken").value=getSessionToken();
+  document.getElementById("sessionImportToken").value="";
+  render();
+  updateCloudStatus("Cloud: new empty session created");
+  toast("New empty session created");
 };
 document.getElementById("connectToken").onclick=async()=>{
   const input=document.getElementById("sessionImportToken").value.trim();
   if(!input){toast("Paste a session token first");return;}
-  localStorage.setItem(SESSION_KEY,input);
-  document.getElementById("sessionToken").value=input;
+  const previousToken=getSessionToken();
+  const previousState=state;
   cloudReady=false;
-  updateCloudStatus("Cloud: connecting…");
-  await pullCloud();
-  if(cloudReady) updateCloudStatus("Cloud: connected");
+  updateCloudStatus("Cloud: importing session…");
+  try{
+    await pullCloud(input,false);
+    localStorage.setItem(SESSION_KEY,input);
+    document.getElementById("sessionToken").value=input;
+    document.getElementById("sessionImportToken").value="";
+    render();
+    toast("Entire session imported — tasks, groups, Today & Not Today replaced");
+    updateCloudStatus("Cloud: connected");
+  }catch(e){
+    state=previousState;
+    localStorage.setItem(SESSION_KEY,previousToken);
+    localStorage.setItem(STORAGE,JSON.stringify(state));
+    render();
+    cloudReady=false;
+    updateCloudStatus("Cloud: import failed");
+    toast("Session not found or expired — current session kept safe");
+  }
 };
 
 load();
