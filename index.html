@@ -200,11 +200,11 @@
   .session-box p{color:var(--muted);font-size:13px;line-height:1.5}
   .session-key{display:flex;gap:8px;margin:14px 0}
   .session-key input{flex:1;min-width:0;border:1px solid var(--line);border-radius:9px;padding:10px;background:#f7f4ee;font-family:ui-monospace,monospace}
-  .session-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .session-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}.session-actions .btn{border:1px solid var(--line);font-weight:700;min-height:38px;padding:9px 14px}.session-actions .btn.primary{box-shadow:0 3px 10px #0002}
   .theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:12px 0 18px}
-  .theme-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:8px;padding:8px 5px;cursor:pointer;font-size:11px}
-  .theme-btn.active{outline:2px solid var(--accent);outline-offset:1px}
-  .security-note{font-size:11px;color:var(--muted);margin-top:12px}
+  .theme-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:9px;padding:10px 7px;cursor:pointer;font-size:11px;font-weight:600;transition:.15s;box-shadow:0 1px 2px #0001}.theme-btn:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 3px 8px #0002}.theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  
+  .security-note{font-size:11px;color:var(--muted);margin-top:14px}.settings-main-btn{font-weight:800!important;border:1px solid var(--accent)!important;background:var(--accent)!important;color:#fff!important;box-shadow:0 3px 10px #0002!important}.settings-main-btn:hover{filter:brightness(.96);transform:translateY(-1px)}
   @media(max-width:600px){.theme-grid{grid-template-columns:repeat(3,1fr)}}
   .toast{
     position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -246,7 +246,7 @@
     <button class="btn" id="clearCompleted">Clear completed</button>
     <button class="btn" id="exportData">Export</button>
     <button class="btn" id="importBtn">Import</button>
-    <button class="btn" id="sessionBtn">Settings</button>
+    <button class="btn settings-main-btn" id="sessionBtn">⚙ Settings</button>
     <input type="file" id="importFile" accept=".json" hidden>
   </div>
 
