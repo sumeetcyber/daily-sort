@@ -72,7 +72,7 @@
   .capture textarea:focus{border-color:#91bca6;box-shadow:0 0 0 3px #91bca633}
   .btn{
     border:1px solid var(--line);
-    background:var(--card);
+    background:var(--button,var(--card));
     color:var(--text);
     border-radius:10px;
     padding:10px 14px;
@@ -188,7 +188,7 @@
   .card.open .details{display:block}
   .details textarea{
     width:100%;min-height:65px;resize:vertical;border:1px solid var(--line);
-    border-radius:8px;padding:8px;background:white
+    border-radius:8px;padding:8px;background:var(--input);color:var(--text)
   }
   .details-row{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
   .right .cards{background:var(--right-bg)}
@@ -213,8 +213,9 @@
   .session-key input{flex:1;min-width:0;border:1px solid var(--line);border-radius:9px;padding:10px;background:var(--input);font-family:ui-monospace,monospace}
   .session-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}.session-actions .btn{border:1px solid var(--line);font-weight:700;min-height:38px;padding:9px 14px}.session-actions .btn.primary{box-shadow:0 3px 10px #0002}
   .theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:12px 0 18px}
-  .theme-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:9px;padding:10px 7px;cursor:pointer;font-size:11px;font-weight:600;transition:.15s;box-shadow:0 1px 2px #0001}.theme-btn:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 3px 8px #0002}.theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  .theme-btn{border:1px solid var(--line);background:var(--button,var(--panel));color:var(--text);border-radius:9px;padding:10px 7px;cursor:pointer;font-size:11px;font-weight:600;transition:.15s;box-shadow:0 1px 2px #0001}.theme-btn:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 3px 8px #0002}.theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
   
+  .warning-box{max-width:620px}.confirm-actions{justify-content:flex-end}.danger-btn{background:var(--accent)!important;color:#fff!important}.session-box .btn{background:var(--button,var(--card));color:var(--text);border-color:var(--line)}
   .security-note{font-size:11px;color:var(--muted);margin-top:14px}.settings-main-btn{font-weight:800!important;border:1px solid var(--accent)!important;background:var(--accent)!important;color:#fff!important;box-shadow:0 3px 10px #0002!important}.settings-main-btn:hover{filter:brightness(.96);transform:translateY(-1px)}
   @media(max-width:600px){.theme-grid{grid-template-columns:repeat(3,1fr)}}
   .toast{
@@ -300,6 +301,17 @@
 
   <div class="footer">Saved locally + synced to your private Daily Sort session. · <button id="sessionFooter">Session</button></div>
 </div>
+<div class="session-modal" id="newSessionConfirm" role="dialog" aria-modal="true" aria-labelledby="newSessionConfirmTitle">
+  <div class="session-box warning-box">
+    <h2 id="newSessionConfirmTitle">Arey bro — did you copy your previous token?</h2>
+    <p><b>This will clear this browser and start a completely empty new session.</b><br><br>Your old cloud session will <b>NOT</b> be deleted. It stays on the cloud until 14 days of inactivity. If you did not save its token, you may lose your easy way back to it.</p>
+    <div class="session-actions confirm-actions">
+      <button class="btn" id="cancelNewSession">Cancel</button>
+      <button class="btn primary danger-btn" id="confirmNewSession">Yes, clear this and start new</button>
+    </div>
+  </div>
+</div>
+
 <div class="session-modal" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="sessionTitle">
   <div class="session-box">
     <h2 id="sessionTitle">Settings</h2>
@@ -700,39 +712,88 @@ function randomToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);retu
 function hexRgb(h){h=h.replace("#","");if(h.length===3)h=h.split("").map(x=>x+x).join("");return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
 function rgbHex(a){return "#"+a.map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,"0")).join("")}
 function mix(a,b,amt){const A=hexRgb(a),B=hexRgb(b);return rgbHex(A.map((x,i)=>x+(B[i]-x)*amt))}
-function applyTheme(name){const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;const dark=hexRgb(t.bg).reduce((a,v)=>a+v,0)<390;const card=dark?mix(t.panel,"#ffffff",.08):"#ffffff";const input=dark?mix(t.panel,"#ffffff",.12):"#ffffff";const surface2=dark?mix(t.panel,t.bg,.45):mix(t.panel,t.bg,.18);const surface3=dark?mix(t.panel,t.bg,.2):mix(t.panel,t.bg,.08);const right=dark?mix(t.panel,t.bg,.28):mix(t.panel,"#f5eeee",.28);const rightHead=dark?mix(t.panel,"#ffffff",.05):mix(t.panel,"#f4e9e7",.45);const detail=dark?mix(t.panel,t.bg,.15):mix(t.panel,"#ffffff",.25);r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);r.style.setProperty("--card",card);r.style.setProperty("--input",input);r.style.setProperty("--surface-2",surface2);r.style.setProperty("--surface-3",surface3);r.style.setProperty("--capture",dark?mix(t.panel,t.bg,.35):mix(t.panel,t.accentSoft,.45));r.style.setProperty("--capture-line",t.line);r.style.setProperty("--right-bg",right);r.style.setProperty("--right-head",rightHead);r.style.setProperty("--hover",surface3);r.style.setProperty("--empty",t.line);r.style.setProperty("--detail",detail);localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));}
+function applyTheme(name){
+  const t=THEMES[name]||THEMES.Paper;
+  const r=document.documentElement;
+  const dark=hexRgb(t.bg).reduce((a,v)=>a+v,0)<520;
+  const card=dark?mix(t.panel,"#ffffff",.035):t.panel;
+  const input=dark?mix(t.panel,"#ffffff",.025):t.panel;
+  const surface2=dark?mix(t.panel,t.bg,.42):mix(t.panel,t.bg,.18);
+  const surface3=dark?mix(t.panel,t.bg,.22):mix(t.panel,t.bg,.08);
+  const right=dark?mix(t.panel,t.bg,.08):mix(t.panel,"#f5eeee",.28);
+  const rightHead=dark?mix(t.panel,t.bg,.03):mix(t.panel,"#f4e9e7",.45);
+  const detail=dark?mix(t.panel,t.bg,.12):mix(t.panel,"#ffffff",.25);
+  const btn=dark?mix(t.panel,"#ffffff",.06):t.panel;
+  r.style.setProperty("--bg",t.bg); r.style.setProperty("--panel",t.panel); r.style.setProperty("--line",t.line);
+  r.style.setProperty("--text",t.text); r.style.setProperty("--muted",t.muted); r.style.setProperty("--accent",t.accent); r.style.setProperty("--accent-soft",t.accentSoft);
+  r.style.setProperty("--card",card); r.style.setProperty("--input",input); r.style.setProperty("--surface-2",surface2); r.style.setProperty("--surface-3",surface3);
+  r.style.setProperty("--capture",dark?mix(t.panel,t.bg,.28):mix(t.panel,t.accentSoft,.45)); r.style.setProperty("--capture-line",t.line);
+  r.style.setProperty("--right-bg",right); r.style.setProperty("--right-head",rightHead); r.style.setProperty("--hover",surface3); r.style.setProperty("--empty",t.line); r.style.setProperty("--detail",detail); r.style.setProperty("--button",btn);
+  localStorage.setItem(THEME_KEY,name);
+  document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));
+  if(typeof queueCloudSave==='function' && cloudReady) queueCloudSave();
+}
+
 function renderThemes(){const grid=document.getElementById("themeGrid");grid.innerHTML=Object.keys(THEMES).map(n=>`<button class="theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");grid.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme));applyTheme(localStorage.getItem(THEME_KEY)||"Paper");}
 async function deriveKey(token,salt){const base=await crypto.subtle.importKey("raw",encoder.encode(token),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:180000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);}
 function getSessionToken(){let t=localStorage.getItem(SESSION_KEY);if(!t){t=randomToken();localStorage.setItem(SESSION_KEY,t)}return t}
 async function deterministicSalt(token){const b=await crypto.subtle.digest("SHA-256",encoder.encode(SESSION_SALT_PREFIX+token));return new Uint8Array(b).slice(0,16)}
 async function encryptState(token,obj){const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const iv=crypto.getRandomValues(new Uint8Array(12));const plain=encoder.encode(JSON.stringify(obj));const cipher=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,plain));return JSON.stringify({v:1,iv:bytesToB64(iv),data:bytesToB64(cipher)})}
 async function decryptState(token,payload){const x=typeof payload==="string"?JSON.parse(payload):payload;const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(x.iv)},key,b64ToBytes(x.data));return JSON.parse(new TextDecoder().decode(plain))}
-async function pullCloud(){
-  const token=getSessionToken();
+async function fetchCloudSession(token){
+  const {data,error}=await sb.rpc("daily_sort_get_session",{p_token:token});
+  if(error) throw error;
+  if(data==null) return null;
+  const payload=typeof data==="string"?JSON.parse(data):data;
+  const remote=await decryptState(token,payload);
+  if(remote && remote.state && Array.isArray(remote.state.tasks) && Array.isArray(remote.state.groups)){
+    return {state:remote.state,theme:remote.theme||null};
+  }
+  if(remote && Array.isArray(remote.tasks) && Array.isArray(remote.groups)){
+    return {state:remote,theme:null};
+  }
+  throw new Error("Invalid Daily Sort session payload");
+}
+
+async function pullCloud(tokenOverride=null){
+  const token=tokenOverride||getSessionToken();
   updateCloudStatus("Cloud: connecting…");
   try{
-    const {data,error}=await sb.rpc("daily_sort_get_session",{p_token:token});
-    if(error) throw error;
-    if(data?.data){
-      const remote=await decryptState(token,data.data);
-      if(Array.isArray(remote.tasks)&&Array.isArray(remote.groups)){state=remote;localStorage.setItem(STORAGE,JSON.stringify(state));render();toast("Session synced");}
+    const remote=await fetchCloudSession(token);
+    if(remote){
+      state=remote.state;
+      localStorage.setItem(STORAGE,JSON.stringify(state));
+      if(remote.theme && THEMES[remote.theme]) localStorage.setItem(THEME_KEY,remote.theme);
+      render();
+      renderThemes();
+      toast("Session synced");
     }else{
-      await pushCloud();
+      await pushCloud(token);
     }
     cloudReady=true;
     updateCloudStatus("Cloud: connected");
-  }catch(e){console.warn("Daily Sort cloud sync unavailable",e);updateCloudStatus("Cloud: unavailable — local mode");toast("Cloud sync unavailable");}
+    return remote;
+  }catch(e){
+    console.warn("Daily Sort cloud sync unavailable",e);
+    cloudReady=false;
+    updateCloudStatus("Cloud: unavailable — current session preserved");
+    return null;
+  }
 }
-async function pushCloud(){
-  if(syncingCloud)return; syncingCloud=true;
+
+async function pushCloud(tokenOverride=null,stateOverride=null){
+  if(syncingCloud)return false; syncingCloud=true;
   try{
-    const token=getSessionToken();
-    const encrypted=await encryptState(token,state);
+    const token=tokenOverride||getSessionToken();
+    const payload={state:stateOverride||state,theme:localStorage.getItem(THEME_KEY)||"Paper"};
+    const encrypted=await encryptState(token,payload);
     const {error}=await sb.rpc("daily_sort_save_session",{p_token:token,p_data:encrypted});
     if(error) throw error;
-  }catch(e){console.warn("Daily Sort cloud save failed",e)}
+    return true;
+  }catch(e){console.warn("Daily Sort cloud save failed",e);return false}
   finally{syncingCloud=false;}
 }
+
 function queueCloudSave(){
   if(!cloudReady)return;
   clearTimeout(cloudTimer);
@@ -769,32 +830,70 @@ document.getElementById("sessionBtn").onclick=openSession;
 document.getElementById("sessionFooter").onclick=openSession;
 document.getElementById("closeSession").onclick=closeSession;
 document.getElementById("sessionModal").onclick=e=>{if(e.target.id==="sessionModal")closeSession()};
+document.getElementById("newSessionConfirm").onclick=e=>{if(e.target.id==="newSessionConfirm")e.currentTarget.classList.remove("show")};
 document.getElementById("revealToken").onclick=()=>{const x=document.getElementById("sessionToken");x.type=x.type==="password"?"text":"password";document.getElementById("revealToken").textContent=x.type==="password"?"Show":"Hide"};
 document.getElementById("copyToken").onclick=async()=>{await navigator.clipboard.writeText(getSessionToken());toast("Session key copied")};
-document.getElementById("newToken").onclick=async()=>{
-  if(confirm("Create a completely new Daily Sort session? Your current session will remain available until it expires.")){
-    localStorage.setItem(SESSION_KEY,randomToken());
-    document.getElementById("sessionToken").value=getSessionToken();
-    cloudReady=true;
-    await pushCloud();
-    updateCloudStatus("Cloud: new session created");
-    toast("New session created");
-  }
+document.getElementById("newToken").onclick=()=>{
+  document.getElementById("newSessionConfirm").classList.add("show");
+};
+document.getElementById("cancelNewSession").onclick=()=>document.getElementById("newSessionConfirm").classList.remove("show");
+document.getElementById("confirmNewSession").onclick=async()=>{
+  const newToken=randomToken();
+  const emptyState={groups:[],tasks:[]};
+  const oldToken=getSessionToken();
+  // IMPORTANT: oldToken is intentionally NOT deleted from Supabase.
+  // Only this browser's active session is replaced.
+  localStorage.setItem(SESSION_KEY,newToken);
+  state=emptyState;
+  localStorage.setItem(STORAGE,JSON.stringify(state));
+  localStorage.setItem(LAST_RESET,todayKey());
+  document.getElementById("newSessionConfirm").classList.remove("show");
+  document.getElementById("sessionToken").value=newToken;
+  document.getElementById("sessionImportToken").value="";
+  cloudReady=false;
+  render();
+  renderThemes();
+  updateCloudStatus("Cloud: creating new session…");
+  const ok=await pushCloud(newToken,emptyState);
+  cloudReady=ok;
+  updateCloudStatus(ok?"Cloud: connected — new session":"Cloud: unavailable — new session kept locally");
+  toast(ok?"New session created — old session remains on cloud":"New session created locally");
 };
 document.getElementById("connectToken").onclick=async()=>{
   const input=document.getElementById("sessionImportToken").value.trim();
   if(!input){toast("Paste a session token first");return;}
-  localStorage.setItem(SESSION_KEY,input);
-  document.getElementById("sessionToken").value=input;
-  cloudReady=false;
-  updateCloudStatus("Cloud: connecting…");
-  await pullCloud();
-  if(cloudReady) updateCloudStatus("Cloud: connected");
+  if(input===getSessionToken()){toast("That is already the current session");return;}
+  updateCloudStatus("Cloud: loading imported session…");
+  try{
+    // IMPORTANT: fetch only. Never create an empty session for a bad/imported token.
+    const remote=await fetchCloudSession(input);
+    if(!remote) throw new Error("Session not found or expired");
+    // Validate everything BEFORE touching the current B session.
+    const importedState=remote.state;
+    if(!Array.isArray(importedState.tasks)||!Array.isArray(importedState.groups)) throw new Error("Invalid session state");
+    // Now, and only now, replace B with A.
+    localStorage.setItem(SESSION_KEY,input);
+    state=importedState;
+    localStorage.setItem(STORAGE,JSON.stringify(state));
+    if(remote.theme && THEMES[remote.theme]) localStorage.setItem(THEME_KEY,remote.theme);
+    document.getElementById("sessionToken").value=input;
+    document.getElementById("sessionImportToken").value="";
+    render();
+    renderThemes();
+    cloudReady=true;
+    updateCloudStatus("Cloud: connected — imported session");
+    toast("Imported session completely replaced the current one");
+  }catch(e){
+    console.warn("Daily Sort import failed",e);
+    updateCloudStatus("Cloud: unavailable — current session preserved");
+    toast("Import failed — current session kept");
+  }
 };
 
 load();
 removeDefaultGroups();
 render();
+applyTheme(localStorage.getItem(THEME_KEY)||"Paper");
 pullCloud();
 
 // If the browser stays open across midnight, check every minute and reset automatically.
