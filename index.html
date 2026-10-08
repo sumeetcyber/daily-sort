@@ -753,10 +753,10 @@ async function pullCloud(tokenOverride=null){
       const payload=typeof data === "string" ? JSON.parse(data) : data;
       if(payload && payload.iv && payload.data){
         const remote=await decryptState(token,payload);
-        const importedState=remote?.state || remote;
-        if(!Array.isArray(importedState?.tasks)) throw new Error("Invalid session data");
-         importedState={tasks:importedState.tasks};
-         importedState.tasks.forEach(t=>delete t.groupId);
+        const remoteState=remote?.state || remote;
+        if(!Array.isArray(remoteState?.tasks)) throw new Error("Invalid session data");
+        const importedState={tasks:remoteState.tasks};
+        importedState.tasks.forEach(t=>delete t.groupId);
         if(remote?.theme && THEMES[remote.theme]) applyTheme(remote.theme,false);
         state=importedState;
         localStorage.setItem(STORAGE,JSON.stringify(state));
@@ -783,7 +783,7 @@ async function pushCloud(tokenOverride=null){
     const token=tokenOverride||getSessionToken();
     const payload={state,theme:localStorage.getItem(THEME_KEY)||"Paper"};
     const encrypted=await encryptState(token,payload);
-    const {error}=await sb.rpc("daily_sort_save_session",{p_token:token,p_data:encrypted});
+    const {error}=await sb.rpc("daily_sort_save_session",{p_token:token,p_data:JSON.parse(encrypted)});
     if(error) throw error;
     return true;
   }catch(e){console.warn("Daily Sort cloud save failed",e);return false}
