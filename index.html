@@ -225,6 +225,7 @@
     .right{grid-column:auto}
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="wrap">
@@ -245,7 +246,7 @@
     <button class="btn" id="clearCompleted">Clear completed</button>
     <button class="btn" id="exportData">Export</button>
     <button class="btn" id="importBtn">Import</button>
-    <button class="btn" id="sessionBtn">Session</button>
+    <button class="btn" id="sessionBtn">Settings</button>
     <input type="file" id="importFile" accept=".json" hidden>
   </div>
 
@@ -286,14 +287,19 @@
     </section>
   </main>
 
-  <div class="footer">Saved locally in this browser. No account, server, or cloud required. · <button id="sessionFooter">Local session</button></div>
+  <div class="footer">Saved locally + synced to your private Daily Sort session. · <button id="sessionFooter">Session</button></div>
 </div>
 <div class="session-modal" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="sessionTitle">
   <div class="session-box">
-    <h2 id="sessionTitle">Local Session</h2>
-    <p>Daily Sort uses one local session. Your session key lets you move an encrypted backup to another browser/device. Keep it private.</p>
-    <div class="session-key"><input id="sessionToken" type="password" readonly aria-label="Session key"><button class="btn" id="revealToken">Show</button></div>
-    <div class="session-actions"><button class="btn primary" id="copyToken">Copy key</button><button class="btn" id="newToken">Rotate key</button><button class="btn" id="closeSession">Close</button></div>
+    <h2 id="sessionTitle">Settings</h2>
+    <p>One Daily Sort session, synced through Supabase. Your token is the key to this session. It is never put in the URL.</p>
+    <div style="font-size:12px;color:var(--muted);margin-top:12px">Your current session token</div>
+    <div class="session-key"><input id="sessionToken" type="password" readonly aria-label="Session token"><button class="btn" id="revealToken">Show</button></div>
+    <div class="session-actions"><button class="btn primary" id="copyToken">Copy token</button><button class="btn" id="newToken">New session</button></div>
+    <div style="font-size:12px;color:var(--muted);margin-top:16px">Use an existing token on another computer</div>
+    <div class="session-key"><input id="sessionImportToken" type="password" placeholder="Paste session token"><button class="btn" id="connectToken">Connect</button></div>
+    <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:8px">Cloud: connecting…</div>
+    <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
     <div style="margin-top:20px"><b style="font-size:13px">Theme</b><div class="theme-grid" id="themeGrid"></div></div>
     <div class="security-note">Local-only security note: a person who already has full access to this browser profile can inspect local browser storage. The key protects exported backups; it cannot make a client-only HTML app invisible to a local attacker.</div>
   </div>
@@ -304,6 +310,15 @@
 <script>
 const STORAGE = "daily-sort-v1";
 const LAST_RESET = "daily-sort-last-reset";
+const SESSION_KEY = "daily-sort-session-key";
+const THEME_KEY="daily-sort-theme";
+const SESSION_SALT_PREFIX="daily-sort-session-v1:";
+const SUPABASE_URL = "https://cepdhdpzahqthrtyqogo.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Hjvm2fSk4P1lR46pxIIcKQ_dnen3qS2";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let cloudTimer = null;
+let cloudReady = false;
+let syncingCloud = false;
 
 let state = {
   groups: [],
@@ -316,6 +331,7 @@ function id(){
 
 function save(){
   localStorage.setItem(STORAGE, JSON.stringify(state));
+  queueCloudSave();
 }
 
 function load(){
@@ -325,7 +341,7 @@ function load(){
     state.groups=Array.isArray(state.groups)?state.groups:[];
     state.tasks=Array.isArray(state.tasks)?state.tasks:[];
     state.tasks.forEach(t=>{if(!t.zone)t.zone="today";if(!("notes" in t))t.notes="";if(!("open" in t))t.open=false;});
-  }catch(e){}
+  }catch(e){state={groups:[],tasks:[]};}
   dailyResetIfNeeded();
 }
 
@@ -666,17 +682,58 @@ const THEMES={
   "Sunset":{"bg":"#fff0e8","panel":"#fffaf7","line":"#ead2c5","text":"#35201a","muted":"#80645b","accent":"#d16b42","accentSoft":"#f8e1d6"},
   "Plum":{"bg":"#241b28","panel":"#302333","line":"#4c384f","text":"#f5e8f2","muted":"#bba7b7","accent":"#d78bc1","accentSoft":"#4b2f45"}
 };
-const THEME_KEY="daily-sort-theme";
-const SESSION_KEY="daily-sort-session-key";
 const encoder=new TextEncoder();
 function bytesToB64(bytes){let s="";bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");}
 function b64ToBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";const bin=atob(s);return Uint8Array.from(bin,c=>c.charCodeAt(0));}
 function randomToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return bytesToB64(a);}
-function getSessionToken(){let t=localStorage.getItem(SESSION_KEY);if(!t){t=randomToken();localStorage.setItem(SESSION_KEY,t)}return t}
 function applyTheme(name){const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));}
 function renderThemes(){const grid=document.getElementById("themeGrid");grid.innerHTML=Object.keys(THEMES).map(n=>`<button class="theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");grid.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme));applyTheme(localStorage.getItem(THEME_KEY)||"Paper");}
 async function deriveKey(token,salt){const base=await crypto.subtle.importKey("raw",encoder.encode(token),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:180000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);}
-async let toastTimer;
+function getSessionToken(){let t=localStorage.getItem(SESSION_KEY);if(!t){t=randomToken();localStorage.setItem(SESSION_KEY,t)}return t}
+async function deterministicSalt(token){const b=await crypto.subtle.digest("SHA-256",encoder.encode(SESSION_SALT_PREFIX+token));return new Uint8Array(b).slice(0,16)}
+async function encryptState(token,obj){const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const iv=crypto.getRandomValues(new Uint8Array(12));const plain=encoder.encode(JSON.stringify(obj));const cipher=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,plain));return JSON.stringify({v:1,iv:bytesToB64(iv),data:bytesToB64(cipher)})}
+async function decryptState(token,payload){const x=typeof payload==="string"?JSON.parse(payload):payload;const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(x.iv)},key,b64ToBytes(x.data));return JSON.parse(new TextDecoder().decode(plain))}
+async function pullCloud(){
+  const token=getSessionToken();
+  updateCloudStatus("Cloud: connecting…");
+  try{
+    const {data,error}=await sb.rpc("daily_sort_get_session",{p_token:token});
+    if(error) throw error;
+    if(data?.data){
+      const remote=await decryptState(token,data.data);
+      if(Array.isArray(remote.tasks)&&Array.isArray(remote.groups)){state=remote;localStorage.setItem(STORAGE,JSON.stringify(state));render();toast("Session synced");}
+    }else{
+      await pushCloud();
+    }
+    cloudReady=true;
+    updateCloudStatus("Cloud: connected");
+  }catch(e){console.warn("Daily Sort cloud sync unavailable",e);updateCloudStatus("Cloud: unavailable — local mode");toast("Cloud sync unavailable");}
+}
+async function pushCloud(){
+  if(syncingCloud)return; syncingCloud=true;
+  try{
+    const token=getSessionToken();
+    const encrypted=await encryptState(token,state);
+    const {error}=await sb.rpc("daily_sort_save_session",{p_token:token,p_data:encrypted});
+    if(error) throw error;
+  }catch(e){console.warn("Daily Sort cloud save failed",e)}
+  finally{syncingCloud=false;}
+}
+function queueCloudSave(){
+  if(!cloudReady)return;
+  clearTimeout(cloudTimer);
+  cloudTimer=setTimeout(pushCloud,500);
+}
+function updateCloudStatus(msg){const el=document.getElementById("cloudStatus");if(el)el.textContent=msg;}
+function openSession(){
+  const x=document.getElementById("sessionToken");
+  x.value=getSessionToken();
+  document.getElementById("sessionModal").classList.add("show");
+  renderThemes();
+}
+function closeSession(){document.getElementById("sessionModal").classList.remove("show");}
+
+let toastTimer;
 function toast(msg){
   const el=document.getElementById("toast");
   el.textContent=msg;el.classList.add("show");
@@ -700,11 +757,31 @@ document.getElementById("closeSession").onclick=closeSession;
 document.getElementById("sessionModal").onclick=e=>{if(e.target.id==="sessionModal")closeSession()};
 document.getElementById("revealToken").onclick=()=>{const x=document.getElementById("sessionToken");x.type=x.type==="password"?"text":"password";document.getElementById("revealToken").textContent=x.type==="password"?"Show":"Hide"};
 document.getElementById("copyToken").onclick=async()=>{await navigator.clipboard.writeText(getSessionToken());toast("Session key copied")};
-document.getElementById("newToken").onclick=()=>{if(confirm("Rotate the session key? Existing exported backups will keep their old key.")){localStorage.setItem(SESSION_KEY,randomToken());document.getElementById("sessionToken").value=getSessionToken();toast("Session key rotated")}};
+document.getElementById("newToken").onclick=async()=>{
+  if(confirm("Create a completely new Daily Sort session? Your current session will remain available until it expires.")){
+    localStorage.setItem(SESSION_KEY,randomToken());
+    document.getElementById("sessionToken").value=getSessionToken();
+    cloudReady=true;
+    await pushCloud();
+    updateCloudStatus("Cloud: new session created");
+    toast("New session created");
+  }
+};
+document.getElementById("connectToken").onclick=async()=>{
+  const input=document.getElementById("sessionImportToken").value.trim();
+  if(!input){toast("Paste a session token first");return;}
+  localStorage.setItem(SESSION_KEY,input);
+  document.getElementById("sessionToken").value=input;
+  cloudReady=false;
+  updateCloudStatus("Cloud: connecting…");
+  await pullCloud();
+  if(cloudReady) updateCloudStatus("Cloud: connected");
+};
 
 load();
 removeDefaultGroups();
 render();
+pullCloud();
 
 // If the browser stays open across midnight, check every minute and reset automatically.
 setInterval(()=>{
