@@ -18,6 +18,17 @@
     --red:#b56b67;
     --red-soft:#f5e7e5;
     --shadow:0 8px 24px rgba(40,32,22,.06);
+    --surface-2:#fbfaf7;
+    --surface-3:#f3efe8;
+    --card:#fff;
+    --input:#fff;
+    --capture:#edf3ef;
+    --capture-line:#d6e5dc;
+    --right-bg:#fbf8f7;
+    --right-head:#fbf1ef;
+    --hover:#f2eee8;
+    --empty:#cfc8bd;
+    --detail:#fcfbf8;
   }
   *{box-sizing:border-box}
   body{
@@ -38,8 +49,8 @@
   }
   .subtitle{margin:10px auto 0;color:var(--muted);font-size:16px}
   .capture{
-    background:#edf3ef;
-    border:1px solid #d6e5dc;
+    background:var(--capture);
+    border:1px solid var(--capture-line);
     border-radius:14px;
     padding:14px;
     display:flex;
@@ -52,16 +63,16 @@
     flex:1;
     min-height:84px;
     resize:vertical;
-    border:1px solid #d9d4ca;
+    border:1px solid var(--line);
     border-radius:10px;
-    background:#fff;
+    background:var(--card);
     padding:12px 14px;
     outline:none;
   }
   .capture textarea:focus{border-color:#91bca6;box-shadow:0 0 0 3px #91bca633}
   .btn{
     border:1px solid var(--line);
-    background:#fff;
+    background:var(--card);
     color:var(--text);
     border-radius:10px;
     padding:10px 14px;
@@ -102,12 +113,12 @@
   }
   .count{
     min-width:30px;height:30px;border-radius:50%;
-    display:grid;place-items:center;background:#f0ece5;color:var(--muted);font-size:13px
+    display:grid;place-items:center;background:var(--surface-3);color:var(--muted);font-size:13px
   }
   .groups{padding:12px}
   .group{
     border:1px solid var(--line);
-    background:#fbfaf7;
+    background:var(--surface-2);
     border-radius:11px;
     padding:11px 12px;
     margin-bottom:8px;
@@ -120,20 +131,20 @@
   .group-num{color:var(--muted);font-size:12px}
   .add-group{display:flex;gap:7px;padding:12px;border-top:1px solid var(--line)}
   .add-group input{
-    min-width:0;flex:1;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fff
+    min-width:0;flex:1;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:var(--input)
   }
   .cards{padding:14px;min-height:440px}
-  .cards.dragover{background:#f2f7f4}
+  .cards.dragover{background:var(--accent-soft)}
   .empty{
-    border:1px dashed #cfc8bd;
+    border:1px dashed var(--empty);
     border-radius:13px;
     min-height:140px;
     display:grid;place-items:center;
-    text-align:center;color:#91897e;padding:24px
+    text-align:center;color:var(--muted);padding:24px
   }
   .card{
-    background:#fff;
-    border:1px solid #ddd7ce;
+    background:var(--card);
+    border:1px solid var(--line);
     border-radius:13px;
     margin-bottom:10px;
     overflow:hidden;
@@ -149,7 +160,7 @@
   }
   .check{
     width:20px;height:20px;border-radius:50%;
-    border:1.5px solid #b7b0a5;flex:none;cursor:pointer;margin-top:1px;background:#fff;
+    border:1.5px solid #b7b0a5;flex:none;cursor:pointer;margin-top:1px;background:var(--card);
   }
   .done .check{background:var(--accent);border-color:var(--accent);position:relative}
   .done .check:after{content:"✓";color:#fff;position:absolute;font-size:13px;left:3px;top:-1px}
@@ -158,20 +169,20 @@
   .done .task-title{text-decoration:line-through}
   .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
   .pill{
-    font-size:11px;color:#70695f;background:#f3efe8;border-radius:20px;padding:4px 8px
+    font-size:11px;color:var(--muted);background:var(--surface-3);border-radius:20px;padding:4px 8px
   }
   .expand{
-    border:0;background:none;cursor:pointer;color:#7d756b;padding:2px 5px;font-size:15px
+    border:0;background:none;cursor:pointer;color:var(--muted);padding:2px 5px;font-size:15px
   }
   .card-tools{display:flex;gap:3px}
   .icon-btn{
-    border:0;background:transparent;color:#7d756b;cursor:pointer;padding:3px 5px;border-radius:6px
+    border:0;background:transparent;color:var(--muted);cursor:pointer;padding:3px 5px;border-radius:6px
   }
-  .icon-btn:hover{background:#f2eee8}
+  .icon-btn:hover{background:var(--hover)}
   .details{
     display:none;
-    border-top:1px solid #ebe6de;
-    background:#fcfbf8;
+    border-top:1px solid var(--line);
+    background:var(--detail);
     padding:12px 14px 14px 45px;
   }
   .card.open .details{display:block}
@@ -180,8 +191,8 @@
     border-radius:8px;padding:8px;background:white
   }
   .details-row{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
-  .right .cards{background:#fbf8f7}
-  .right .panel-head{background:#fbf1ef}
+  .right .cards{background:var(--right-bg)}
+  .right .panel-head{background:var(--right-head)}
   .right .empty{min-height:180px}
   .section-note{padding:10px 15px;color:var(--muted);font-size:12px;border-bottom:1px solid var(--line)}
   .footer{
@@ -189,8 +200,8 @@
   }
   .footer button{border:0;background:transparent;color:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
   .task-title-edit{width:100%;border:1px solid transparent;background:transparent;color:var(--text);font-size:15px;line-height:1.42;padding:1px 3px;border-radius:6px;outline:none}
-  .task-title-edit:hover{border-color:#e0dbd2;background:#fff}
-  .task-title-edit:focus{border-color:#9bbda9;background:#fff;box-shadow:0 0 0 2px #9bbda933}
+  .task-title-edit:hover{border-color:var(--line);background:var(--card)}
+  .task-title-edit:focus{border-color:#9bbda9;background:var(--card);box-shadow:0 0 0 2px #9bbda933}
   .done .task-title-edit{text-decoration:line-through;color:#746e65}
   .cards{max-height:calc(100vh - 340px);overflow-y:auto}
   .session-modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px;z-index:30}
@@ -199,7 +210,7 @@
   .session-box h2{margin:0 0 6px;font-family:Georgia,serif;font-weight:500}
   .session-box p{color:var(--muted);font-size:13px;line-height:1.5}
   .session-key{display:flex;gap:8px;margin:14px 0}
-  .session-key input{flex:1;min-width:0;border:1px solid var(--line);border-radius:9px;padding:10px;background:#f7f4ee;font-family:ui-monospace,monospace}
+  .session-key input{flex:1;min-width:0;border:1px solid var(--line);border-radius:9px;padding:10px;background:var(--input);font-family:ui-monospace,monospace}
   .session-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}.session-actions .btn{border:1px solid var(--line);font-weight:700;min-height:38px;padding:9px 14px}.session-actions .btn.primary{box-shadow:0 3px 10px #0002}
   .theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:12px 0 18px}
   .theme-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:9px;padding:10px 7px;cursor:pointer;font-size:11px;font-weight:600;transition:.15s;box-shadow:0 1px 2px #0001}.theme-btn:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 3px 8px #0002}.theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
@@ -208,7 +219,7 @@
   @media(max-width:600px){.theme-grid{grid-template-columns:repeat(3,1fr)}}
   .toast{
     position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
-    background:#211e1a;color:white;padding:10px 15px;border-radius:9px;font-size:13px;
+    background:var(--text);color:white;padding:10px 15px;border-radius:9px;font-size:13px;
     opacity:0;pointer-events:none;transition:.2s;z-index:10
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -686,67 +697,41 @@ const encoder=new TextEncoder();
 function bytesToB64(bytes){let s="";bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");}
 function b64ToBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";const bin=atob(s);return Uint8Array.from(bin,c=>c.charCodeAt(0));}
 function randomToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return bytesToB64(a);}
-function applyTheme(name){const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));}
+function hexRgb(h){h=h.replace("#","");if(h.length===3)h=h.split("").map(x=>x+x).join("");return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function rgbHex(a){return "#"+a.map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,"0")).join("")}
+function mix(a,b,amt){const A=hexRgb(a),B=hexRgb(b);return rgbHex(A.map((x,i)=>x+(B[i]-x)*amt))}
+function applyTheme(name){const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;const dark=hexRgb(t.bg).reduce((a,v)=>a+v,0)<390;const card=dark?mix(t.panel,"#ffffff",.08):"#ffffff";const input=dark?mix(t.panel,"#ffffff",.12):"#ffffff";const surface2=dark?mix(t.panel,t.bg,.45):mix(t.panel,t.bg,.18);const surface3=dark?mix(t.panel,t.bg,.2):mix(t.panel,t.bg,.08);const right=dark?mix(t.panel,t.bg,.28):mix(t.panel,"#f5eeee",.28);const rightHead=dark?mix(t.panel,"#ffffff",.05):mix(t.panel,"#f4e9e7",.45);const detail=dark?mix(t.panel,t.bg,.15):mix(t.panel,"#ffffff",.25);r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);r.style.setProperty("--card",card);r.style.setProperty("--input",input);r.style.setProperty("--surface-2",surface2);r.style.setProperty("--surface-3",surface3);r.style.setProperty("--capture",dark?mix(t.panel,t.bg,.35):mix(t.panel,t.accentSoft,.45));r.style.setProperty("--capture-line",t.line);r.style.setProperty("--right-bg",right);r.style.setProperty("--right-head",rightHead);r.style.setProperty("--hover",surface3);r.style.setProperty("--empty",t.line);r.style.setProperty("--detail",detail);localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));}
 function renderThemes(){const grid=document.getElementById("themeGrid");grid.innerHTML=Object.keys(THEMES).map(n=>`<button class="theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");grid.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme));applyTheme(localStorage.getItem(THEME_KEY)||"Paper");}
 async function deriveKey(token,salt){const base=await crypto.subtle.importKey("raw",encoder.encode(token),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:180000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);}
 function getSessionToken(){let t=localStorage.getItem(SESSION_KEY);if(!t){t=randomToken();localStorage.setItem(SESSION_KEY,t)}return t}
 async function deterministicSalt(token){const b=await crypto.subtle.digest("SHA-256",encoder.encode(SESSION_SALT_PREFIX+token));return new Uint8Array(b).slice(0,16)}
 async function encryptState(token,obj){const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const iv=crypto.getRandomValues(new Uint8Array(12));const plain=encoder.encode(JSON.stringify(obj));const cipher=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,plain));return JSON.stringify({v:1,iv:bytesToB64(iv),data:bytesToB64(cipher)})}
 async function decryptState(token,payload){const x=typeof payload==="string"?JSON.parse(payload):payload;const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(x.iv)},key,b64ToBytes(x.data));return JSON.parse(new TextDecoder().decode(plain))}
-async function fetchCloudSession(token){
-  const {data,error}=await sb.rpc("daily_sort_get_session",{p_token:token});
-  if(error) throw error;
-  // Supabase returns jsonb strings as JS strings. Older versions of this app
-  // also returned an object, so accept both forms.
-  let payload = data;
-  if(!payload) return null;
-  // Supabase may return the jsonb value either as the encrypted JSON string
-  // or as the parsed {v,iv,data} object. Never unwrap the ciphertext itself.
-  if(typeof payload === "object" && payload.data && payload.iv) {
-    payload = payload;
-  } else if(typeof payload === "object" && typeof payload.data === "string") {
-    payload = payload.data;
-  }
-  return await decryptState(token,payload);
-}
 async function pullCloud(){
   const token=getSessionToken();
   updateCloudStatus("Cloud: connecting…");
   try{
-    const remote=await fetchCloudSession(token);
-    if(remote && Array.isArray(remote.tasks) && Array.isArray(remote.groups)){
-      state=remote;
-      localStorage.setItem(STORAGE,JSON.stringify(state));
-      render();
-      cloudReady=true;
-      updateCloudStatus("Cloud: connected");
-      return true;
+    const {data,error}=await sb.rpc("daily_sort_get_session",{p_token:token});
+    if(error) throw error;
+    if(data?.data){
+      const remote=await decryptState(token,data.data);
+      if(Array.isArray(remote.tasks)&&Array.isArray(remote.groups)){state=remote;localStorage.setItem(STORAGE,JSON.stringify(state));render();toast("Session synced");}
+    }else{
+      await pushCloud();
     }
-    // This is a brand-new local session, so create it.
-    await pushCloud();
     cloudReady=true;
     updateCloudStatus("Cloud: connected");
-    return true;
-  }catch(e){
-    console.warn("Daily Sort cloud sync unavailable",e);
-    cloudReady=false;
-    updateCloudStatus("Cloud: unavailable — local mode");
-    return false;
-  }
+  }catch(e){console.warn("Daily Sort cloud sync unavailable",e);updateCloudStatus("Cloud: unavailable — local mode");toast("Cloud sync unavailable");}
 }
-async function pushCloud(tokenOverride=null,stateOverride=null){
-  if(syncingCloud)return false; syncingCloud=true;
+async function pushCloud(){
+  if(syncingCloud)return; syncingCloud=true;
   try{
-    const token=tokenOverride || getSessionToken();
-    const payload=stateOverride || state;
-    const encrypted=await encryptState(token,payload);
+    const token=getSessionToken();
+    const encrypted=await encryptState(token,state);
     const {error}=await sb.rpc("daily_sort_save_session",{p_token:token,p_data:encrypted});
     if(error) throw error;
-    return true;
-  }catch(e){
-    console.warn("Daily Sort cloud save failed",e);
-    return false;
-  }finally{syncingCloud=false;}
+  }catch(e){console.warn("Daily Sort cloud save failed",e)}
+  finally{syncingCloud=false;}
 }
 function queueCloudSave(){
   if(!cloudReady)return;
@@ -787,54 +772,24 @@ document.getElementById("sessionModal").onclick=e=>{if(e.target.id==="sessionMod
 document.getElementById("revealToken").onclick=()=>{const x=document.getElementById("sessionToken");x.type=x.type==="password"?"text":"password";document.getElementById("revealToken").textContent=x.type==="password"?"Show":"Hide"};
 document.getElementById("copyToken").onclick=async()=>{await navigator.clipboard.writeText(getSessionToken());toast("Session key copied")};
 document.getElementById("newToken").onclick=async()=>{
-  const oldToken=getSessionToken();
-  const ok=confirm("AREY BRO 😭 — did you copy/save your previous session token?\n\nIf you continue, this browser will be cleared and Session A will no longer be your current session. Your old cloud session stays untouched and can still be imported with its token until it has been inactive for 14 days.\n\nIf you didn't save the old token, you'll be fucked. Continue?");
-  if(!ok) return;
-  const fresh=randomToken();
-  const emptyState={groups:[],tasks:[]};
-  localStorage.setItem(SESSION_KEY,fresh);
-  state=emptyState;
-  localStorage.setItem(STORAGE,JSON.stringify(state));
-  render();
-  document.getElementById("sessionToken").value=fresh;
-  updateCloudStatus("Creating new session…");
-  const saved=await pushCloud(fresh,emptyState);
-  cloudReady=saved;
-  updateCloudStatus(saved?"Cloud: connected — new session":"Cloud: unavailable — new session kept locally");
-  toast(saved?"New session created — old session preserved in cloud":"New local session created");
+  if(confirm("Create a completely new Daily Sort session? Your current session will remain available until it expires.")){
+    localStorage.setItem(SESSION_KEY,randomToken());
+    document.getElementById("sessionToken").value=getSessionToken();
+    cloudReady=true;
+    await pushCloud();
+    updateCloudStatus("Cloud: new session created");
+    toast("New session created");
+  }
 };
 document.getElementById("connectToken").onclick=async()=>{
   const input=document.getElementById("sessionImportToken").value.trim();
   if(!input){toast("Paste a session token first");return;}
-  const previousToken=getSessionToken();
-  const previousState=JSON.parse(JSON.stringify(state));
-  updateCloudStatus("Checking imported session…");
-  try{
-    const remote=await fetchCloudSession(input);
-    if(!remote || !Array.isArray(remote.tasks) || !Array.isArray(remote.groups)){
-      throw new Error("Session not found or expired");
-    }
-    // Only commit the imported session after the entire remote state was
-    // successfully fetched and decrypted. A failed import cannot destroy the current session.
-    localStorage.setItem(SESSION_KEY,input);
-    state=remote;
-    localStorage.setItem(STORAGE,JSON.stringify(state));
-    document.getElementById("sessionToken").value=input;
-    cloudReady=true;
-    render();
-    updateCloudStatus("Cloud: connected");
-    document.getElementById("sessionImportToken").value="";
-    toast("Whole session imported");
-  }catch(e){
-    localStorage.setItem(SESSION_KEY,previousToken);
-    state=previousState;
-    localStorage.setItem(STORAGE,JSON.stringify(state));
-    render();
-    cloudReady=false;
-    updateCloudStatus("Cloud: unavailable — current session preserved");
-    toast("Could not import that session");
-    console.warn("Daily Sort session import failed",e);
-  }
+  localStorage.setItem(SESSION_KEY,input);
+  document.getElementById("sessionToken").value=input;
+  cloudReady=false;
+  updateCloudStatus("Cloud: connecting…");
+  await pullCloud();
+  if(cloudReady) updateCloudStatus("Cloud: connected");
 };
 
 load();
