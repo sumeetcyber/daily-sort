@@ -693,33 +693,53 @@ function getSessionToken(){let t=localStorage.getItem(SESSION_KEY);if(!t){t=rand
 async function deterministicSalt(token){const b=await crypto.subtle.digest("SHA-256",encoder.encode(SESSION_SALT_PREFIX+token));return new Uint8Array(b).slice(0,16)}
 async function encryptState(token,obj){const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const iv=crypto.getRandomValues(new Uint8Array(12));const plain=encoder.encode(JSON.stringify(obj));const cipher=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,plain));return JSON.stringify({v:1,iv:bytesToB64(iv),data:bytesToB64(cipher)})}
 async function decryptState(token,payload){const x=typeof payload==="string"?JSON.parse(payload):payload;const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(x.iv)},key,b64ToBytes(x.data));return JSON.parse(new TextDecoder().decode(plain))}
-async function pullCloud(tokenOverride=null, createIfMissing=true){
-  const token=tokenOverride || getSessionToken();
+async function fetchCloudSession(token){
+  const {data,error}=await sb.rpc("daily_sort_get_session",{p_token:token});
+  if(error) throw error;
+  // Supabase returns jsonb strings as JS strings. Older versions of this app
+  // also returned an object, so accept both forms.
+  const payload = typeof data === "string" ? data : (data?.data ?? data);
+  if(!payload) return null;
+  return await decryptState(token,payload);
+}
+async function pullCloud(){
+  const token=getSessionToken();
   updateCloudStatus("Cloud: connecting…");
   try{
-    const {data,error}=await sb.rpc("daily_sort_get_session",{p_token:token});
-    if(error) throw error;
-    if(data?.data){
-      const remote=await decryptState(token,data.data);
-      if(Array.isArray(remote.tasks)&&Array.isArray(remote.groups)){state=remote;localStorage.setItem(STORAGE,JSON.stringify(state));render();toast("Session synced");}
-    }else if(createIfMissing){
-      await pushCloud();
-    }else{
-      throw new Error("Session not found or expired");
+    const remote=await fetchCloudSession(token);
+    if(remote && Array.isArray(remote.tasks) && Array.isArray(remote.groups)){
+      state=remote;
+      localStorage.setItem(STORAGE,JSON.stringify(state));
+      render();
+      cloudReady=true;
+      updateCloudStatus("Cloud: connected");
+      return true;
     }
+    // This is a brand-new local session, so create it.
+    await pushCloud();
     cloudReady=true;
     updateCloudStatus("Cloud: connected");
-  }catch(e){console.warn("Daily Sort cloud sync unavailable",e);updateCloudStatus("Cloud: unavailable — local mode");toast("Cloud sync unavailable");}
+    return true;
+  }catch(e){
+    console.warn("Daily Sort cloud sync unavailable",e);
+    cloudReady=false;
+    updateCloudStatus("Cloud: unavailable — local mode");
+    return false;
+  }
 }
-async function pushCloud(){
-  if(syncingCloud)return; syncingCloud=true;
+async function pushCloud(tokenOverride=null,stateOverride=null){
+  if(syncingCloud)return false; syncingCloud=true;
   try{
-    const token=getSessionToken();
-    const encrypted=await encryptState(token,state);
+    const token=tokenOverride || getSessionToken();
+    const payload=stateOverride || state;
+    const encrypted=await encryptState(token,payload);
     const {error}=await sb.rpc("daily_sort_save_session",{p_token:token,p_data:encrypted});
     if(error) throw error;
-  }catch(e){console.warn("Daily Sort cloud save failed",e)}
-  finally{syncingCloud=false;}
+    return true;
+  }catch(e){
+    console.warn("Daily Sort cloud save failed",e);
+    return false;
+  }finally{syncingCloud=false;}
 }
 function queueCloudSave(){
   if(!cloudReady)return;
@@ -760,44 +780,46 @@ document.getElementById("sessionModal").onclick=e=>{if(e.target.id==="sessionMod
 document.getElementById("revealToken").onclick=()=>{const x=document.getElementById("sessionToken");x.type=x.type==="password"?"text":"password";document.getElementById("revealToken").textContent=x.type==="password"?"Show":"Hide"};
 document.getElementById("copyToken").onclick=async()=>{await navigator.clipboard.writeText(getSessionToken());toast("Session key copied")};
 document.getElementById("newToken").onclick=async()=>{
-  const oldToken=getSessionToken();
-  const ok=confirm("AREY BRO 😭 — did you copy/save your previous session token?\n\nIf you continue, this browser will be cleared and you will start with a completely empty session.\n\nYour OLD cloud session is NOT deleted. It stays on the cloud and can be imported later with its token, until it has been inactive for 14 days.\n\nIf you did not save the old token, you may be fucked. Continue?");
-  if(!ok)return;
-  state={groups:[],tasks:[]};
-  localStorage.setItem(STORAGE,JSON.stringify(state));
-  localStorage.setItem(SESSION_KEY,randomToken());
-  localStorage.setItem(LAST_RESET,todayKey());
-  cloudReady=true;
-  await pushCloud();
-  document.getElementById("sessionToken").value=getSessionToken();
-  document.getElementById("sessionImportToken").value="";
-  render();
-  updateCloudStatus("Cloud: new empty session created");
-  toast("New empty session created");
+  if(confirm("Create a completely new Daily Sort session? Your current session will remain available until it expires.")){
+    localStorage.setItem(SESSION_KEY,randomToken());
+    document.getElementById("sessionToken").value=getSessionToken();
+    cloudReady=true;
+    await pushCloud();
+    updateCloudStatus("Cloud: new session created");
+    toast("New session created");
+  }
 };
 document.getElementById("connectToken").onclick=async()=>{
   const input=document.getElementById("sessionImportToken").value.trim();
   if(!input){toast("Paste a session token first");return;}
   const previousToken=getSessionToken();
-  const previousState=state;
-  cloudReady=false;
-  updateCloudStatus("Cloud: importing session…");
+  const previousState=JSON.parse(JSON.stringify(state));
+  updateCloudStatus("Checking imported session…");
   try{
-    await pullCloud(input,false);
+    const remote=await fetchCloudSession(input);
+    if(!remote || !Array.isArray(remote.tasks) || !Array.isArray(remote.groups)){
+      throw new Error("Session not found or expired");
+    }
+    // Only commit the imported session after the entire remote state was
+    // successfully fetched and decrypted. A failed import cannot destroy the current session.
     localStorage.setItem(SESSION_KEY,input);
+    state=remote;
+    localStorage.setItem(STORAGE,JSON.stringify(state));
     document.getElementById("sessionToken").value=input;
-    document.getElementById("sessionImportToken").value="";
+    cloudReady=true;
     render();
-    toast("Entire session imported — tasks, groups, Today & Not Today replaced");
     updateCloudStatus("Cloud: connected");
+    document.getElementById("sessionImportToken").value="";
+    toast("Whole session imported");
   }catch(e){
-    state=previousState;
     localStorage.setItem(SESSION_KEY,previousToken);
+    state=previousState;
     localStorage.setItem(STORAGE,JSON.stringify(state));
     render();
     cloudReady=false;
-    updateCloudStatus("Cloud: import failed");
-    toast("Session not found or expired — current session kept safe");
+    updateCloudStatus("Cloud: unavailable — current session preserved");
+    toast("Could not import that session");
+    console.warn("Daily Sort session import failed",e);
   }
 };
 
