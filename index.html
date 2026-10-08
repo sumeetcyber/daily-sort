@@ -719,6 +719,10 @@ async function pushCloud(){
   }catch(e){console.warn("Daily Sort cloud save failed",e)}
   finally{syncingCloud=false;}
 }
+async function deleteCloudSession(token){
+  const {error}=await sb.rpc("daily_sort_delete_session",{p_token:token});
+  if(error) throw error;
+}
 function queueCloudSave(){
   if(!cloudReady)return;
   clearTimeout(cloudTimer);
@@ -758,13 +762,35 @@ document.getElementById("sessionModal").onclick=e=>{if(e.target.id==="sessionMod
 document.getElementById("revealToken").onclick=()=>{const x=document.getElementById("sessionToken");x.type=x.type==="password"?"text":"password";document.getElementById("revealToken").textContent=x.type==="password"?"Show":"Hide"};
 document.getElementById("copyToken").onclick=async()=>{await navigator.clipboard.writeText(getSessionToken());toast("Session key copied")};
 document.getElementById("newToken").onclick=async()=>{
-  if(confirm("Create a completely new Daily Sort session? Your current session will remain available until it expires.")){
-    localStorage.setItem(SESSION_KEY,randomToken());
-    document.getElementById("sessionToken").value=getSessionToken();
+  const oldToken=getSessionToken();
+  const ok=confirm("⚠ NEW SESSION
+
+This will permanently delete the current cloud session — including ALL tasks, groups, Today and Not Today data stored in it.
+
+SAVE/COPY YOUR CURRENT SESSION TOKEN FIRST if you may ever need this session again.
+
+After continuing, the old token will no longer work. A completely empty new session will be created.
+
+Continue?");
+  if(!ok)return;
+  try{
+    updateCloudStatus("Cloud: deleting old session…");
+    await deleteCloudSession(oldToken);
+    const newToken=randomToken();
+    localStorage.setItem(SESSION_KEY,newToken);
+    state={groups:[],tasks:[]};
+    localStorage.setItem(STORAGE,JSON.stringify(state));
+    localStorage.removeItem(LAST_RESET);
+    document.getElementById("sessionToken").value=newToken;
+    render();
     cloudReady=true;
     await pushCloud();
-    updateCloudStatus("Cloud: new session created");
-    toast("New session created");
+    updateCloudStatus("Cloud: connected — new empty session");
+    toast("New empty session created");
+  }catch(e){
+    console.error("Could not replace session",e);
+    updateCloudStatus("Cloud: unavailable");
+    toast("Could not delete the old session — nothing was changed");
   }
 };
 document.getElementById("connectToken").onclick=async()=>{
