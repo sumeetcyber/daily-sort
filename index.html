@@ -698,8 +698,15 @@ async function fetchCloudSession(token){
   if(error) throw error;
   // Supabase returns jsonb strings as JS strings. Older versions of this app
   // also returned an object, so accept both forms.
-  const payload = typeof data === "string" ? data : (data?.data ?? data);
+  let payload = data;
   if(!payload) return null;
+  // Supabase may return the jsonb value either as the encrypted JSON string
+  // or as the parsed {v,iv,data} object. Never unwrap the ciphertext itself.
+  if(typeof payload === "object" && payload.data && payload.iv) {
+    payload = payload;
+  } else if(typeof payload === "object" && typeof payload.data === "string") {
+    payload = payload.data;
+  }
   return await decryptState(token,payload);
 }
 async function pullCloud(){
@@ -780,14 +787,21 @@ document.getElementById("sessionModal").onclick=e=>{if(e.target.id==="sessionMod
 document.getElementById("revealToken").onclick=()=>{const x=document.getElementById("sessionToken");x.type=x.type==="password"?"text":"password";document.getElementById("revealToken").textContent=x.type==="password"?"Show":"Hide"};
 document.getElementById("copyToken").onclick=async()=>{await navigator.clipboard.writeText(getSessionToken());toast("Session key copied")};
 document.getElementById("newToken").onclick=async()=>{
-  if(confirm("Create a completely new Daily Sort session? Your current session will remain available until it expires.")){
-    localStorage.setItem(SESSION_KEY,randomToken());
-    document.getElementById("sessionToken").value=getSessionToken();
-    cloudReady=true;
-    await pushCloud();
-    updateCloudStatus("Cloud: new session created");
-    toast("New session created");
-  }
+  const oldToken=getSessionToken();
+  const ok=confirm("AREY BRO 😭 — did you copy/save your previous session token?\n\nIf you continue, this browser will be cleared and Session A will no longer be your current session. Your old cloud session stays untouched and can still be imported with its token until it has been inactive for 14 days.\n\nIf you didn't save the old token, you'll be fucked. Continue?");
+  if(!ok) return;
+  const fresh=randomToken();
+  const emptyState={groups:[],tasks:[]};
+  localStorage.setItem(SESSION_KEY,fresh);
+  state=emptyState;
+  localStorage.setItem(STORAGE,JSON.stringify(state));
+  render();
+  document.getElementById("sessionToken").value=fresh;
+  updateCloudStatus("Creating new session…");
+  const saved=await pushCloud(fresh,emptyState);
+  cloudReady=saved;
+  updateCloudStatus(saved?"Cloud: connected — new session":"Cloud: unavailable — new session kept locally");
+  toast(saved?"New session created — old session preserved in cloud":"New local session created");
 };
 document.getElementById("connectToken").onclick=async()=>{
   const input=document.getElementById("sessionImportToken").value.trim();
