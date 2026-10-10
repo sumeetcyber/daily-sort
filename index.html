@@ -49,16 +49,16 @@
     max-width:1100px;
   }
   .capture textarea{
-    flex:1;
-    min-height:84px;
-    resize:vertical;
-    border:1px solid #d9d4ca;
-    border-radius:10px;
-    background:#fff;
-    padding:12px 14px;
-    outline:none;
+    flex:1; min-width:0; min-height:84px; resize:vertical;
+    border:1px solid var(--line); border-radius:10px;
+    background:var(--input,var(--panel)); color:var(--text);
+    padding:12px 14px; outline:none;
   }
-  .capture textarea:focus{border-color:#91bca6;box-shadow:0 0 0 3px #91bca633}
+  .capture textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .capture-actions{display:flex;flex-direction:column;gap:8px;flex:none}
+  .panel-head-actions{display:flex;align-items:center;gap:10px}
+  .dump-btn{border:1px solid var(--line);background:var(--button,var(--panel));color:var(--text);border-radius:9px;padding:6px 10px;cursor:pointer;font-size:18px;line-height:1}
+  .dump-btn:hover{border-color:var(--accent);background:var(--soft,var(--accent-soft))}
   .btn{
     border:1px solid var(--line);
     background:#fff;
@@ -170,10 +170,14 @@
     text-align:center;color:#8b8379;font-size:12px;margin-top:22px
   }
   .footer button{border:0;background:transparent;color:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-  .task-title-edit{width:100%;border:1px solid transparent;background:transparent;color:var(--text);font-size:15px;line-height:1.42;padding:1px 3px;border-radius:6px;outline:none}
-  .task-title-edit:hover{border-color:#e0dbd2;background:#fff}
-  .task-title-edit:focus{border-color:#9bbda9;background:#fff;box-shadow:0 0 0 2px #9bbda933}
-  .done .task-title-edit{text-decoration:line-through;color:#746e65}
+  .task-title-edit{display:block;user-select:text;-webkit-user-select:text;width:100%;min-width:0;min-height:24px;height:24px;resize:none;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;border:1px solid transparent;background:transparent;color:var(--text);font:inherit;font-size:15px;line-height:1.42;padding:2px 3px;border-radius:6px;outline:none;cursor:text;box-sizing:border-box}
+  .task-title-edit:hover{border-color:var(--line);background:var(--input,var(--panel));color:var(--text)}
+  .task-title-edit:focus{border-color:var(--accent);background:var(--input,var(--panel));color:var(--text);box-shadow:0 0 0 2px var(--accent-soft)}
+  .done .task-title-edit{text-decoration:line-through;color:var(--muted)}
+  .card-main{min-width:0}
+  .task-body{overflow-wrap:anywhere}
+  .cards{max-height:calc(100vh - 300px);overflow-y:auto}
+  @media(max-width:700px){.capture-actions{width:100%;flex-direction:row}.capture-actions .btn{flex:1}.panel-head{gap:8px}.panel-title{font-size:20px}}
   .cards{max-height:calc(100vh - 340px);overflow-y:auto}
   /* Session modal: keep the entire settings UI inside one contained box. */
   .session-modal{
@@ -215,7 +219,9 @@
   .theme-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:9px;padding:10px 7px;cursor:pointer;font-size:11px;font-weight:600;transition:.15s;box-shadow:0 1px 2px #0001}.theme-btn:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 3px 8px #0002}.theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
   
   .capture{background:var(--panel);border-color:var(--line)}
-  .capture textarea,.add-group input,.details textarea,.session-key input{background:var(--input,#fff);color:var(--text);border-color:var(--line)}
+  .capture textarea,.details textarea,.session-key input{background:var(--input,var(--panel));color:var(--text);border-color:var(--line)}
+  .capture textarea::placeholder,.details textarea::placeholder{color:var(--muted);opacity:1}
+  .capture textarea:focus,.details textarea:focus,.session-key input:focus{background:var(--input,var(--panel));color:var(--text);border-color:var(--accent);outline:none;box-shadow:0 0 0 2px var(--accent-soft)}
   .btn{background:var(--button,var(--panel));color:var(--text);border-color:var(--line)}
   .btn.primary,.settings-main-btn{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
   .group{background:var(--card,var(--panel));color:var(--text)}
@@ -362,7 +368,10 @@
 
   <section class="capture">
     <textarea id="bulkInput" placeholder="Paste tasks here — one task per line&#10;&#10;study for exam&#10;buy shoe powder&#10;call RTO&#10;finish assignment"></textarea>
-    <button class="btn primary" id="addTasks">Add Tasks</button>
+    <div class="capture-actions">
+      <button class="btn primary" id="addToday">Add to Today</button>
+      <button class="btn" id="addLater">Add to Not Today</button>
+    </div>
   </section>
 
   <div class="hint">Drag tasks to <b>Not Today</b> to take them out of today's work. Click a task to expand its details.</div>
@@ -382,7 +391,7 @@
           <div class="panel-title">Today</div>
           <div style="color:var(--muted);font-size:12px;margin-top:3px">Everything you are considering for today</div>
         </div>
-        <div class="count" id="todayCount">0</div>
+        <div class="panel-head-actions"><button class="dump-btn" id="dumpToday" title="Move all Today task titles into the paste box">↑</button><div class="count" id="todayCount">0</div></div>
       </div>
       <div class="cards" id="todayCards" data-zone="today"></div>
     </section>
@@ -393,7 +402,7 @@
           <div class="panel-title">Not Today</div>
           <div style="color:var(--muted);font-size:12px;margin-top:3px">Still saved. Just not today's work.</div>
         </div>
-        <div class="count" id="laterCount">0</div>
+        <div class="panel-head-actions"><button class="dump-btn" id="dumpLater" title="Move all Not Today task titles into the paste box">↑</button><div class="count" id="laterCount">0</div></div>
       </div>
       <div class="cards" id="laterCards" data-zone="later"></div>
     </section>
@@ -483,18 +492,27 @@ function escapeHtml(s){
   return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 }
 
-function addTasksFromText(){
+function addTasksFromText(zone="today"){
   const box=document.getElementById("bulkInput");
   const lines=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
   if(!lines.length) return;
   lines.forEach(text=>{
-    state.tasks.push({
-      id:id(), text, notes:"", zone:"today", done:false, open:false, created:Date.now()
-    });
+    state.tasks.push({id:id(),text,notes:"",zone,done:false,open:false,created:Date.now()});
   });
   box.value="";
   save(); render();
-  toast(lines.length+" task"+(lines.length===1?"":"s")+" added");
+  toast(lines.length+" task"+(lines.length===1?"":"s")+" added to "+(zone==="later"?"Not Today":"Today"));
+}
+function dumpZone(zone){
+  const selected=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
+  if(!selected.length){toast("No tasks to dump");return;}
+  const box=document.getElementById("bulkInput");
+  const existing=box.value.trim();
+  box.value=[existing,...selected.map(t=>t.text)].filter(Boolean).join("\n");
+  const ids=new Set(selected.map(t=>t.id));
+  state.tasks=state.tasks.filter(t=>!ids.has(t.id));
+  save();render();box.focus();
+  toast(selected.length+" task titles moved to the paste box");
 }
 
 function taskCard(t){
@@ -503,7 +521,7 @@ function taskCard(t){
     <div class="card-main">
       <button class="check" data-action="complete" title="Complete"></button>
       <div class="task-body">
-        <input class="task-title-edit" data-action="title" value="${escapeHtml(t.text)}" aria-label="Task title">
+        <textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(t.text)}</textarea>
       </div>
       <div class="card-tools">
         <button class="icon-btn" data-action="up" title="Move up">↑</button>
@@ -598,12 +616,21 @@ function bindActions(){
     card.querySelector('[data-action="expand"]').onclick=e=>{
       e.stopPropagation(); t.open=!t.open; save();render();
     };
-    card.querySelector('[data-action="title"]').oninput=e=>{
-      t.text=e.target.value; save();
-    };
-    card.querySelector('[data-action="title"]').onkeydown=e=>{
-      if(e.key==="Enter"){e.preventDefault();e.target.blur();}
-    };
+    const titleEditor=card.querySelector('[data-action="title"]');
+    const fitTitle=()=>{titleEditor.style.height="24px";titleEditor.style.height=Math.max(24,titleEditor.scrollHeight)+"px";};
+    fitTitle();
+    titleEditor.addEventListener("input",e=>{t.text=e.currentTarget.value;fitTitle();save();});
+    titleEditor.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();e.currentTarget.blur();}});
+    // Native dragging on the parent article can steal mouse clicks from the textarea,
+    // preventing caret placement and text selection. Disable parent dragging while editing.
+    titleEditor.addEventListener("pointerdown",e=>{
+      card.draggable=false;
+      e.stopPropagation();
+    });
+    titleEditor.addEventListener("focus",()=>{card.draggable=false;});
+    titleEditor.addEventListener("blur",()=>{card.draggable=true;});
+    titleEditor.draggable=false;
+    titleEditor.addEventListener("dragstart",e=>e.preventDefault());
     card.querySelector('[data-action="notes"]').oninput=e=>{
       t.notes=e.target.value; save();
     };
@@ -625,6 +652,7 @@ function bindActions(){
 function bindDnD(){
   document.querySelectorAll(".card").forEach(card=>{
     card.addEventListener("dragstart",e=>{
+      if(e.target.closest('input,textarea,button,[contenteditable="true"]')){e.preventDefault();return;}
       window.dragTaskId=card.dataset.id;
       e.dataTransfer.setData("text/plain",card.dataset.id);
       e.dataTransfer.effectAllowed="move";
@@ -703,8 +731,8 @@ function importData(file){
   r.onload=()=>{
     try{
       const x=JSON.parse(r.result);
-      if(!Array.isArray(x.tasks)||!Array.isArray(x.groups))throw Error();
-      state=x;save();render();toast("Imported");
+      if(!Array.isArray(x.tasks))throw Error();
+      state={tasks:x.tasks};state.tasks.forEach(t=>{delete t.groupId;if(!t.zone)t.zone="today";if(!("notes" in t))t.notes="";if(!("open" in t))t.open=false;});save();render();toast("Imported");
     }catch(e){toast("Invalid backup file")}
   };
   r.readAsText(file);
@@ -810,9 +838,12 @@ function toast(msg){
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),1800);
 }
 
-document.getElementById("addTasks").onclick=addTasksFromText;
+document.getElementById("addToday").onclick=()=>addTasksFromText("today");
+document.getElementById("addLater").onclick=()=>addTasksFromText("later");
+document.getElementById("dumpToday").onclick=()=>dumpZone("today");
+document.getElementById("dumpLater").onclick=()=>dumpZone("later");
 document.getElementById("bulkInput").addEventListener("keydown",e=>{
-  if((e.ctrlKey||e.metaKey)&&e.key==="Enter")addTasksFromText();
+  if((e.ctrlKey||e.metaKey)&&e.key==="Enter")addTasksFromText("today");
 });
 document.getElementById("clearCompleted").onclick=clearCompleted;
 document.getElementById("exportData").onclick=exportData;
