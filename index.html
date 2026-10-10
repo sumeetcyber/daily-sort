@@ -356,6 +356,15 @@
     #sessionModal > .session-box{width:calc(100vw - 24px) !important;max-height:calc(100vh - 24px) !important;padding:20px !important;}
     #sessionModal .theme-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
   }
+  .draft-tools{max-width:1100px;margin:-7px auto 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+  .draft-tools details{position:relative;max-width:100%}
+  .draft-tools summary{cursor:pointer;user-select:none;color:var(--text);border:1px solid var(--line);background:var(--button,var(--panel));padding:7px 10px;border-radius:8px}
+  .draft-history-list{margin-top:8px;display:flex;flex-direction:column;gap:6px;max-height:280px;overflow:auto;width:min(460px,calc(100vw - 50px));padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+  .draft-history-item{display:flex;align-items:center;gap:8px;text-align:left;width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--card,var(--panel));color:var(--text);cursor:pointer}
+  .draft-history-item:hover{border-color:var(--accent)}
+  .draft-history-meta{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}
+  .draft-history-preview{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;max-height:3.6em;overflow:hidden}
+  .draft-history-empty{padding:8px;color:var(--muted)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -373,6 +382,7 @@
       <button class="btn" id="addLater">Add to Not Today</button>
     </div>
   </section>
+  <div class="draft-tools"><span id="draftStatus" aria-live="polite">Draft autosave is on</span></div>
 
   <div class="hint">Drag tasks to <b>Not Today</b> to take them out of today's work. Click a task to expand its details.</div>
 
@@ -421,7 +431,7 @@
       </div>
     </div>
     <h2 id="sessionTitle">Settings</h2>
-    <p>Keep your token safely noted in your notes app. Lose it, all your work will be unrecoverable.</p>
+    <p>One Daily Sort session, synced through Supabase. Your token is the key to this session. It is never put in the URL.</p>
     <div style="font-size:12px;color:var(--muted);margin-top:12px">Your current session token</div>
     <div class="session-key"><input id="sessionToken" type="password" readonly aria-label="Session token"><button class="btn" id="revealToken">Show</button></div>
     <div class="session-actions"><button class="btn primary" id="copyToken">Copy token</button><button class="btn" id="newToken">New session</button></div>
@@ -440,6 +450,7 @@ const STORAGE = "daily-sort-v1";
 const LAST_RESET = "daily-sort-last-reset";
 const SESSION_KEY = "daily-sort-session-key";
 const THEME_KEY="daily-sort-theme";
+const DRAFT_KEY="daily-sort-bulk-draft-v1";
 const SESSION_SALT_PREFIX="daily-sort-session-v1:";
 const SUPABASE_URL = "https://cepdhdpzahqthrtyqogo.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Hjvm2fSk4P1lR46pxIIcKQ_dnen3qS2";
@@ -492,14 +503,31 @@ function escapeHtml(s){
   return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 }
 
+function persistDraft(){
+  const box=document.getElementById("bulkInput");
+  if(!box)return;
+  try{localStorage.setItem(DRAFT_KEY,box.value);}catch(e){}
+  const status=document.getElementById("draftStatus");
+  if(status)status.textContent="Draft saved locally · "+new Date().toLocaleTimeString("en-GB",{hour12:false});
+}
+function initDrafts(){
+  try{localStorage.removeItem("daily-sort-bulk-draft-history-v1");}catch(e){}
+  const box=document.getElementById("bulkInput");
+  try{box.value=localStorage.getItem(DRAFT_KEY)||"";}catch(e){}
+  box.addEventListener("input",persistDraft);
+  box.addEventListener("blur",persistDraft);
+}
+
 function addTasksFromText(zone="today"){
   const box=document.getElementById("bulkInput");
   const lines=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
   if(!lines.length) return;
+  persistDraft();
   lines.forEach(text=>{
     state.tasks.push({id:id(),text,notes:"",zone,done:false,open:false,created:Date.now()});
   });
   box.value="";
+  persistDraft(false);
   save(); render();
   toast(lines.length+" task"+(lines.length===1?"":"s")+" added to "+(zone==="later"?"Not Today":"Today"));
 }
@@ -509,6 +537,7 @@ function dumpZone(zone){
   const box=document.getElementById("bulkInput");
   const existing=box.value.trim();
   box.value=[existing,...selected.map(t=>t.text)].filter(Boolean).join("\n");
+  persistDraft();
   const ids=new Set(selected.map(t=>t.id));
   state.tasks=state.tasks.filter(t=>!ids.has(t.id));
   save();render();box.focus();
@@ -866,6 +895,11 @@ document.getElementById("confirmNewSession").onclick=async()=>{
   state={tasks:[]};
   localStorage.setItem(STORAGE,JSON.stringify(state));
   localStorage.setItem(LAST_RESET,todayKey());
+  localStorage.removeItem(DRAFT_KEY);
+  document.getElementById("bulkInput").value="";
+  localStorage.setItem(DRAFT_KEY,"");
+  const draftStatus=document.getElementById("draftStatus");
+  if(draftStatus)draftStatus.textContent="Draft autosave is on";
   localStorage.setItem(SESSION_KEY,newToken);
   localStorage.setItem(THEME_KEY,"Paper");
   applyTheme("Paper",false);
@@ -896,6 +930,7 @@ document.getElementById("connectToken").onclick=async()=>{
 };
 
 load();
+initDrafts();
 applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);
 render();
 pullCloud();
