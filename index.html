@@ -431,7 +431,7 @@
       </div>
     </div>
     <h2 id="sessionTitle">Settings</h2>
-    <p>One Daily Sort session, synced through Supabase. Your token is the key to this session. It is never put in the URL.</p>
+    <p>Keep this key safe and secret. Lose this key, lose your stuff.</p>
     <div style="font-size:12px;color:var(--muted);margin-top:12px">Your current session token</div>
     <div class="session-key"><input id="sessionToken" type="password" readonly aria-label="Session token"><button class="btn" id="revealToken">Show</button></div>
     <div class="session-actions"><button class="btn primary" id="copyToken">Copy token</button><button class="btn" id="newToken">New session</button></div>
@@ -439,8 +439,7 @@
     <div class="session-key"><input id="sessionImportToken" type="password" placeholder="Paste session token"><button class="btn" id="connectToken">Connect</button></div>
     <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:8px">Cloud: connecting…</div>
     <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
-    <div style="margin-top:20px"><b style="font-size:13px">Theme</b><div class="theme-grid" id="themeGrid"></div></div>
-    <div class="security-note">Local-only security note: a person who already has full access to this browser profile can inspect local browser storage. The key protects exported backups; it cannot make a client-only HTML app invisible to a local attacker.</div>
+    <div style="margin-top:20px"><b style="font-size:13px">Theme</b><div class="theme-grid" id="themeGrid"></div></div>    
   </div>
 </div>
 <div class="toast" id="toast"></div>
