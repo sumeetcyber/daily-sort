@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Daily Sort</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='5' y='5' width='54' height='54' rx='16' fill='%234d8f70'/%3E%3Cpath d='M19 21h26M19 32h18M19 43h11' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='44' cy='43' r='5' fill='white'/%3E%3C/svg%3E">
 <style>
   :root{
     --bg:#f7f5f0;
@@ -29,6 +30,10 @@
   button,input,textarea{font:inherit}
   .wrap{max-width:1450px;margin:0 auto;padding:34px 30px 60px}
   header{text-align:center;margin-bottom:28px}
+  .brand{display:flex;align-items:center;justify-content:center;gap:10px}
+  .brand-mark{width:35px;height:35px;flex:none;color:var(--accent)}
+  .brand h1{margin:0}
+  .clock{font:12px ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);margin-top:8px;letter-spacing:.04em}
   h1{
     margin:0;
     font-family:Georgia,"Times New Roman",serif;
@@ -114,14 +119,25 @@
     text-align:center;color:#91897e;padding:24px
   }
   .card{
+    position:relative;z-index:0;
     background:#fff;
     border:1px solid #ddd7ce;
     border-radius:13px;
     margin-bottom:10px;
-    overflow:hidden;
+    overflow:visible;
     cursor:grab;
   }
   .card:active{cursor:grabbing}
+  .card:hover{z-index:8}
+  .card-tools{position:relative;z-index:1}
+  .insert-below{position:relative;flex:none;width:25px;height:25px;border-radius:50%;border:1px solid var(--accent);background:var(--panel);color:var(--accent);font-size:19px;line-height:20px;padding:0;display:grid;place-items:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .08s ease-out,background .12s,color .12s;z-index:5;box-shadow:0 2px 7px #00000012}
+  .card:hover .insert-below{opacity:1;pointer-events:auto}
+  .insert-below:hover{background:var(--accent);color:white}
+  .card.just-added{animation:newCardGlow 1.8s ease-out}
+  @keyframes newCardGlow{0%,35%{box-shadow:0 0 0 3px var(--accent);background:var(--accent-soft)}100%{box-shadow:none;background:var(--panel)}}
+  .insert-below.fade-after-click{animation:plusFadeOut 2s ease-out forwards;pointer-events:none}
+  @keyframes plusFadeOut{0%{opacity:1}75%{opacity:.35}100%{opacity:0}}
+  @media(hover:none){.card:hover .insert-below{opacity:1;pointer-events:auto}}
   .card.dragging{opacity:.45}
   .card.drop-target{border-color:#79a88f;box-shadow:0 0 0 2px #79a88f33}
   .card.done{opacity:.62}
@@ -277,15 +293,24 @@
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   @media(max-width:1000px){
-    .board{grid-template-columns:190px 1fr}
-    .right{grid-column:1/-1}
+    .wrap{padding-left:clamp(12px,3vw,30px);padding-right:clamp(12px,3vw,30px)}
+    .board{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .panel{min-width:0}
+    .panel-head{min-width:0}
+    .panel-head > div:first-child{min-width:0}
+    .panel-head .panel-title{white-space:nowrap}
+    .cards{min-width:0}
   }
   @media(max-width:700px){
     .wrap{padding:22px 12px 45px}
     h1{font-size:34px}
     .capture{flex-direction:column;align-items:stretch}
-    .board{grid-template-columns:1fr}
+    .board{grid-template-columns:minmax(0,1fr)}
     .panel{min-height:auto}
+    .cards{max-height:none;overflow:visible}
+    .card-main{gap:7px;padding:11px}
+    .card-tools{gap:0}
+    .icon-btn{padding:3px 4px}
     .right{grid-column:auto}
   }
 
@@ -371,8 +396,12 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Daily Sort</h1>
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" role="img" aria-label="Daily Sort logo"><path d="M5 10h30M5 20h21M5 30h12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><circle cx="29" cy="30" r="4" fill="currentColor"/></svg>
+      <h1>Daily Sort</h1>
+    </div>
     <div class="subtitle">Dump everything in. Decide what actually belongs in today.</div>
+    <div class="clock" id="localClock" aria-label="Local time">--:--:--</div>
   </header>
 
   <section class="capture">
@@ -431,15 +460,20 @@
       </div>
     </div>
     <h2 id="sessionTitle">Settings</h2>
-    <p>Keep this key safe and secret. Lose this key, lose your stuff.</p>
+    <p>One Daily Sort session, synced through Supabase. Your token is the key to this session. It is never put in the URL.</p>
     <div style="font-size:12px;color:var(--muted);margin-top:12px">Your current session token</div>
     <div class="session-key"><input id="sessionToken" type="password" readonly aria-label="Session token"><button class="btn" id="revealToken">Show</button></div>
     <div class="session-actions"><button class="btn primary" id="copyToken">Copy token</button><button class="btn" id="newToken">New session</button></div>
     <div style="font-size:12px;color:var(--muted);margin-top:16px">Use an existing token on another computer</div>
     <div class="session-key"><input id="sessionImportToken" type="password" placeholder="Paste session token"><button class="btn" id="connectToken">Connect</button></div>
-    <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:8px">Cloud: connecting…</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px" aria-label="Keyboard shortcuts">
+      <div style="border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft,var(--accent-soft));text-align:center"><div style="font-size:11px;color:var(--muted);margin-bottom:5px">ADD TO</div><div style="font-weight:750">Today</div><kbd style="display:inline-block;margin-top:7px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font:12px ui-monospace,monospace">Ctrl + Enter</kbd></div>
+      <div style="border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft,var(--accent-soft));text-align:center"><div style="font-size:11px;color:var(--muted);margin-bottom:5px">ADD TO</div><div style="font-weight:750">Not Today</div><kbd style="display:inline-block;margin-top:7px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font:12px ui-monospace,monospace">Ctrl + Shift + Enter</kbd></div>
+    </div>
+    <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:12px">Cloud: connecting…</div>
     <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
-    <div style="margin-top:20px"><b style="font-size:13px">Theme</b><div class="theme-grid" id="themeGrid"></div></div>    
+    <div style="margin-top:20px"><b style="font-size:13px">Theme</b><div class="theme-grid" id="themeGrid"></div></div>
+    <div class="security-note">Local-only security note: a person who already has full access to this browser profile can inspect local browser storage. The key protects exported backups; it cannot make a client-only HTML app invisible to a local attacker.</div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -457,6 +491,10 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 let cloudTimer = null;
 let cloudReady = false;
 let syncingCloud = false;
+let realtimeChannel = null;
+let realtimeToken = null;
+let applyingRemote = false;
+let localChangeAt = 0;
 
 let state = {
   tasks: []
@@ -467,6 +505,7 @@ function id(){
 }
 
 function save(){
+  localChangeAt=Date.now();
   localStorage.setItem(STORAGE, JSON.stringify(state));
   queueCloudSave();
 }
@@ -508,6 +547,7 @@ function persistDraft(){
   try{localStorage.setItem(DRAFT_KEY,box.value);}catch(e){}
   const status=document.getElementById("draftStatus");
   if(status)status.textContent="Draft saved locally · "+new Date().toLocaleTimeString("en-GB",{hour12:false});
+  queueCloudSave();
 }
 function initDrafts(){
   try{localStorage.removeItem("daily-sort-bulk-draft-history-v1");}catch(e){}
@@ -552,6 +592,7 @@ function taskCard(t){
         <textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(t.text)}</textarea>
       </div>
       <div class="card-tools">
+        <button class="insert-below" data-action="insert-below" aria-label="Add an empty task below" title="Add empty task below">+</button>
         <button class="icon-btn" data-action="up" title="Move up">↑</button>
         <button class="icon-btn" data-action="down" title="Move down">↓</button>
         <button class="icon-btn" data-action="move-later" title="${t.zone==="later"?"Move to Today":"Move to Not Today"}">${t.zone==="later"?"←":"→"}</button>
@@ -671,6 +712,18 @@ function bindActions(){
     });
     card.querySelector('[data-action="delete"]').onclick=()=>{
       state.tasks=state.tasks.filter(x=>x.id!==tid);save();render();
+    };
+    card.querySelector('[data-action="insert-below"]').onclick=e=>{
+      e.stopPropagation();
+      const index=state.tasks.findIndex(x=>x.id===tid);
+      const blank={id:id(),text:"",notes:"",zone:t.zone,done:false,open:false,created:Date.now()};
+      state.tasks.splice(index+1,0,blank);save();render();
+      const newCard=document.querySelector(`.card[data-id="${blank.id}"]`);
+      const next=newCard?.querySelector('[data-action="title"]');
+      const newPlus=newCard?.querySelector('[data-action="insert-below"]');
+      if(newCard)newCard.classList.add("just-added");
+      if(newPlus)newPlus.classList.add("fade-after-click");
+      if(next){next.focus();next.setSelectionRange(0,0);}
     };
   });
 
@@ -794,11 +847,41 @@ function b64ToBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)
 function randomToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return bytesToB64(a);}
 function applyTheme(name, sync=true){const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);r.style.setProperty("--input",t.input||t.panel);r.style.setProperty("--button",t.button||t.panel);r.style.setProperty("--card",t.card||t.panel);r.style.setProperty("--details",t.details||t.panel);r.style.setProperty("--soft",t.soft||t.accentSoft);r.style.setProperty("--later-bg",t.laterBg||t.panel);r.style.setProperty("--later-head",t.laterHead||t.panel);r.style.setProperty("--red",t.red||"#b56b67");localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));if(sync) queueCloudSave();}
 function renderThemes(){const grid=document.getElementById("themeGrid");grid.innerHTML=Object.keys(THEMES).map(n=>`<button class="theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");grid.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme));applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);}
-async function deriveKey(token,salt){const base=await crypto.subtle.importKey("raw",encoder.encode(token),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:180000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);}
+const derivedKeyCache=new Map();
+async function deriveKey(token,salt){if(derivedKeyCache.has(token))return derivedKeyCache.get(token);const promise=(async()=>{const base=await crypto.subtle.importKey("raw",encoder.encode(token),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:180000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);})();derivedKeyCache.set(token,promise);try{return await promise}catch(e){derivedKeyCache.delete(token);throw e}}
 function getSessionToken(){let t=localStorage.getItem(SESSION_KEY);if(!t){t=randomToken();localStorage.setItem(SESSION_KEY,t)}return t}
 async function deterministicSalt(token){const b=await crypto.subtle.digest("SHA-256",encoder.encode(SESSION_SALT_PREFIX+token));return new Uint8Array(b).slice(0,16)}
 async function encryptState(token,obj){const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const iv=crypto.getRandomValues(new Uint8Array(12));const plain=encoder.encode(JSON.stringify(obj));const cipher=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,plain));return JSON.stringify({v:1,iv:bytesToB64(iv),data:bytesToB64(cipher)})}
 async function decryptState(token,payload){const x=typeof payload==="string"?JSON.parse(payload):payload;const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(x.iv)},key,b64ToBytes(x.data));return JSON.parse(new TextDecoder().decode(plain))}
+async function setupRealtime(token=getSessionToken()){
+  if(realtimeToken===token && realtimeChannel)return;
+  if(realtimeChannel){try{await sb.removeChannel(realtimeChannel);}catch(e){}}
+  realtimeChannel=null;realtimeToken=token;
+  const digest=await crypto.subtle.digest("SHA-256",encoder.encode("daily-sort-channel:"+token));
+  const channelId=Array.from(new Uint8Array(digest).slice(0,12)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  realtimeChannel=sb.channel("daily-sort-live-"+channelId,{config:{broadcast:{self:false}}})
+    .on("broadcast",{event:"state"},async({payload})=>{
+      if(!payload?.encrypted || applyingRemote)return;
+      try{
+        const remote=await decryptState(token,payload.encrypted);
+        const remoteState=remote?.state||remote;
+        if(!Array.isArray(remoteState?.tasks))return;
+        applyingRemote=true;
+        state={tasks:remoteState.tasks};
+        if(typeof remote?.draft === "string"){const box=document.getElementById("bulkInput");if(box && document.activeElement!==box){box.value=remote.draft;try{localStorage.setItem(DRAFT_KEY,remote.draft)}catch(e){}}}
+        state.tasks.forEach(t=>{delete t.groupId;if(!t.zone)t.zone="today";if(!("notes" in t))t.notes="";if(!("open" in t))t.open=false;});
+        localStorage.setItem(STORAGE,JSON.stringify(state));
+        if(remote?.theme&&THEMES[remote.theme])applyTheme(remote.theme,false);
+        render();
+        updateCloudStatus("Cloud: live · synced from another device");
+      }catch(err){console.warn("Live update could not be applied",err)}
+      finally{applyingRemote=false;}
+    })
+    .subscribe(status=>{
+      if(status==="SUBSCRIBED")updateCloudStatus("Cloud: live · devices connected");
+    });
+}
+
 async function pullCloud(tokenOverride=null){
   const token=tokenOverride||getSessionToken();
   updateCloudStatus("Cloud: connecting…");
@@ -812,6 +895,7 @@ async function pullCloud(tokenOverride=null){
         const remoteState=remote?.state || remote;
         if(!Array.isArray(remoteState?.tasks)) throw new Error("Invalid session data");
         const importedState={tasks:remoteState.tasks};
+        if(typeof remote?.draft === "string"){const box=document.getElementById("bulkInput");if(box){box.value=remote.draft;try{localStorage.setItem(DRAFT_KEY,remote.draft)}catch(e){}}}
         importedState.tasks.forEach(t=>delete t.groupId);
         if(remote?.theme && THEMES[remote.theme]) applyTheme(remote.theme,false);
         state=importedState;
@@ -835,20 +919,28 @@ async function pullCloud(tokenOverride=null){
 }
 async function pushCloud(tokenOverride=null){
   if(syncingCloud)return false; syncingCloud=true;
+  const changeSnapshot=localChangeAt;
   try{
     const token=tokenOverride||getSessionToken();
-    const payload={state,theme:localStorage.getItem(THEME_KEY)||"Paper"};
+    const payload={state,draft:document.getElementById("bulkInput")?.value||"",theme:localStorage.getItem(THEME_KEY)||"Paper"};
     const encrypted=await encryptState(token,payload);
     const {error}=await sb.rpc("daily_sort_save_session",{p_token:token,p_data:JSON.parse(encrypted)});
     if(error) throw error;
+    if(realtimeChannel && !applyingRemote){
+      try{await realtimeChannel.send({type:"broadcast",event:"state",payload:{encrypted,at:Date.now()}})}catch(broadcastError){console.warn("Live broadcast failed",broadcastError)}
+    }
     return true;
   }catch(e){console.warn("Daily Sort cloud save failed",e);return false}
-  finally{syncingCloud=false;}
+  finally{
+    syncingCloud=false;
+    if(cloudReady && localChangeAt>changeSnapshot)queueCloudSave();
+  }
 }
 function queueCloudSave(){
   if(!cloudReady)return;
   clearTimeout(cloudTimer);
-  cloudTimer=setTimeout(pushCloud,500);
+  if(applyingRemote)return;
+  cloudTimer=setTimeout(pushCloud,0);
 }
 function updateCloudStatus(msg){const el=document.getElementById("cloudStatus");if(el)el.textContent=msg;}
 function openSession(){
@@ -871,7 +963,10 @@ document.getElementById("addLater").onclick=()=>addTasksFromText("later");
 document.getElementById("dumpToday").onclick=()=>dumpZone("today");
 document.getElementById("dumpLater").onclick=()=>dumpZone("later");
 document.getElementById("bulkInput").addEventListener("keydown",e=>{
-  if((e.ctrlKey||e.metaKey)&&e.key==="Enter")addTasksFromText("today");
+  if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){
+    e.preventDefault();
+    addTasksFromText(e.shiftKey?"later":"today");
+  }
 });
 document.getElementById("clearCompleted").onclick=clearCompleted;
 document.getElementById("exportData").onclick=exportData;
@@ -900,6 +995,7 @@ document.getElementById("confirmNewSession").onclick=async()=>{
   const draftStatus=document.getElementById("draftStatus");
   if(draftStatus)draftStatus.textContent="Draft autosave is on";
   localStorage.setItem(SESSION_KEY,newToken);
+  await setupRealtime(newToken);
   localStorage.setItem(THEME_KEY,"Paper");
   applyTheme("Paper",false);
   document.getElementById("sessionToken").value=newToken;
@@ -918,6 +1014,7 @@ document.getElementById("connectToken").onclick=async()=>{
   const ok=await pullCloud(input);
   if(ok){
     localStorage.setItem(SESSION_KEY,input);
+    await setupRealtime(input);
     document.getElementById("sessionToken").value=input;
     cloudReady=true;
     updateCloudStatus("Cloud: connected — imported session");
@@ -932,7 +1029,9 @@ load();
 initDrafts();
 applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);
 render();
-pullCloud();
+setupRealtime().then(()=>pullCloud());
+function updateClock(){const el=document.getElementById("localClock");if(el)el.textContent=new Date().toLocaleTimeString("en-GB",{hour12:false});}
+updateClock();setInterval(updateClock,1000);
 
 // If the browser stays open across midnight, check every minute and reset automatically.
 setInterval(()=>{
