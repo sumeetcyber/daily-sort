@@ -130,7 +130,8 @@
   .card:active{cursor:grabbing}
   .card:hover{z-index:8}
   .card-tools{position:relative;z-index:1}
-  .insert-below{position:relative;flex:none;width:25px;height:25px;border-radius:50%;border:1px solid var(--accent);background:var(--panel);color:var(--accent);font-size:18px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .08s ease-out,background .12s,color .12s;z-index:5;box-shadow:0 2px 7px #00000012}
+  .insert-below{position:relative;flex:none;width:30px;height:30px;box-sizing:border-box;border-radius:50%;border:1px solid var(--accent);background:var(--panel);color:var(--accent);font-size:0;line-height:0;padding:0;display:inline-flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .08s ease-out,background .12s,color .12s;z-index:5;box-shadow:0 2px 7px #00000012}
+  .insert-below::before{content:"+";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font-family:Arial,sans-serif;font-size:19px;font-weight:400;line-height:1;display:block;width:1em;height:1em;text-align:center;pointer-events:none}
   .card:hover .insert-below{opacity:1;pointer-events:auto}
   .insert-below:hover{background:var(--accent);color:white}
   .card.just-added{animation:newCardGlow 1.8s ease-out}
@@ -593,7 +594,7 @@ function taskCard(t){
         <textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(t.text)}</textarea>
       </div>
       <div class="card-tools">
-        <button class="insert-below" data-action="insert-below" aria-label="Add an empty task below" title="Add empty task below">+</button>
+        <button class="insert-below" data-action="insert-below" aria-label="Add an empty task below" title="Add empty task below"></button>
         <button class="icon-btn" data-action="up" title="Move up">↑</button>
         <button class="icon-btn" data-action="down" title="Move down">↓</button>
         <button class="icon-btn" data-action="move-later" title="${t.zone==="later"?"Move to Today":"Move to Not Today"}">${t.zone==="later"?"←":"→"}</button>
