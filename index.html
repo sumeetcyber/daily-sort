@@ -472,6 +472,15 @@
       <div style="border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft,var(--accent-soft));text-align:center"><div style="font-size:11px;color:var(--muted);margin-bottom:5px">ADD TO</div><div style="font-weight:750">Today</div><kbd style="display:inline-block;margin-top:7px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font:12px ui-monospace,monospace">Ctrl + Enter</kbd></div>
       <div style="border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft,var(--accent-soft));text-align:center"><div style="font-size:11px;color:var(--muted);margin-bottom:5px">ADD TO</div><div style="font-weight:750">Not Today</div><kbd style="display:inline-block;margin-top:7px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font:12px ui-monospace,monospace">Ctrl + Shift + Enter</kbd></div>
     </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px" aria-label="Multiline task instructions">
+      <div style="border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft,var(--accent-soft));text-align:center;min-width:0">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:5px">INSIDE A TASK BOX</div><div style="font-weight:750">Alt + Enter</div><div style="font-size:12px;margin-top:5px">Break a line inside the task you're editing.</div><div style="font:12px ui-monospace,monospace;white-space:pre-line;margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel)">First line<br>Second line</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft,var(--accent-soft));text-align:center;min-width:0">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:5px">INSIDE THE PASTE BOX</div><div style="font-weight:750">&gt;&gt;&gt;&gt;STRING&lt;&lt;&lt;&lt;</div><div style="font-size:12px;margin-top:5px">Wrap multiline text to keep it as one task.</div><div style="font:11px ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;text-align:left;margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel)">&gt;&gt;&gt;&gt;STRING
+EABNDJD&lt;&lt;&lt;&lt;</div><div style="font-size:11px;color:var(--muted);margin-top:5px">Added task becomes:<br><b>STRING<br>EABNDJD</b></div>
+      </div>
+    </div>
     <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:12px">Cloud: connecting…</div>
     <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
     <div style="margin-top:20px"><b style="font-size:13px">Theme</b><div class="theme-grid" id="themeGrid"></div></div>
@@ -559,9 +568,26 @@ function initDrafts(){
   box.addEventListener("blur",persistDraft);
 }
 
+function parseBulkTasks(input){
+  const tasks=[];
+  const re=/>>>>([\s\S]*?)<<<</g;
+  let cursor=0,match;
+  while((match=re.exec(input))!==null){
+    const before=input.slice(cursor,match.index);
+    before.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));
+    // The delimiters are syntax, not part of the task. Preserve intentional inner line breaks.
+    tasks.push(match[1].replace(/^\r?\n|\r?\n$/g,""));
+    cursor=re.lastIndex;
+  }
+  input.slice(cursor).split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));
+  return tasks.filter(x=>x.length>0);
+}
+function formatTaskForPaste(text){
+  return String(text??"").includes("\n") || String(text??"").includes("\r") ? ">>>>"+text+"<<<<" : String(text??"");
+}
 function addTasksFromText(zone="today"){
   const box=document.getElementById("bulkInput");
-  const lines=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  const lines=parseBulkTasks(box.value);
   if(!lines.length) return;
   persistDraft();
   lines.forEach(text=>{
@@ -577,7 +603,7 @@ function dumpZone(zone){
   if(!selected.length){toast("No tasks to dump");return;}
   const box=document.getElementById("bulkInput");
   const existing=box.value.trim();
-  box.value=[existing,...selected.map(t=>t.text)].filter(Boolean).join("\n");
+  box.value=[existing,...selected.map(t=>formatTaskForPaste(t.text))].filter(Boolean).join("\n");
   persistDraft();
   const ids=new Set(selected.map(t=>t.id));
   state.tasks=state.tasks.filter(t=>!ids.has(t.id));
@@ -691,7 +717,10 @@ function bindActions(){
     const fitTitle=()=>{titleEditor.style.height="24px";titleEditor.style.height=Math.max(24,titleEditor.scrollHeight)+"px";};
     fitTitle();
     titleEditor.addEventListener("input",e=>{t.text=e.currentTarget.value;fitTitle();save();});
-    titleEditor.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();e.currentTarget.blur();}});
+    titleEditor.addEventListener("keydown",e=>{
+      if(e.key==="Enter" && e.altKey){e.preventDefault();const el=e.currentTarget;const start=el.selectionStart,end=el.selectionEnd;el.setRangeText("\n",start,end,"end");el.dispatchEvent(new Event("input",{bubbles:true}));return;}
+      if(e.key==="Enter"){e.preventDefault();e.currentTarget.blur();}
+    });
     // Native dragging on the parent article can steal mouse clicks from the textarea,
     // preventing caret placement and text selection. Disable parent dragging while editing.
     titleEditor.addEventListener("pointerdown",e=>{
