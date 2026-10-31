@@ -408,7 +408,15 @@
   .toggle-list-row input[type=text]{flex:1;min-width:0;border:1px solid transparent;border-radius:5px;padding:4px 6px;background:transparent;color:var(--text)}
   .toggle-list-row input[type=text]:focus{outline:none;border-color:var(--accent);background:var(--input,var(--panel))}
   .toggle-list-row.done input[type=text]{text-decoration:line-through;color:var(--muted)}
-  .card[data-task-color]{border-left:4px solid var(--task-color)}
+  .card[data-task-color]{border:1px solid color-mix(in srgb,var(--task-color) 72%,var(--line));border-left:4px solid var(--task-color);background:color-mix(in srgb,var(--task-color) 7%,var(--card,var(--panel)))}
+  .card[data-task-color] .toggle-list-heading,
+  .card[data-task-color] .toggle-list-title-edit,
+  .card[data-task-color] .toggle-list-count,
+  .card[data-task-color] .task-number{color:var(--task-color)}
+  .card[data-task-color] .toggle-list{border-color:color-mix(in srgb,var(--task-color) 55%,var(--line));background:color-mix(in srgb,var(--task-color) 9%,var(--panel))}
+  .card[data-task-color] .toggle-list-row input[type=text]{color:var(--task-color)}
+  .card[data-task-color] .toggle-list-row input[type=checkbox]{accent-color:var(--task-color)}
+  .card[data-task-color] .toggle-list-collapse{color:var(--task-color);border-color:color-mix(in srgb,var(--task-color) 55%,var(--line))}
 
 
   /* Theme-complete controls: every surface follows the active theme tokens. */
@@ -492,6 +500,11 @@
   .toggle-list-count{margin-left:auto;font-size:11px;color:var(--muted);background:var(--soft,var(--accent-soft));border-radius:20px;padding:3px 8px;white-space:nowrap}
   .toggle-list{margin-top:8px}
 
+
+  .toggle-list-title-edit{flex:1;min-width:90px;width:100%;border:1px solid transparent;border-radius:7px;padding:5px 7px;background:transparent;color:var(--text);font:inherit;font-size:14px;font-weight:700;letter-spacing:.01em}
+  .toggle-list-title-edit:hover{border-color:var(--line);background:var(--soft,var(--accent-soft))}
+  .toggle-list-title-edit:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);background:var(--input,var(--panel))}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -528,8 +541,8 @@
   <div class="bulk-tools" aria-label="Task selection and arrangement">
     <button class="btn" id="toggleNumbers">Show numbers</button>
     <button class="btn" id="togglePanelHeight">Fixed height</button>
-    <label style="font-size:12px;color:var(--muted)">Move selected above #</label>
-    <input id="moveAboveNumber" type="number" min="1" max="62" placeholder="1–62" aria-label="Target task number">
+    <label style="font-size:12px;color:var(--muted)">Move selected above</label>
+    <input id="moveAboveNumber" type="number" min="1" max="62" placeholder="...." aria-label="Target task number">
     <button class="btn" id="moveSelected">Move selected</button>
     <label style="font-size:12px;color:var(--muted)">Color</label>
     <select id="selectedColor" aria-label="Selected task color">
@@ -599,28 +612,44 @@
 EABNDJD&lt;&lt;&lt;&lt;</div><div style="font-size:11px;color:var(--muted);margin-top:5px">Added task becomes:<br><b>STRING<br>EABNDJD</b></div>
       </div>
     </div>
-    <div style="margin-top:16px;border:1px solid var(--line);border-radius:11px;padding:13px;background:var(--soft,var(--accent-soft))">
-      <b style="font-size:13px">Toggle lists + color syntax</b>
-      <div style="font-size:12px;color:var(--muted);margin:7px 0">Use the titled format below, or the simple ++++ format. Each line becomes a selectable checkbox; [x] starts checked. Edit labels directly in the rendered list.</div>
-      <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px;margin:7px 0">++++
-[ ] First step
-[ ] Second step
-[x] Already done
-++++</pre>
-      <div style="margin:12px 0 8px;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel)">
-        <div style="font-size:13px;font-weight:650;margin-bottom:5px">Named toggle list syntax</div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Put the list title after <code>++++</code> and before <code>////</code>. Each line becomes an editable checkbox. The final <code>++++</code> closes the list.</div>
-        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;line-height:1.65;background:var(--soft,var(--accent-soft));border:1px solid var(--line);border-radius:7px;padding:10px;margin:0">++++ TOGGLE TITLE ////
+    <div style="margin-top:18px">
+      <div style="font-size:14px;font-weight:750;margin-bottom:4px">🧩 Task syntax toolkit</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Two little shortcuts for giving tasks extra structure.</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
+        <section style="min-width:0;border:1px solid var(--line);border-radius:13px;padding:13px;background:var(--panel);box-shadow:0 5px 16px rgba(0,0,0,.06)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+            <span style="width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--soft,var(--accent-soft));font-size:17px">☑</span>
+            <div><div style="font-size:13px;font-weight:750">Toggle list</div><div style="font-size:11px;color:var(--muted)">One task · many checkboxes</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin:0 0 9px">Wrap the whole checklist in <code>&gt;&gt;&gt;&gt;</code> and <code>&lt;&lt;&lt;&lt;</code>. Give it a title, then put one item on each line.</div>
+          <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,monospace;background:var(--soft,var(--accent-soft));border:1px solid var(--line);border-radius:9px;padding:11px;margin:0 0 9px">&gt;&gt;&gt;&gt;++++ TOGGLE TITLE ////
 task 1
 task 2
-++++</pre>
-        <div style="font-size:12px;color:var(--muted);margin-top:8px">Result: one task card titled “TOGGLE TITLE”, containing two independently selectable rows.</div>
-      </div>
-      <div style="font-size:12px;color:var(--muted);margin:7px 0">Choose a color name in the toolbar. The app stores the color name with the task, but hides the syntax while you edit it.</div>
-      <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px;margin:7px 0">{{Purple}}
+++++&lt;&lt;&lt;&lt;</pre>
+          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)">
+            <span style="color:var(--accent);font-weight:750">↳</span>
+            <span>Creates one titled, expandable checklist. Tick items or edit their labels.</span>
+          </div>
+        </section>
+        <section style="min-width:0;border:1px solid var(--line);border-radius:13px;padding:13px;background:var(--panel);box-shadow:0 5px 16px rgba(0,0,0,.06)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+            <span style="width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--soft,var(--accent-soft));font-size:17px">🎨</span>
+            <div><div style="font-size:13px;font-weight:750">Task color</div><div style="font-size:11px;color:var(--muted)">Highlight without hex codes</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin:0 0 9px">Choose tasks, pick a named color in the toolbar, then Apply color. The syntax stays hidden while you work.</div>
+          <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,monospace;background:var(--soft,var(--accent-soft));border:1px solid var(--line);border-radius:9px;padding:11px;margin:0 0 9px">{{Purple}}
 My highlighted task
 {{/Color}}</pre>
-      <div style="font-size:12px;color:var(--muted)">Select multiple tasks, choose a color, and click Apply color. Numbering can be shown or hidden; Move selected places selected tasks above the chosen number within their current column.</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)">
+            <span style="color:var(--accent);font-weight:750">↳</span>
+            <span>Remove it anytime with <b>Remove color</b>. Your task text stays intact.</span>
+          </div>
+        </section>
+      </div>
+      <div style="margin-top:11px;padding:10px 12px;border-radius:10px;background:var(--soft,var(--accent-soft));display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text)">
+        <span style="font-size:16px">⌨️</span>
+        <span><b>Quick tip:</b> Paste either format into the big textbox, then add it to Today or Not Today. The outer <code>&gt;&gt;&gt;&gt;...&lt;&lt;&lt;&lt;</code> wrapper keeps the whole block together as one task.</span>
+      </div>
     </div>
     <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:12px">Cloud: connecting…</div>
     <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
@@ -818,7 +847,7 @@ function taskCard(t,number){
       <span class="task-number">${number}.</span>
       <button class="check" data-action="complete" title="Complete"></button>
       <div class="task-body">
-        ${parseToggleList(t.text) ? `<div class="toggle-list-heading"><button class="toggle-list-collapse" data-action="toggle-list-collapse" aria-expanded="${!t.listCollapsed}" title="${t.listCollapsed?"Expand":"Collapse"} list">${t.listCollapsed?"▸":"▾"}</button><span class="toggle-list-title">${escapeHtml(parseToggleList(t.text).title)}</span><span class="toggle-list-count">${parseToggleList(t.text).length} items</span></div>${t.listCollapsed?"":toggleListMarkup(t)}` : `<textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(parseColorSyntax(t.text).body)}</textarea>`}
+        ${parseToggleList(t.text) ? `<div class="toggle-list-heading"><button class="toggle-list-collapse" data-action="toggle-list-collapse" aria-expanded="${!t.listCollapsed}" title="${t.listCollapsed?"Expand":"Collapse"} list">${t.listCollapsed?"▸":"▾"}</button><input class="toggle-list-title-edit" data-action="toggle-list-title" type="text" value="${escapeHtml(parseToggleList(t.text).title)}" aria-label="Toggle list title" title="Edit checklist title"><span class="toggle-list-count">${parseToggleList(t.text).length} items</span></div>${t.listCollapsed?"":toggleListMarkup(t)}` : `<textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(parseColorSyntax(t.text).body)}</textarea>`}
       </div>
       <div class="card-tools">
         <button class="insert-below" data-action="insert-below" aria-label="Add an empty task below" title="Add empty task below"></button>
@@ -966,8 +995,11 @@ function bindActions(){
       t.text=colorInfo.name?withColorSyntax(listSource,colorInfo.name):listSource;
       save();
     };
+    card.addEventListener("input",e=>{
+      if(e.target.matches('[data-action="toggle-list-title"],[data-action="edit-item"]'))syncToggleText();
+    });
     card.addEventListener("change",e=>{
-      if(e.target.matches('[data-action="toggle-item"],[data-action="edit-item"]'))syncToggleText();
+      if(e.target.matches('[data-action="toggle-item"],[data-action="edit-item"],[data-action="toggle-list-title"]'))syncToggleText();
     });
     card.querySelectorAll('[data-action="move-later"]').forEach(btn=>{
       btn.onclick=e=>{
