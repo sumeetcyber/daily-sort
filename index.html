@@ -518,24 +518,34 @@
   @media(prefers-reduced-motion:reduce){.brand-mark,.brand-mark circle:last-child{animation:none}}
 
 
-  /* Reordering mode: show positions briefly and spotlight both swapped tasks. */
-  body.movement-numbers .task-number{display:block;animation:number-line-in .22s ease-out both}
-  @keyframes number-line-in{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
+  /* Reordering: brief solid 30% body fill and directional displaced-arrow ring. */
   .card.task-swap-flash .card-main{
-    animation:task-body-swap-flash .78s ease-out both;
+    animation:task-body-swap-flash .6s ease-out both;
     border-radius:inherit;
   }
   .card.task-swap-flash{
     border-color:var(--accent)!important;
-    box-shadow:0 0 0 2px var(--accent-soft),0 0 22px color-mix(in srgb,var(--accent) 32%,transparent);
+    box-shadow:0 0 0 1px var(--accent);
   }
   @keyframes task-body-swap-flash{
-    0%{background:color-mix(in srgb,var(--accent) 36%,var(--card,var(--panel)));box-shadow:inset 0 0 0 2px var(--accent)}
+    0%,38%{background:color-mix(in srgb,var(--accent) 30%,var(--card,var(--panel)));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 75%,transparent)}
     100%{background:transparent;box-shadow:inset 0 0 0 0 transparent}
   }
-  .card-tools .icon-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .card-tools .icon-btn.movement-arrow-pulse{
+    position:relative;
+    z-index:2;
+    color:var(--accent)!important;
+    border-color:var(--accent)!important;
+    background:color-mix(in srgb,var(--accent) 18%,var(--panel))!important;
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 28%,transparent),0 0 16px color-mix(in srgb,var(--accent) 36%,transparent);
+    animation:movement-arrow-ring .6s ease-out both;
+  }
+  @keyframes movement-arrow-ring{
+    0%,45%{transform:scale(1.08);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 34%,transparent),0 0 18px color-mix(in srgb,var(--accent) 38%,transparent)}
+    100%{transform:scale(1);box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 0%,transparent),0 0 0 transparent}
+  }
   @media(prefers-reduced-motion:reduce){
-    .card.task-swap-flash .card-main,.card.task-swap-flash{animation:none;transition:none}
+    .card.task-swap-flash .card-main,.card.task-swap-flash,.card-tools .icon-btn.movement-arrow-pulse{animation:none;transition:none}
     body.movement-numbers .task-number{animation:none}
   }
 
@@ -947,25 +957,35 @@ function render(){
 
 
 let movementNumberTimer=null;
-function keepMoveControlInPlace(tid,direction,swappedIds=[]){
-  // Recenter the same arrow after render so repeated clicks can keep landing on it.
+function keepMoveControlInPlace(tid,direction,swappedIds=[],displacedId=null){
   requestAnimationFrame(()=>{
-    const card=document.querySelector(`.card[data-id="${tid}"]`);
-    if(!card)return;
-    const button=card.querySelector(`[data-action="${direction<0?"up":"down"}"]`);
-    if(button){
-      button.focus({preventScroll:true});
-      button.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
-    }else{
-      card.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
+    const movingCard=document.querySelector(`.card[data-id="${tid}"]`);
+    const movingButton=movingCard?.querySelector(`[data-action="${direction<0?"up":"down"}"]`);
+    if(movingButton){
+      // Keep the control that was clicked focused and centered for rapid repeated clicks.
+      movingButton.focus({preventScroll:true});
+      movingButton.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
+    }else if(movingCard){
+      movingCard.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
+    }
+
+    // The displaced task gets the directional arrow cue: down when pushed down,
+    // up when pushed up. Also spotlight both exchanged task bodies.
+    const displacedCard=displacedId?document.querySelector(`.card[data-id="${displacedId}"]`):null;
+    const displacedArrow=displacedCard?.querySelector(`[data-action="${direction<0?"down":"up"}"]`);
+    if(displacedArrow){
+      displacedArrow.classList.remove("movement-arrow-pulse");
+      void displacedArrow.offsetWidth;
+      displacedArrow.classList.add("movement-arrow-pulse");
+      setTimeout(()=>displacedArrow.classList.remove("movement-arrow-pulse"),650);
     }
     swappedIds.forEach(id=>{
-      const swapped=document.querySelector(`.card[data-id="${id}"]`);
-      if(swapped){
-        swapped.classList.remove("task-swap-flash");
-        void swapped.offsetWidth;
-        swapped.classList.add("task-swap-flash");
-        setTimeout(()=>swapped.classList.remove("task-swap-flash"),850);
+      const card=document.querySelector(`.card[data-id="${id}"]`);
+      if(card){
+        card.classList.remove("task-swap-flash");
+        void card.offsetWidth;
+        card.classList.add("task-swap-flash");
+        setTimeout(()=>card.classList.remove("task-swap-flash"),650);
       }
     });
   });
@@ -981,7 +1001,8 @@ function moveTask(tid, direction){
   const targetPos=pos+direction;
   if(targetPos<0 || targetPos>=sameZone.length)return;
   const targetIndex=sameZone[targetPos].i;
-  const swappedIds=[state.tasks[index].id,state.tasks[targetIndex].id];
+  const displacedId=state.tasks[targetIndex].id;
+  const swappedIds=[state.tasks[index].id,displacedId];
   [state.tasks[index],state.tasks[targetIndex]]=[state.tasks[targetIndex],state.tasks[index]];
   // Briefly reveal numbering so the new position is obvious.
   document.body.classList.add("movement-numbers");
@@ -989,7 +1010,7 @@ function moveTask(tid, direction){
   movementNumberTimer=setTimeout(()=>document.body.classList.remove("movement-numbers"),1800);
   save();
   render();
-  keepMoveControlInPlace(tid,direction,swappedIds);
+  keepMoveControlInPlace(tid,direction,swappedIds,displacedId);
 }
 
 function moveTaskBefore(dragId, targetId){
