@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#171923">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="./icons/daily-sort.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
 <title>Daily Sort</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='5' y='5' width='54' height='54' rx='16' fill='%234d8f70'/%3E%3Cpath d='M19 21h26M19 32h18M19 43h11' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='44' cy='43' r='5' fill='white'/%3E%3C/svg%3E">
 <style>
@@ -505,6 +510,35 @@
   .toggle-list-title-edit:hover{border-color:var(--line);background:var(--soft,var(--accent-soft))}
   .toggle-list-title-edit:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);background:var(--input,var(--panel))}
 
+
+  .brand-mark{width:42px;height:42px;overflow:visible;filter:drop-shadow(0 3px 7px color-mix(in srgb,var(--accent) 22%,transparent));animation:brand-arrive .55s cubic-bezier(.2,.8,.2,1) both}
+  .brand-mark circle:last-child{animation:brand-spark 2.8s ease-in-out infinite;transform-origin:37px 12px}
+  @keyframes brand-arrive{from{opacity:0;transform:translateY(4px) rotate(-7deg) scale(.88)}to{opacity:1;transform:translateY(0) rotate(0) scale(1)}}
+  @keyframes brand-spark{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.28);opacity:1}}
+  @media(prefers-reduced-motion:reduce){.brand-mark,.brand-mark circle:last-child{animation:none}}
+
+
+  /* Reordering mode: show positions briefly and spotlight both swapped tasks. */
+  body.movement-numbers .task-number{display:block;animation:number-line-in .22s ease-out both}
+  @keyframes number-line-in{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
+  .card.task-swap-flash .card-main{
+    animation:task-body-swap-flash .78s ease-out both;
+    border-radius:inherit;
+  }
+  .card.task-swap-flash{
+    border-color:var(--accent)!important;
+    box-shadow:0 0 0 2px var(--accent-soft),0 0 22px color-mix(in srgb,var(--accent) 32%,transparent);
+  }
+  @keyframes task-body-swap-flash{
+    0%{background:color-mix(in srgb,var(--accent) 36%,var(--card,var(--panel)));box-shadow:inset 0 0 0 2px var(--accent)}
+    100%{background:transparent;box-shadow:inset 0 0 0 0 transparent}
+  }
+  .card-tools .icon-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  @media(prefers-reduced-motion:reduce){
+    .card.task-swap-flash .card-main,.card.task-swap-flash{animation:none;transition:none}
+    body.movement-numbers .task-number{animation:none}
+  }
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -512,7 +546,13 @@
 <div class="wrap">
   <header>
     <div class="brand">
-      <svg class="brand-mark" viewBox="0 0 40 40" role="img" aria-label="Daily Sort logo"><path d="M5 10h30M5 20h21M5 30h12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><circle cx="29" cy="30" r="4" fill="currentColor"/></svg>
+      <svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-label="Daily Sort logo">
+        <defs><linearGradient id="dsLogoGrad" x1="5" y1="5" x2="43" y2="43" gradientUnits="userSpaceOnUse"><stop stop-color="var(--accent)"/><stop offset="1" stop-color="var(--logo-pop,var(--blue))"/></linearGradient></defs>
+        <rect x="2.5" y="2.5" width="43" height="43" rx="14" fill="url(#dsLogoGrad)" opacity=".16"/>
+        <path d="M11 15h24M11 23.5h17M11 32h10" fill="none" stroke="url(#dsLogoGrad)" stroke-width="3.6" stroke-linecap="round"/>
+        <path d="m28 31 4 4 7-9" fill="none" stroke="url(#dsLogoGrad)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="37" cy="12" r="3" fill="var(--logo-pop,var(--blue))"/>
+      </svg>
       <h1>Daily Sort</h1>
     </div>
     <div class="subtitle">Dump everything in. Decide what actually belongs in today.</div>
@@ -542,7 +582,7 @@
     <button class="btn" id="toggleNumbers">Show numbers</button>
     <button class="btn" id="togglePanelHeight">Fixed height</button>
     <label style="font-size:12px;color:var(--muted)">Move selected above</label>
-    <input id="moveAboveNumber" type="number" min="1" max="62" placeholder="...." aria-label="Target task number">
+    <input id="moveAboveNumber" type="number" min="1" placeholder="...." aria-label="Target task number">
     <button class="btn" id="moveSelected">Move selected</button>
     <label style="font-size:12px;color:var(--muted)">Color</label>
     <select id="selectedColor" aria-label="Selected task color">
@@ -741,32 +781,39 @@ function initDrafts(){
 function parseBulkTasks(input){
   const source=String(input||"");
   const tasks=[];
-  const lines=source.split(/\r?\n/);
-  const isTitleStart=line=>/^\s*\+\+\+\+[ \t]+.+?[ \t]+\/\/\/\/\s*$/.test(line);
-  const isPlainStart=line=>line.trim()==="++++";
-  const pushPlain=value=>value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(x=>{
-    if(x.startsWith(">>>>")&&x.endsWith("<<<<"))tasks.push(x.slice(4,-4));
-    else tasks.push(x);
-  });
-  let plain=[];
-  for(let i=0;i<lines.length;i++){
-    const line=lines[i];
-    if(isTitleStart(line)||isPlainStart(line)){
-      let end=i+1;
-      while(end<lines.length&&lines[end].trim()!=="++++")end++;
-      if(end<lines.length){
-        pushPlain(plain.join("\n"));plain=[];
-        const content=lines.slice(i+1,end).join("\n").trim();
-        const titleMatch=line.match(/^\s*\+\+\+\+[ \t]+(.+?)[ \t]+\/\/\/\/\s*$/);
-        tasks.push(titleMatch?`++++ ${titleMatch[1].trim()} ////\n${content}\n++++`:`++++\n${content}\n++++`);
-        i=end;
-        continue;
+  const pushUnwrapped=chunk=>{
+    const lines=chunk.split(/\r?\n/);
+    let plain=[];
+    const flush=()=>{plain.map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));plain=[];};
+    for(let i=0;i<lines.length;i++){
+      const line=lines[i];
+      const titled=/^\s*\+\+\+\+[ \t]+.+?[ \t]+\/\/\/\/\s*$/.test(line);
+      const simple=line.trim()==="++++";
+      if(titled||simple){
+        let end=i+1;
+        while(end<lines.length&&lines[end].trim()!=="++++")end++;
+        if(end<lines.length){
+          flush();
+          const content=lines.slice(i+1,end).join("\n").trim();
+          const titleMatch=line.match(/^\s*\+\+\+\+[ \t]+(.+?)[ \t]+\/\/\/\/\s*$/);
+          tasks.push(titleMatch?`++++ ${titleMatch[1].trim()} ////\n${content}\n++++`:`++++\n${content}\n++++`);
+          i=end;
+          continue;
+        }
       }
+      plain.push(line);
     }
-    plain.push(line);
+    flush();
+  };
+  const wrapped=/>>>>([\s\S]*?)<<<</g;
+  let cursor=0,match;
+  while((match=wrapped.exec(source))!==null){
+    pushUnwrapped(source.slice(cursor,match.index));
+    tasks.push(match[1].replace(/^\r?\n|\r?\n$/g,""));
+    cursor=wrapped.lastIndex;
   }
-  pushPlain(plain.join("\n"));
-  return tasks.filter(x=>x.length>0);
+  pushUnwrapped(source.slice(cursor));
+  return tasks.filter(x=>String(x).trim().length>0);
 }
 function formatTaskForPaste(text){
   return String(text??"").includes("\n") || String(text??"").includes("\r") ? ">>>>"+text+"<<<<" : String(text??"");
@@ -798,7 +845,19 @@ function dumpZone(zone){
 }
 
 const selectedTaskIds = new Set();
-function updateSelectionCount(){const el=document.getElementById("selectionCount");if(el)el.textContent=selectedTaskIds.size+" selected";}
+function updateSelectionCount(){
+  const el=document.getElementById("selectionCount");
+  if(el)el.textContent=selectedTaskIds.size+" selected";
+  const input=document.getElementById("moveAboveNumber");
+  if(input){
+    const zones=["today","later"].filter(zone=>state.tasks.some(t=>selectedTaskIds.has(t.id)&&(t.zone==="later"?"later":"today")===zone));
+    const limits=zones.map(zone=>Math.max(1,state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone).length-1));
+    const max=limits.length?Math.max(...limits):Math.max(1,...["today","later"].map(zone=>state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone).length-1));
+    input.max=String(max);
+    input.placeholder="1–"+max;
+    input.title="Choose a position from 1 to "+max+" (based on the selected column)";
+  }
+}
 const TASK_COLORS={Purple:"#B78CFF",Blue:"#4D8DFF",Cyan:"#35C9E8",Teal:"#28B7A5",Green:"#35B96B",Lime:"#91C83E",Yellow:"#E3C34B",Orange:"#F09A45",Red:"#E45B63",Pink:"#E78ACB",Rose:"#D96B91",White:"#F4F4F4"};
 function parseColorSyntax(text){
   const raw=String(text||"");
@@ -887,25 +946,50 @@ function render(){
 }
 
 
+let movementNumberTimer=null;
+function keepMoveControlInPlace(tid,direction,swappedIds=[]){
+  // Recenter the same arrow after render so repeated clicks can keep landing on it.
+  requestAnimationFrame(()=>{
+    const card=document.querySelector(`.card[data-id="${tid}"]`);
+    if(!card)return;
+    const button=card.querySelector(`[data-action="${direction<0?"up":"down"}"]`);
+    if(button){
+      button.focus({preventScroll:true});
+      button.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
+    }else{
+      card.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
+    }
+    swappedIds.forEach(id=>{
+      const swapped=document.querySelector(`.card[data-id="${id}"]`);
+      if(swapped){
+        swapped.classList.remove("task-swap-flash");
+        void swapped.offsetWidth;
+        swapped.classList.add("task-swap-flash");
+        setTimeout(()=>swapped.classList.remove("task-swap-flash"),850);
+      }
+    });
+  });
+}
 function moveTask(tid, direction){
   const index=state.tasks.findIndex(t=>t.id===tid);
   if(index<0)return;
-
   const task=state.tasks[index];
   const sameZone=state.tasks
     .map((t,i)=>({t,i}))
     .filter(x=>(x.t.zone==="later"?"later":"today") === (task.zone==="later"?"later":"today"));
-
   const pos=sameZone.findIndex(x=>x.i===index);
   const targetPos=pos+direction;
   if(targetPos<0 || targetPos>=sameZone.length)return;
-
   const targetIndex=sameZone[targetPos].i;
-  [state.tasks[index],state.tasks[targetIndex]]=
-    [state.tasks[targetIndex],state.tasks[index]];
-
+  const swappedIds=[state.tasks[index].id,state.tasks[targetIndex].id];
+  [state.tasks[index],state.tasks[targetIndex]]=[state.tasks[targetIndex],state.tasks[index]];
+  // Briefly reveal numbering so the new position is obvious.
+  document.body.classList.add("movement-numbers");
+  if(movementNumberTimer)clearTimeout(movementNumberTimer);
+  movementNumberTimer=setTimeout(()=>document.body.classList.remove("movement-numbers"),1800);
   save();
   render();
+  keepMoveControlInPlace(tid,direction,swappedIds);
 }
 
 function moveTaskBefore(dragId, targetId){
@@ -951,6 +1035,20 @@ function bindActions(){
     if(listCollapse)listCollapse.onclick=e=>{
       e.stopPropagation();t.listCollapsed=!t.listCollapsed;save();render();
     };
+    // Keep native drag from hijacking caret placement and text selection in every editor.
+    card.querySelectorAll('input[type="text"], textarea').forEach(editor=>{
+      editor.draggable=false;
+      editor.addEventListener("pointerdown",e=>{
+        card.draggable=false;
+        e.stopPropagation();
+      });
+      editor.addEventListener("focus",()=>{card.draggable=false;});
+      editor.addEventListener("blur",()=>{card.draggable=true;});
+      editor.addEventListener("dragstart",e=>e.preventDefault());
+    });
+    card.querySelectorAll('[data-action="toggle-item"],[data-action="select-task"]').forEach(control=>{
+      control.addEventListener("pointerdown",e=>e.stopPropagation());
+    });
     const titleEditor=card.querySelector('[data-action="title"]');
     const fitTitle=()=>{if(!titleEditor)return;titleEditor.style.height="24px";titleEditor.style.height=Math.max(24,titleEditor.scrollHeight)+"px";};
     fitTitle();
@@ -1034,7 +1132,7 @@ function bindActions(){
 function bindDnD(){
   document.querySelectorAll(".card").forEach(card=>{
     card.addEventListener("dragstart",e=>{
-      if(e.target.closest('input,textarea,button,[contenteditable="true"]')){e.preventDefault();return;}
+      if(e.target.closest('input,textarea,button,select,[contenteditable="true"]')){e.preventDefault();return;}
       window.dragTaskId=card.dataset.id;
       e.dataTransfer.setData("text/plain",card.dataset.id);
       e.dataTransfer.effectAllowed="move";
@@ -1096,18 +1194,22 @@ function bindDnD(){
 function moveSelectedAbove(){
   const target=Number(document.getElementById("moveAboveNumber").value);
   if(!selectedTaskIds.size){toast("Select at least one task");return;}
-  if(!Number.isInteger(target)||target<1||target>62){toast("Enter a task number from 1 to 62");return;}
+  if(!Number.isInteger(target)||target<1){toast("Enter a valid position");return;}
+  let moved=false;
   for(const zone of ["today","later"]){
     const ordered=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
     const selected=ordered.filter(t=>selectedTaskIds.has(t.id));
     if(!selected.length)continue;
     const rest=ordered.filter(t=>!selectedTaskIds.has(t.id));
-    const insertAt=Math.min(target-1,rest.length);
+    const maxPosition=Math.max(1,ordered.length-1);
+    if(target>maxPosition){toast("For "+(zone==="today"?"Today":"Not Today")+", choose a position from 1 to "+maxPosition);continue;}
+    const insertAt=Math.min(target-1,Math.max(0,rest.length-1));
     rest.splice(insertAt,0,...selected);
     let cursor=0;
     state.tasks=state.tasks.map(t=>(t.zone==="later"?"later":"today")===zone?rest[cursor++]:t);
+    moved=true;
   }
-  save();render();toast("Selected tasks repositioned");
+  if(moved){save();render();toast("Selected tasks repositioned");}
 }
 function applyColorToSelected(){
   if(!selectedTaskIds.size){toast("Select at least one task");return;}
@@ -1419,6 +1521,11 @@ setInterval(()=>{
     toast("New day — Today survived");
   }
 },60000);
+</script>
+<script>
+if("serviceWorker" in navigator && location.protocol==="https:"){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
+}
 </script>
 </body>
 </html>
