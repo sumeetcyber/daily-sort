@@ -392,6 +392,24 @@
   .draft-history-meta{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}
   .draft-history-preview{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;max-height:3.6em;overflow:hidden}
   .draft-history-empty{padding:8px;color:var(--muted)}
+
+  .task-number{display:none;flex:none;min-width:24px;color:var(--muted);font:11px ui-monospace,monospace;text-align:right;padding-top:4px}
+  body.show-task-numbers .task-number{display:block}
+  .select-task{width:16px;height:16px;flex:none;margin:3px 0 0;accent-color:var(--accent);cursor:pointer}
+  .task.selected{outline:2px solid var(--accent);outline-offset:1px}
+  .bulk-tools{max-width:1450px;margin:0 auto 16px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .bulk-tools .btn{padding:7px 10px;font-size:13px}
+  .bulk-tools input[type=number]{width:76px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:7px;background:var(--input,var(--panel));color:var(--text)}
+  .bulk-tools input[type=color]{width:34px;height:32px;padding:2px;border:1px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer}
+  .selection-count{font-size:12px;color:var(--muted);margin-left:auto}
+  .toggle-list{margin:8px 0 2px 0;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--soft,var(--accent-soft));display:flex;flex-direction:column;gap:6px}
+  .toggle-list-row{display:flex;align-items:center;gap:8px;min-width:0}
+  .toggle-list-row input[type=checkbox]{accent-color:var(--accent);flex:none}
+  .toggle-list-row input[type=text]{flex:1;min-width:0;border:1px solid transparent;border-radius:5px;padding:4px 6px;background:transparent;color:var(--text)}
+  .toggle-list-row input[type=text]:focus{outline:none;border-color:var(--accent);background:var(--input,var(--panel))}
+  .toggle-list-row.done input[type=text]{text-decoration:line-through;color:var(--muted)}
+  .card[data-task-color]{border-left:4px solid var(--task-color)}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -423,6 +441,17 @@
     <button class="btn" id="importBtn">Import</button>
     <button class="btn settings-main-btn" id="sessionBtn">⚙ Settings</button>
     <input type="file" id="importFile" accept=".json" hidden>
+  </div>
+
+  <div class="bulk-tools" aria-label="Task selection and arrangement">
+    <button class="btn" id="toggleNumbers">Show numbers</button>
+    <label style="font-size:12px;color:var(--muted)">Move selected above #</label>
+    <input id="moveAboveNumber" type="number" min="1" placeholder="1–62" aria-label="Target task number">
+    <button class="btn" id="moveSelected">Move selected</button>
+    <label style="font-size:12px;color:var(--muted)">Color</label>
+    <input id="selectedColor" type="color" value="#b78cff" aria-label="Selected task color">
+    <button class="btn" id="applySelectedColor">Apply color</button>
+    <span class="selection-count" id="selectionCount">0 selected</span>
   </div>
 
   <main class="board">
@@ -480,6 +509,20 @@
         <div style="font-size:11px;color:var(--muted);margin-bottom:5px">INSIDE THE PASTE BOX</div><div style="font-weight:750">&gt;&gt;&gt;&gt;STRING&lt;&lt;&lt;&lt;</div><div style="font-size:12px;margin-top:5px">Wrap multiline text to keep it as one task.</div><div style="font:11px ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;text-align:left;margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel)">&gt;&gt;&gt;&gt;STRING
 EABNDJD&lt;&lt;&lt;&lt;</div><div style="font-size:11px;color:var(--muted);margin-top:5px">Added task becomes:<br><b>STRING<br>EABNDJD</b></div>
       </div>
+    </div>
+    <div style="margin-top:16px;border:1px solid var(--line);border-radius:11px;padding:13px;background:var(--soft,var(--accent-soft))">
+      <b style="font-size:13px">Toggle lists + color syntax</b>
+      <div style="font-size:12px;color:var(--muted);margin:7px 0">Wrap a list in ++++ lines. Each [ ] becomes a selectable checkbox; [x] starts checked. Edit the labels directly in the rendered list.</div>
+      <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px;margin:7px 0">++++
+[ ] First step
+[ ] Second step
+[x] Already done
+++++</pre>
+      <div style="font-size:12px;color:var(--muted);margin:7px 0">Color syntax is stored in the task textbox. The color is applied to the task card.</div>
+      <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px;margin:7px 0">[[color=#B78CFF]]
+My highlighted task
+[[/color]]</pre>
+      <div style="font-size:12px;color:var(--muted)">Select multiple tasks, choose a color, and click Apply color. Numbering can be shown or hidden; Move selected places selected tasks above the chosen number within their current column.</div>
     </div>
     <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:12px">Cloud: connecting…</div>
     <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
@@ -611,13 +654,41 @@ function dumpZone(zone){
   toast(selected.length+" task titles moved to the paste box");
 }
 
-function taskCard(t){
+const selectedTaskIds = new Set();
+function updateSelectionCount(){const el=document.getElementById("selectionCount");if(el)el.textContent=selectedTaskIds.size+" selected";}
+function parseColorSyntax(text){
+  const m=String(text||"").match(/^\s*\[\[color=(#[0-9a-fA-F]{6})\]\]\s*([\s\S]*?)\s*\[\[\/color\]\]\s*$/);
+  return m ? {color:m[1],body:m[2]} : {color:null,body:String(text||"")};
+}
+function parseToggleList(text){
+  const source=parseColorSyntax(text).body;
+  const m=String(source||"").match(/^\s*\+\+\+\+\s*\r?\n([\s\S]*?)\r?\n\+\+\+\+\s*$/);
+  if(!m)return null;
+  return m[1].split(/\r?\n/).map((line,index)=>{
+    const item=line.match(/^\s*\[([ xX])\]\s?(.*)$/);
+    return {done:!!item&&item[1].toLowerCase()==="x",text:item?item[2]:line,index};
+  });
+}
+function toggleListMarkup(t){
+  const parsed=parseToggleList(t.text);
+  if(!parsed)return "";
+  return `<div class="toggle-list" data-toggle-list="${t.id}">${parsed.map((item,i)=>`
+    <div class="toggle-list-row ${item.done?"done":""}" data-list-index="${i}">
+      <input type="checkbox" data-action="toggle-item" ${item.done?"checked":""} aria-label="Toggle list item">
+      <input type="text" data-action="edit-item" value="${escapeHtml(item.text)}" aria-label="Toggle list item text">
+    </div>`).join("")}</div>`;
+}
+function taskCard(t,number){
+  const color=parseColorSyntax(t.text).color;
   return `
-  <article class="card ${t.done?"done":""} ${t.open?"open":""}" draggable="true" data-id="${t.id}">
+  <article class="card ${t.done?"done":""} ${t.open?"open":""} ${selectedTaskIds.has(t.id)?"selected":""}" draggable="true" data-id="${t.id}" ${color?`data-task-color style="--task-color:${color}"`:""}>
     <div class="card-main">
+      <input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task">
+      <span class="task-number">${number}.</span>
       <button class="check" data-action="complete" title="Complete"></button>
       <div class="task-body">
         <textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(t.text)}</textarea>
+        ${toggleListMarkup(t)}
       </div>
       <div class="card-tools">
         <button class="insert-below" data-action="insert-below" aria-label="Add an empty task below" title="Add empty task below"></button>
@@ -636,7 +707,6 @@ function taskCard(t){
     </div>
   </article>`;
 }
-
 function renderCards(){
   const today=state.tasks.filter(t=>t.zone!=="later");
   const later=state.tasks.filter(t=>t.zone==="later");
@@ -646,14 +716,15 @@ function renderCards(){
   document.getElementById("todayCount").textContent=today.length;
   document.getElementById("laterCount").textContent=later.length;
 
-  tc.innerHTML=today.length ? today.map(taskCard).join("") :
+  tc.innerHTML=today.length ? today.map((t,i)=>taskCard(t,i+1)).join("") :
     `<div class="empty">No tasks for today.<br>Paste a bunch above and start sorting.</div>`;
-  lc.innerHTML=later.length ? later.map(taskCard).join("") :
+  lc.innerHTML=later.length ? later.map((t,i)=>taskCard(t,i+1)).join("") :
     `<div class="empty">Nothing parked here.<br>Drag a task here when it isn't today's problem.</div>`;
 }
 
 function render(){
-  renderCards(); bindDnD(); bindActions();
+  for(const sid of [...selectedTaskIds])if(!state.tasks.some(t=>t.id===sid))selectedTaskIds.delete(sid);
+  renderCards(); bindDnD(); bindActions(); updateSelectionCount();
 }
 
 
@@ -701,6 +772,10 @@ function bindActions(){
   document.querySelectorAll(".card").forEach(card=>{
     const tid=card.dataset.id;
     const t=state.tasks.find(x=>x.id===tid);
+    card.querySelector('[data-action="select-task"]').onchange=e=>{
+      if(e.target.checked)selectedTaskIds.add(tid);else selectedTaskIds.delete(tid);
+      card.classList.toggle("selected",e.target.checked);updateSelectionCount();
+    };
     card.querySelector('[data-action="complete"]').onclick=e=>{
       e.stopPropagation(); t.done=!t.done; save();render();
     };
@@ -716,7 +791,13 @@ function bindActions(){
     const titleEditor=card.querySelector('[data-action="title"]');
     const fitTitle=()=>{titleEditor.style.height="24px";titleEditor.style.height=Math.max(24,titleEditor.scrollHeight)+"px";};
     fitTitle();
-    titleEditor.addEventListener("input",e=>{t.text=e.currentTarget.value;fitTitle();save();});
+    titleEditor.addEventListener("input",e=>{
+      t.text=e.currentTarget.value;fitTitle();save();
+      const preview=card.querySelector('.toggle-list');
+      const markup=toggleListMarkup(t);
+      if(preview){if(markup)preview.outerHTML=markup;else preview.remove();}
+      else if(markup)titleEditor.insertAdjacentHTML('afterend',markup);
+    });
     titleEditor.addEventListener("keydown",e=>{
       if(e.key==="Enter" && e.altKey){e.preventDefault();const el=e.currentTarget;const start=el.selectionStart,end=el.selectionEnd;el.setRangeText("\n",start,end,"end");el.dispatchEvent(new Event("input",{bubbles:true}));return;}
       if(e.key==="Enter"){e.preventDefault();e.currentTarget.blur();}
@@ -734,6 +815,23 @@ function bindActions(){
     card.querySelector('[data-action="notes"]').oninput=e=>{
       t.notes=e.target.value; save();
     };
+    const syncToggleText=()=>{
+      const parsed=parseToggleList(t.text);if(!parsed)return;
+      const rows=[...card.querySelectorAll(".toggle-list-row")];
+      const colorInfo=parseColorSyntax(t.text);
+      const listSource="++++\n"+rows.map(row=>{
+        const checked=row.querySelector('[data-action="toggle-item"]').checked;
+        const label=row.querySelector('[data-action="edit-item"]').value;
+        return (checked?"[x] ":"[ ] ")+label;
+      }).join("\n")+"\n++++";
+      t.text=colorInfo.color?`[[color=${colorInfo.color}]]\n${listSource}\n[[/color]]`:listSource;
+      const editor=card.querySelector('[data-action="title"]');
+      if(editor && document.activeElement!==editor)editor.value=t.text;
+      save();
+    };
+    card.addEventListener("change",e=>{
+      if(e.target.matches('[data-action="toggle-item"],[data-action="edit-item"]'))syncToggleText();
+    });
     card.querySelectorAll('[data-action="move-later"]').forEach(btn=>{
       btn.onclick=e=>{
         e.stopPropagation();
@@ -826,6 +924,33 @@ function bindDnD(){
   });
 }
 
+function moveSelectedAbove(){
+  const target=Number(document.getElementById("moveAboveNumber").value);
+  if(!selectedTaskIds.size){toast("Select at least one task");return;}
+  if(!Number.isInteger(target)||target<1){toast("Enter a valid task number");return;}
+  for(const zone of ["today","later"]){
+    const ordered=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
+    const selected=ordered.filter(t=>selectedTaskIds.has(t.id));
+    if(!selected.length)continue;
+    const rest=ordered.filter(t=>!selectedTaskIds.has(t.id));
+    const insertAt=Math.min(target-1,rest.length);
+    rest.splice(insertAt,0,...selected);
+    let cursor=0;
+    state.tasks=state.tasks.map(t=>(t.zone==="later"?"later":"today")===zone?rest[cursor++]:t);
+  }
+  save();render();toast("Selected tasks repositioned");
+}
+function applyColorToSelected(){
+  if(!selectedTaskIds.size){toast("Select at least one task");return;}
+  const color=document.getElementById("selectedColor").value.toUpperCase();
+  state.tasks.forEach(t=>{
+    if(!selectedTaskIds.has(t.id))return;
+    const parsed=parseColorSyntax(t.text);
+    const body=parsed.body;
+    t.text=`[[color=${color}]]\n${body}\n[[/color]]`;
+  });
+  save();render();toast("Color applied to selected tasks");
+}
 function clearCompleted(){
   const n=state.tasks.length;
   state.tasks=state.tasks.filter(t=>!t.done);
@@ -1078,8 +1203,20 @@ document.getElementById("connectToken").onclick=async()=>{
   }
 };
 
+document.getElementById("toggleNumbers").onclick=()=>{
+  const enabled=document.body.classList.toggle("show-task-numbers");
+  document.getElementById("toggleNumbers").textContent=enabled?"Hide numbers":"Show numbers";
+  localStorage.setItem("daily-sort-show-numbers",enabled?"1":"0");
+};
+document.getElementById("moveSelected").onclick=moveSelectedAbove;
+document.getElementById("applySelectedColor").onclick=applyColorToSelected;
+
 load();
 initDrafts();
+if(localStorage.getItem("daily-sort-show-numbers")==="1"){
+  document.body.classList.add("show-task-numbers");
+  document.getElementById("toggleNumbers").textContent="Hide numbers";
+}
 applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);
 render();
 setupRealtime().then(()=>pullCloud());
