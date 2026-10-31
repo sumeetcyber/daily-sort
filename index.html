@@ -468,6 +468,22 @@
     .cards{max-height:65vh;min-height:260px;overflow-y:auto}
   }
 
+
+  .bulk-tools{position:sticky;top:8px;z-index:8;box-shadow:0 8px 24px rgba(0,0,0,.08);backdrop-filter:blur(12px)}
+  .bulk-tools .btn{white-space:nowrap}
+  .selection-count{font-weight:600}
+  .toggle-list-heading{font-size:13px;font-weight:650;color:var(--text);margin:2px 0 7px;display:flex;align-items:center;gap:8px}
+  .toggle-list-heading span{font-size:11px;font-weight:400;color:var(--muted);background:var(--soft,var(--accent-soft));padding:2px 7px;border-radius:20px}
+  .toggle-list{margin:0;padding:10px 12px;max-width:100%;gap:8px}
+  .toggle-list-row{padding:2px 0}
+  .toggle-list-row input[type=text]{font:inherit;font-size:14px;padding:5px 7px}
+  .toggle-list-row input[type=checkbox]{width:17px;height:17px}
+  .card{transition:border-color .15s,box-shadow .15s,transform .15s}
+  .card:hover{border-color:var(--accent)}
+  .task-title-edit{min-height:30px}
+  .task-body{display:flex;flex-direction:column;gap:4px}
+  .details .btn{background:var(--button,var(--panel));color:var(--text)}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -515,6 +531,7 @@
       <option value="Pink">Pink</option><option value="Rose">Rose</option><option value="White">White</option>
     </select>
     <button class="btn" id="applySelectedColor">Apply color</button>
+    <button class="btn" id="removeSelectedColor">Remove color</button>
     <span class="selection-count" id="selectionCount">0 selected</span>
   </div>
 
@@ -576,16 +593,25 @@ EABNDJD&lt;&lt;&lt;&lt;</div><div style="font-size:11px;color:var(--muted);margi
     </div>
     <div style="margin-top:16px;border:1px solid var(--line);border-radius:11px;padding:13px;background:var(--soft,var(--accent-soft))">
       <b style="font-size:13px">Toggle lists + color syntax</b>
-      <div style="font-size:12px;color:var(--muted);margin:7px 0">Wrap a list in ++++ lines. Each [ ] becomes a selectable checkbox; [x] starts checked. Edit the labels directly in the rendered list.</div>
+      <div style="font-size:12px;color:var(--muted);margin:7px 0">Use the titled format below, or the simple ++++ format. Each line becomes a selectable checkbox; [x] starts checked. Edit labels directly in the rendered list.</div>
       <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px;margin:7px 0">++++
 [ ] First step
 [ ] Second step
 [x] Already done
 ++++</pre>
+      <div style="margin:12px 0 8px;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel)">
+        <div style="font-size:13px;font-weight:650;margin-bottom:5px">Named toggle list syntax</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Put the list title after <code>++++</code> and before <code>////</code>. Each line becomes an editable checkbox. The final <code>++++</code> closes the list.</div>
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;line-height:1.65;background:var(--soft,var(--accent-soft));border:1px solid var(--line);border-radius:7px;padding:10px;margin:0">++++ TOGGLE TITLE ////
+task 1
+task 2
+++++</pre>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px">Result: one task card titled “TOGGLE TITLE”, containing two independently selectable rows.</div>
+      </div>
       <div style="font-size:12px;color:var(--muted);margin:7px 0">Choose a color name in the toolbar. The app stores the color name with the task, but hides the syntax while you edit it.</div>
-      <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px;margin:7px 0">[[color=Purple]]
+      <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px;margin:7px 0">{{Purple}}
 My highlighted task
-[[/color]]</pre>
+{{/Color}}</pre>
       <div style="font-size:12px;color:var(--muted)">Select multiple tasks, choose a color, and click Apply color. Numbering can be shown or hidden; Move selected places selected tasks above the chosen number within their current column.</div>
     </div>
     <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:12px">Cloud: connecting…</div>
@@ -677,16 +703,17 @@ function initDrafts(){
 
 function parseBulkTasks(input){
   const tasks=[];
-  const re=/>>>>([\s\S]*?)<<<</g;
+  const re=/>>>>([\s\S]*?)<<<<|\+\+\+\+[ \t]+([^\r\n]+?)[ \t]+\/\/\/\/[ \t]*\r?\n([\s\S]*?)\r?\n\+\+\+\+|\+\+\+\+[\t ]*\r?\n([\s\S]*?)\r?\n\+\+\+\+/g;
   let cursor=0,match;
+  const pushPlain=chunk=>chunk.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));
   while((match=re.exec(input))!==null){
-    const before=input.slice(cursor,match.index);
-    before.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));
-    // The delimiters are syntax, not part of the task. Preserve intentional inner line breaks.
-    tasks.push(match[1].replace(/^\r?\n|\r?\n$/g,""));
+    pushPlain(input.slice(cursor,match.index));
+    if(match[1]!==undefined)tasks.push(match[1].replace(/^\r?\n|\r?\n$/g,""));
+    else if(match[2]!==undefined)tasks.push("++++ "+match[2].trim()+" ////\n"+match[3].trim()+"\n++++");
+    else tasks.push("++++\n"+match[4].trim()+"\n++++");
     cursor=re.lastIndex;
   }
-  input.slice(cursor).split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));
+  pushPlain(input.slice(cursor));
   return tasks.filter(x=>x.length>0);
 }
 function formatTaskForPaste(text){
@@ -722,21 +749,32 @@ const selectedTaskIds = new Set();
 function updateSelectionCount(){const el=document.getElementById("selectionCount");if(el)el.textContent=selectedTaskIds.size+" selected";}
 const TASK_COLORS={Purple:"#B78CFF",Blue:"#4D8DFF",Cyan:"#35C9E8",Teal:"#28B7A5",Green:"#35B96B",Lime:"#91C83E",Yellow:"#E3C34B",Orange:"#F09A45",Red:"#E45B63",Pink:"#E78ACB",Rose:"#D96B91",White:"#F4F4F4"};
 function parseColorSyntax(text){
-  const m=String(text||"").match(/^\s*\[\[color=([a-zA-Z]+|#[0-9a-fA-F]{6})\]\]\s*([\s\S]*?)\s*\[\[\/color\]\]\s*$/);
-  if(!m)return {color:null,name:null,body:String(text||"")};
-  const name=Object.keys(TASK_COLORS).find(k=>k.toLowerCase()===m[1].toLowerCase())||null;
-  return {color:name?TASK_COLORS[name]:m[1],name,body:m[2]};
+  const raw=String(text||"");
+  const patterns=[
+    /^\s*\{\{(Purple|Blue|Cyan|Teal|Green|Lime|Yellow|Orange|Red|Pink|Rose|White)\}\}\s*([\s\S]*?)\s*\{\{\/Color\}\}\s*$/i,
+    /^\s*\[\[color=([a-zA-Z]+|#[0-9a-fA-F]{6})\]\]\s*([\s\S]*?)\s*\[\[\/color\]\]\s*$/i
+  ];
+  for(const re of patterns){
+    const m=raw.match(re);if(!m)continue;
+    const name=Object.keys(TASK_COLORS).find(k=>k.toLowerCase()===m[1].toLowerCase())||null;
+    return {color:name?TASK_COLORS[name]:(m[1].startsWith("#")?m[1]:null),name,body:m[2]};
+  }
+  return {color:null,name:null,body:raw};
 }
-function withColorSyntax(body,name){return name?`[[color=${name}]]\n${body}\n[[/color]]`:body;}
+function withColorSyntax(body,name){return name?`{{${name}}}\n${body}\n{{/Color}}`:body;}
 
 function parseToggleList(text){
   const source=parseColorSyntax(text).body;
-  const m=String(source||"").match(/^\s*\+\+\+\+\s*\r?\n([\s\S]*?)\r?\n\+\+\+\+\s*$/);
+  const titled=String(source||"").match(/^\s*\+\+\+\+[ \t]+([^\r\n]+?)[ \t]+\/\/\/\/[ \t]*\r?\n([\s\S]*?)\r?\n\+\+\+\+\s*$/);
+  const plain=String(source||"").match(/^\s*\+\+\+\+\s*\r?\n([\s\S]*?)\r?\n\+\+\+\+\s*$/);
+  const m=titled||plain;
   if(!m)return null;
-  return m[1].split(/\r?\n/).map((line,index)=>{
+  const rows=(titled?m[2]:m[1]).split(/\r?\n/).map((line,index)=>{
     const item=line.match(/^\s*\[([ xX])\]\s?(.*)$/);
     return {done:!!item&&item[1].toLowerCase()==="x",text:item?item[2]:line,index};
   });
+  rows.title=titled?m[1].trim():"Checklist";
+  return rows;
 }
 function toggleListMarkup(t){
   const parsed=parseToggleList(t.text);
@@ -756,8 +794,7 @@ function taskCard(t,number){
       <span class="task-number">${number}.</span>
       <button class="check" data-action="complete" title="Complete"></button>
       <div class="task-body">
-        <textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(parseColorSyntax(t.text).body)}</textarea>
-        ${toggleListMarkup(t)}
+        ${parseToggleList(t.text) ? `<div class="toggle-list-heading">${escapeHtml(parseToggleList(t.text).title)} <span>${parseToggleList(t.text).length} items</span></div>${toggleListMarkup(t)}` : `<textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(parseColorSyntax(t.text).body)}</textarea>`}
       </div>
       <div class="card-tools">
         <button class="insert-below" data-action="insert-below" aria-label="Add an empty task below" title="Add empty task below"></button>
@@ -858,17 +895,18 @@ function bindActions(){
       e.stopPropagation(); t.open=!t.open; save();render();
     };
     const titleEditor=card.querySelector('[data-action="title"]');
-    const fitTitle=()=>{titleEditor.style.height="24px";titleEditor.style.height=Math.max(24,titleEditor.scrollHeight)+"px";};
+    const fitTitle=()=>{if(!titleEditor)return;titleEditor.style.height="24px";titleEditor.style.height=Math.max(24,titleEditor.scrollHeight)+"px";};
     fitTitle();
-    titleEditor.addEventListener("input",e=>{
+    if(titleEditor)titleEditor.addEventListener("input",e=>{
+      const typedColor=parseColorSyntax(e.currentTarget.value);
       const currentColor=parseColorSyntax(t.text).name;
-      t.text=withColorSyntax(e.currentTarget.value,currentColor);fitTitle();save();
+      t.text=typedColor.name?e.currentTarget.value:withColorSyntax(e.currentTarget.value,currentColor);fitTitle();save();
       const preview=card.querySelector('.toggle-list');
       const markup=toggleListMarkup(t);
       if(preview){if(markup)preview.outerHTML=markup;else preview.remove();}
       else if(markup)titleEditor.insertAdjacentHTML('afterend',markup);
     });
-    titleEditor.addEventListener("keydown",e=>{
+    if(titleEditor)titleEditor.addEventListener("keydown",e=>{
       if(e.key==="Enter" && e.altKey){e.preventDefault();const el=e.currentTarget;const start=el.selectionStart,end=el.selectionEnd;el.setRangeText("\n",start,end,"end");el.dispatchEvent(new Event("input",{bubbles:true}));return;}
       if(e.key==="Enter"){e.preventDefault();e.currentTarget.blur();}
     });
@@ -889,14 +927,13 @@ function bindActions(){
       const parsed=parseToggleList(t.text);if(!parsed)return;
       const rows=[...card.querySelectorAll(".toggle-list-row")];
       const colorInfo=parseColorSyntax(t.text);
-      const listSource="++++\n"+rows.map(row=>{
+      const listTitle=parsed.title&&parsed.title!=="Checklist"?parsed.title:"";
+      const listSource="++++"+(listTitle?" "+listTitle+" ////":"")+"\n"+rows.map(row=>{
         const checked=row.querySelector('[data-action="toggle-item"]').checked;
         const label=row.querySelector('[data-action="edit-item"]').value;
         return (checked?"[x] ":"[ ] ")+label;
       }).join("\n")+"\n++++";
-      t.text=colorInfo.color?`[[color=${colorInfo.color}]]\n${listSource}\n[[/color]]`:listSource;
-      const editor=card.querySelector('[data-action="title"]');
-      if(editor && document.activeElement!==editor)editor.value=t.text;
+      t.text=colorInfo.name?withColorSyntax(listSource,colorInfo.name):listSource;
       save();
     };
     card.addEventListener("change",e=>{
@@ -1019,6 +1056,15 @@ function applyColorToSelected(){
     t.text=withColorSyntax(parsed.body,colorName);
   });
   save();render();toast("Color applied to selected tasks");
+}
+function removeColorFromSelected(){
+  if(!selectedTaskIds.size){toast("Select at least one task");return;}
+  state.tasks.forEach(t=>{
+    if(!selectedTaskIds.has(t.id))return;
+    const parsed=parseColorSyntax(t.text);
+    t.text=parsed.body;
+  });
+  save();render();toast("Color removed from selected tasks");
 }
 function clearCompleted(){
   const n=state.tasks.length;
@@ -1288,6 +1334,7 @@ if(localStorage.getItem("daily-sort-panel-height")==="dynamic"){
 }
 document.getElementById("moveSelected").onclick=moveSelectedAbove;
 document.getElementById("applySelectedColor").onclick=applyColorToSelected;
+document.getElementById("removeSelectedColor").onclick=removeColorFromSelected;
 
 load();
 initDrafts();
