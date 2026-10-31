@@ -448,15 +448,18 @@
   .theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .session-box,.session-modal .session-box{background:var(--panel);color:var(--text);border-color:var(--line)}
   .session-key input{background:var(--input,var(--panel));color:var(--text)}
-  #selectedColor{background:var(--input,var(--panel));border-color:var(--line);color:var(--text);color-scheme:normal}
+  #selectedColor{background:var(--input,var(--panel));border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--text);min-width:105px}
   /* Use the full available screen and give both task columns equal room. */
   .wrap{width:100%;max-width:none;margin:0;padding:clamp(14px,1.8vw,28px) clamp(14px,2.6vw,48px) 24px}
   .capture,.hint,.draft-tools{max-width:none;width:100%}
-  .board{width:100%;max-width:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(12px,1.3vw,22px);align-items:stretch}
+  .board{width:100%;max-width:none;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:clamp(12px,1.3vw,22px);align-items:stretch}
   .panel{min-width:0;min-height:0;height:calc(100vh - 170px);max-height:calc(100vh - 170px);display:flex;flex-direction:column}
   .panel-head{flex:0 0 auto}
   .cards{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain}
   .right{min-width:0}
+  body.dynamic-panels .panel{height:auto;max-height:none;min-height:0}
+  body.dynamic-panels .cards{flex:0 1 auto;max-height:none;overflow:visible}
+  body.dynamic-panels .panel{align-self:start}
   .bulk-tools{max-width:none;width:100%}
   @media(max-width:700px){
     .wrap{padding:14px 12px 24px}
@@ -500,11 +503,17 @@
 
   <div class="bulk-tools" aria-label="Task selection and arrangement">
     <button class="btn" id="toggleNumbers">Show numbers</button>
+    <button class="btn" id="togglePanelHeight">Fixed height</button>
     <label style="font-size:12px;color:var(--muted)">Move selected above #</label>
     <input id="moveAboveNumber" type="number" min="1" max="62" placeholder="1–62" aria-label="Target task number">
     <button class="btn" id="moveSelected">Move selected</button>
     <label style="font-size:12px;color:var(--muted)">Color</label>
-    <input id="selectedColor" type="color" value="#b78cff" aria-label="Selected task color">
+    <select id="selectedColor" aria-label="Selected task color">
+      <option value="Purple">Purple</option><option value="Blue">Blue</option><option value="Cyan">Cyan</option>
+      <option value="Teal">Teal</option><option value="Green">Green</option><option value="Lime">Lime</option>
+      <option value="Yellow">Yellow</option><option value="Orange">Orange</option><option value="Red">Red</option>
+      <option value="Pink">Pink</option><option value="Rose">Rose</option><option value="White">White</option>
+    </select>
     <button class="btn" id="applySelectedColor">Apply color</button>
     <span class="selection-count" id="selectionCount">0 selected</span>
   </div>
@@ -573,8 +582,8 @@ EABNDJD&lt;&lt;&lt;&lt;</div><div style="font-size:11px;color:var(--muted);margi
 [ ] Second step
 [x] Already done
 ++++</pre>
-      <div style="font-size:12px;color:var(--muted);margin:7px 0">Color syntax is stored in the task textbox. The color is applied to the task card.</div>
-      <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px;margin:7px 0">[[color=#B78CFF]]
+      <div style="font-size:12px;color:var(--muted);margin:7px 0">Choose a color name in the toolbar. The app stores the color name with the task, but hides the syntax while you edit it.</div>
+      <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px;margin:7px 0">[[color=Purple]]
 My highlighted task
 [[/color]]</pre>
       <div style="font-size:12px;color:var(--muted)">Select multiple tasks, choose a color, and click Apply color. Numbering can be shown or hidden; Move selected places selected tasks above the chosen number within their current column.</div>
@@ -711,10 +720,15 @@ function dumpZone(zone){
 
 const selectedTaskIds = new Set();
 function updateSelectionCount(){const el=document.getElementById("selectionCount");if(el)el.textContent=selectedTaskIds.size+" selected";}
+const TASK_COLORS={Purple:"#B78CFF",Blue:"#4D8DFF",Cyan:"#35C9E8",Teal:"#28B7A5",Green:"#35B96B",Lime:"#91C83E",Yellow:"#E3C34B",Orange:"#F09A45",Red:"#E45B63",Pink:"#E78ACB",Rose:"#D96B91",White:"#F4F4F4"};
 function parseColorSyntax(text){
-  const m=String(text||"").match(/^\s*\[\[color=(#[0-9a-fA-F]{6})\]\]\s*([\s\S]*?)\s*\[\[\/color\]\]\s*$/);
-  return m ? {color:m[1],body:m[2]} : {color:null,body:String(text||"")};
+  const m=String(text||"").match(/^\s*\[\[color=([a-zA-Z]+|#[0-9a-fA-F]{6})\]\]\s*([\s\S]*?)\s*\[\[\/color\]\]\s*$/);
+  if(!m)return {color:null,name:null,body:String(text||"")};
+  const name=Object.keys(TASK_COLORS).find(k=>k.toLowerCase()===m[1].toLowerCase())||null;
+  return {color:name?TASK_COLORS[name]:m[1],name,body:m[2]};
 }
+function withColorSyntax(body,name){return name?`[[color=${name}]]\n${body}\n[[/color]]`:body;}
+
 function parseToggleList(text){
   const source=parseColorSyntax(text).body;
   const m=String(source||"").match(/^\s*\+\+\+\+\s*\r?\n([\s\S]*?)\r?\n\+\+\+\+\s*$/);
@@ -742,7 +756,7 @@ function taskCard(t,number){
       <span class="task-number">${number}.</span>
       <button class="check" data-action="complete" title="Complete"></button>
       <div class="task-body">
-        <textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(t.text)}</textarea>
+        <textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(parseColorSyntax(t.text).body)}</textarea>
         ${toggleListMarkup(t)}
       </div>
       <div class="card-tools">
@@ -847,7 +861,8 @@ function bindActions(){
     const fitTitle=()=>{titleEditor.style.height="24px";titleEditor.style.height=Math.max(24,titleEditor.scrollHeight)+"px";};
     fitTitle();
     titleEditor.addEventListener("input",e=>{
-      t.text=e.currentTarget.value;fitTitle();save();
+      const currentColor=parseColorSyntax(t.text).name;
+      t.text=withColorSyntax(e.currentTarget.value,currentColor);fitTitle();save();
       const preview=card.querySelector('.toggle-list');
       const markup=toggleListMarkup(t);
       if(preview){if(markup)preview.outerHTML=markup;else preview.remove();}
@@ -997,12 +1012,11 @@ function moveSelectedAbove(){
 }
 function applyColorToSelected(){
   if(!selectedTaskIds.size){toast("Select at least one task");return;}
-  const color=document.getElementById("selectedColor").value.toUpperCase();
+  const colorName=document.getElementById("selectedColor").value;
   state.tasks.forEach(t=>{
     if(!selectedTaskIds.has(t.id))return;
     const parsed=parseColorSyntax(t.text);
-    const body=parsed.body;
-    t.text=`[[color=${color}]]\n${body}\n[[/color]]`;
+    t.text=withColorSyntax(parsed.body,colorName);
   });
   save();render();toast("Color applied to selected tasks");
 }
@@ -1263,6 +1277,15 @@ document.getElementById("toggleNumbers").onclick=()=>{
   document.getElementById("toggleNumbers").textContent=enabled?"Hide numbers":"Show numbers";
   localStorage.setItem("daily-sort-show-numbers",enabled?"1":"0");
 };
+document.getElementById("togglePanelHeight").onclick=()=>{
+  const dynamic=document.body.classList.toggle("dynamic-panels");
+  document.getElementById("togglePanelHeight").textContent=dynamic?"Dynamic height":"Fixed height";
+  localStorage.setItem("daily-sort-panel-height",dynamic?"dynamic":"fixed");
+};
+if(localStorage.getItem("daily-sort-panel-height")==="dynamic"){
+  document.body.classList.add("dynamic-panels");
+  document.getElementById("togglePanelHeight").textContent="Dynamic height";
+}
 document.getElementById("moveSelected").onclick=moveSelectedAbove;
 document.getElementById("applySelectedColor").onclick=applyColorToSelected;
 
