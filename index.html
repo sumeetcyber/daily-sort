@@ -410,6 +410,61 @@
   .toggle-list-row.done input[type=text]{text-decoration:line-through;color:var(--muted)}
   .card[data-task-color]{border-left:4px solid var(--task-color)}
 
+
+  /* Theme-complete controls: every surface follows the active theme tokens. */
+  html,body{background:var(--bg);color:var(--text)}
+  .capture{background:var(--panel);border-color:var(--line)}
+  .capture textarea,.details textarea,.session-key input,
+  .bulk-tools input[type=number],.toggle-list-row input[type=text]{
+    background:var(--input,var(--panel));color:var(--text);border-color:var(--line)
+  }
+  .capture textarea::placeholder,.details textarea::placeholder{color:var(--muted)}
+  .btn,.dump-btn,.bulk-tools input[type=number]{
+    background:var(--button,var(--panel));color:var(--text);border-color:var(--line)
+  }
+  .btn:hover,.dump-btn:hover,.icon-btn:hover{background:var(--soft,var(--accent-soft));border-color:var(--accent)}
+  .btn.primary,.settings-main-btn{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
+  .count,.pill{background:var(--soft,var(--accent-soft));color:var(--muted)}
+  .panel,.bulk-tools{background:var(--panel);border-color:var(--line);color:var(--text)}
+  .panel-head{background:var(--panel);border-color:var(--line)}
+  .card{background:var(--card,var(--panel));color:var(--text);border-color:var(--line)}
+  .details{background:var(--details,var(--panel));border-color:var(--line)}
+  .right .cards{background:var(--later-bg,var(--panel))}
+  .right .panel-head{background:var(--later-head,var(--panel))}
+  .empty{border-color:var(--line);color:var(--muted)}
+  .cards.dragover{background:var(--soft,var(--accent-soft))}
+  .check{background:var(--input,var(--panel));border-color:var(--muted)}
+  .icon-btn,.expand{color:var(--muted)}
+  .toggle-list{background:var(--soft,var(--accent-soft));border-color:var(--line)}
+  .toggle-list-row input[type=text]{color:var(--text)}
+  .select-task,.toggle-list-row input[type=checkbox]{accent-color:var(--accent)}
+  .card.selected{outline:2px solid var(--accent);outline-offset:1px}
+  .card.drop-target{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  .bulk-tools input:focus,.toggle-list-row input[type=text]:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .footer,.hint,.draft-tools{color:var(--muted)}
+  .clock{color:var(--muted)}
+  .toast{background:var(--accent);color:#fff}
+  .theme-btn{background:var(--button,var(--panel));color:var(--text);border-color:var(--line)}
+  .theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .session-box,.session-modal .session-box{background:var(--panel);color:var(--text);border-color:var(--line)}
+  .session-key input{background:var(--input,var(--panel));color:var(--text)}
+  #selectedColor{background:var(--input,var(--panel));border-color:var(--line);color:var(--text);color-scheme:normal}
+  /* Use the full available screen and give both task columns equal room. */
+  .wrap{width:100%;max-width:none;margin:0;padding:clamp(14px,1.8vw,28px) clamp(14px,2.6vw,48px) 24px}
+  .capture,.hint,.draft-tools{max-width:none;width:100%}
+  .board{width:100%;max-width:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(12px,1.3vw,22px);align-items:stretch}
+  .panel{min-width:0;min-height:0;height:calc(100vh - 170px);max-height:calc(100vh - 170px);display:flex;flex-direction:column}
+  .panel-head{flex:0 0 auto}
+  .cards{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain}
+  .right{min-width:0}
+  .bulk-tools{max-width:none;width:100%}
+  @media(max-width:700px){
+    .wrap{padding:14px 12px 24px}
+    .board{grid-template-columns:minmax(0,1fr);gap:14px}
+    .panel{height:auto;max-height:none;min-height:380px}
+    .cards{max-height:65vh;min-height:260px;overflow-y:auto}
+  }
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -446,7 +501,7 @@
   <div class="bulk-tools" aria-label="Task selection and arrangement">
     <button class="btn" id="toggleNumbers">Show numbers</button>
     <label style="font-size:12px;color:var(--muted)">Move selected above #</label>
-    <input id="moveAboveNumber" type="number" min="1" placeholder="1–62" aria-label="Target task number">
+    <input id="moveAboveNumber" type="number" min="1" max="62" placeholder="1–62" aria-label="Target task number">
     <button class="btn" id="moveSelected">Move selected</button>
     <label style="font-size:12px;color:var(--muted)">Color</label>
     <input id="selectedColor" type="color" value="#b78cff" aria-label="Selected task color">
@@ -927,7 +982,7 @@ function bindDnD(){
 function moveSelectedAbove(){
   const target=Number(document.getElementById("moveAboveNumber").value);
   if(!selectedTaskIds.size){toast("Select at least one task");return;}
-  if(!Number.isInteger(target)||target<1){toast("Enter a valid task number");return;}
+  if(!Number.isInteger(target)||target<1||target>62){toast("Enter a task number from 1 to 62");return;}
   for(const zone of ["today","later"]){
     const ordered=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
     const selected=ordered.filter(t=>selectedTaskIds.has(t.id));
@@ -1004,7 +1059,7 @@ const encoder=new TextEncoder();
 function bytesToB64(bytes){let s="";bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");}
 function b64ToBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";const bin=atob(s);return Uint8Array.from(bin,c=>c.charCodeAt(0));}
 function randomToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return bytesToB64(a);}
-function applyTheme(name, sync=true){const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);r.style.setProperty("--input",t.input||t.panel);r.style.setProperty("--button",t.button||t.panel);r.style.setProperty("--card",t.card||t.panel);r.style.setProperty("--details",t.details||t.panel);r.style.setProperty("--soft",t.soft||t.accentSoft);r.style.setProperty("--later-bg",t.laterBg||t.panel);r.style.setProperty("--later-head",t.laterHead||t.panel);r.style.setProperty("--red",t.red||"#b56b67");localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));if(sync) queueCloudSave();}
+function applyTheme(name, sync=true){const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;const hex=t.bg.replace("#","");const rgb=hex.length===3?hex.split("").map(x=>parseInt(x+x,16)):hex.match(/.{2}/g).map(x=>parseInt(x,16));const luminance=(0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2])/255;r.style.colorScheme=luminance<0.48?"dark":"light";r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);r.style.setProperty("--input",t.input||t.panel);r.style.setProperty("--button",t.button||t.panel);r.style.setProperty("--card",t.card||t.panel);r.style.setProperty("--details",t.details||t.panel);r.style.setProperty("--soft",t.soft||t.accentSoft);r.style.setProperty("--later-bg",t.laterBg||t.panel);r.style.setProperty("--later-head",t.laterHead||t.panel);r.style.setProperty("--red",t.red||"#b56b67");localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));if(sync) queueCloudSave();}
 function renderThemes(){const grid=document.getElementById("themeGrid");grid.innerHTML=Object.keys(THEMES).map(n=>`<button class="theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");grid.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme));applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);}
 const derivedKeyCache=new Map();
 async function deriveKey(token,salt){if(derivedKeyCache.has(token))return derivedKeyCache.get(token);const promise=(async()=>{const base=await crypto.subtle.importKey("raw",encoder.encode(token),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:180000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);})();derivedKeyCache.set(token,promise);try{return await promise}catch(e){derivedKeyCache.delete(token);throw e}}
