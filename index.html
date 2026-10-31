@@ -957,16 +957,26 @@ function render(){
 
 
 let movementNumberTimer=null;
-function keepMoveControlInPlace(tid,direction,swappedIds=[],displacedId=null){
+function keepMoveControlInPlace(tid,direction,swappedIds=[],displacedId=null,pointerPoint=null){
   requestAnimationFrame(()=>{
     const movingCard=document.querySelector(`.card[data-id="${tid}"]`);
     const movingButton=movingCard?.querySelector(`[data-action="${direction<0?"up":"down"}"]`);
     if(movingButton){
-      // Keep the control that was clicked focused and centered for rapid repeated clicks.
+      // Keep keyboard focus, then align the arrow's exact center with the original
+      // pointer tip. Fixed-height panels scroll their own card list; dynamic panels
+      // scroll the document because their card lists grow with their contents.
       movingButton.focus({preventScroll:true});
-      movingButton.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
+      if(pointerPoint){
+        const arrowRect=movingButton.getBoundingClientRect();
+        const deltaY=(arrowRect.top+arrowRect.height/2)-pointerPoint.y;
+        const cards=movingButton.closest('.cards');
+        const canScrollCards=cards && cards.scrollHeight>cards.clientHeight+1 &&
+          (getComputedStyle(cards).overflowY==='auto' || getComputedStyle(cards).overflowY==='scroll');
+        if(canScrollCards) cards.scrollTop+=deltaY;
+        else window.scrollBy({top:deltaY,left:0,behavior:'instant'});
+      }
     }else if(movingCard){
-      movingCard.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
+      movingCard.scrollIntoView({behavior:"auto",block:"center",inline:"nearest"});
     }
 
     // The displaced task gets the directional arrow cue: down when pushed down,
@@ -990,7 +1000,7 @@ function keepMoveControlInPlace(tid,direction,swappedIds=[],displacedId=null){
     });
   });
 }
-function moveTask(tid, direction){
+function moveTask(tid, direction, pointerPoint=null){
   const index=state.tasks.findIndex(t=>t.id===tid);
   if(index<0)return;
   const task=state.tasks[index];
@@ -1010,7 +1020,7 @@ function moveTask(tid, direction){
   movementNumberTimer=setTimeout(()=>document.body.classList.remove("movement-numbers"),1800);
   save();
   render();
-  keepMoveControlInPlace(tid,direction,swappedIds,displacedId);
+  keepMoveControlInPlace(tid,direction,swappedIds,displacedId,pointerPoint);
 }
 
 function moveTaskBefore(dragId, targetId){
@@ -1044,10 +1054,10 @@ function bindActions(){
       e.stopPropagation(); t.done=!t.done; save();render();
     };
     card.querySelector('[data-action="up"]').onclick=e=>{
-      e.stopPropagation(); moveTask(tid,-1);
+      e.stopPropagation(); moveTask(tid,-1,{x:e.clientX,y:e.clientY});
     };
     card.querySelector('[data-action="down"]').onclick=e=>{
-      e.stopPropagation(); moveTask(tid,1);
+      e.stopPropagation(); moveTask(tid,1,{x:e.clientX,y:e.clientY});
     };
     card.querySelector('[data-action="expand"]').onclick=e=>{
       e.stopPropagation(); t.open=!t.open; save();render();
