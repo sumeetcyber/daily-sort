@@ -2031,18 +2031,43 @@ function renderClock(){
 async function syncOnlineClock(){
   const status=document.getElementById("timeZoneStatus");
   if(status)status.textContent="Syncing online clock…";
-  try{
-    const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),4500);let response;try{response=await fetch("https://worldtimeapi.org/api/timezone/Etc/UTC",{cache:"no-store",signal:controller.signal});}finally{clearTimeout(timeout)}
-    if(!response.ok)throw new Error("HTTP "+response.status);
-    const data=await response.json();
-    const epoch=Date.parse(data.utc_datetime||data.datetime);
-    if(!Number.isFinite(epoch))throw new Error("Invalid time response");
-    onlineUtcEpoch=epoch;onlineClockStarted=performance.now();onlineClockSynced=true;
-    if(status)status.textContent="Online clock synced · system time-zone rules from this device";
-  }catch(err){
-    if(!onlineClockSynced){onlineUtcEpoch=Date.now();onlineClockStarted=performance.now();}
-    if(status)status.textContent="Online clock unavailable · displaying device time";
+  const sources=[
+    {
+      url:"https://timeapi.io/api/Time/current/zone?timeZone=UTC",
+      parse:data=>Date.parse(data.dateTime||data.date||"")
+    },
+    {
+      url:"https://worldtimeapi.org/api/timezone/Etc/UTC",
+      parse:data=>Date.parse(data.utc_datetime||data.datetime||"")
+    }
+  ];
+  let lastError=null;
+  for(const source of sources){
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),3500);
+    try{
+      const response=await fetch(source.url,{cache:"no-store",signal:controller.signal});
+      if(!response.ok)throw new Error("HTTP "+response.status);
+      const data=await response.json();
+      const epoch=source.parse(data);
+      if(!Number.isFinite(epoch))throw new Error("Invalid time response");
+      onlineUtcEpoch=epoch;
+      onlineClockStarted=performance.now();
+      onlineClockSynced=true;
+      if(status)status.textContent="Online clock synced · system time-zone rules from this device";
+      renderClock();
+      return;
+    }catch(err){
+      lastError=err;
+    }finally{
+      clearTimeout(timeout);
+    }
   }
+  if(!onlineClockSynced){
+    onlineUtcEpoch=Date.now();
+    onlineClockStarted=performance.now();
+  }
+  if(status)status.textContent="Online clock unavailable · displaying device time";
   renderClock();
 }
 function initTimeZoneSettings(){
