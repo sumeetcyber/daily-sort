@@ -1001,6 +1001,9 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
 
 /* v25: keep the Arrange panel genuinely collapsed; later layout rules use !important. */
 .arrange-tools[hidden]{display:none!important;}
+.clear-selection-btn{white-space:nowrap!important;min-height:30px!important;padding:5px 10px!important;font-size:12px!important;}
+.bulk-tools #clearSelection{align-self:center;}
+.arrange-step-content #clearSelection{align-self:center;margin-top:2px;}
 </style>
 
 </head>
@@ -1055,6 +1058,7 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
     <button class="btn" id="applySelectedColor">Apply color</button>
     <button class="btn" id="removeSelectedColor">Remove color</button>
     <span class="selection-count" id="selectionCount">0 selected</span>
+    <button class="btn clear-selection-btn" id="clearSelection" type="button" hidden>✕ Unselect all</button>
   </div>
   <section class="arrange-tools" id="arrangeTools" hidden aria-label="Move selected tasks step by step">
     <div class="arrange-step">
@@ -1063,7 +1067,6 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
         <div class="arrange-step-title">🎯 Select tasks</div>
         <div class="arrange-step-help arrange-select-help"><span>Tick tasks in either column.</span><span>You can select from both.</span></div>
         <span class="arrange-selection" id="arrangeSelectionCount">0 selected · from either column</span>
-        <button class="btn clear-selection-btn" id="clearSelection" type="button" hidden>✕ Unselect all</button>
       </div>
     </div>
     <div class="arrange-step arrange-number-step">
@@ -1367,7 +1370,18 @@ function updateSelectionCount(){
   const arrangeCount=document.getElementById("arrangeSelectionCount");
   if(arrangeCount)arrangeCount.textContent=selectedTaskIds.size+" selected · from either column";
   const clearButton=document.getElementById("clearSelection");
-  if(clearButton)clearButton.hidden=selectedTaskIds.size===0;
+  const arrangePanel=document.getElementById("arrangeTools");
+  const toolbar=document.querySelector(".bulk-tools");
+  const selectionCount=document.getElementById("selectionCount");
+  const stepOne=document.querySelector("#arrangeTools .arrange-step:first-child .arrange-step-content");
+  if(clearButton&&toolbar&&selectionCount&&stepOne){
+    if(arrangePanel&&!arrangePanel.hidden){
+      stepOne.appendChild(clearButton);
+    }else{
+      selectionCount.insertAdjacentElement("afterend",clearButton);
+    }
+    clearButton.hidden=selectedTaskIds.size===0;
+  }
   updateMoveRange();
 }
 function updateMoveRange(){
@@ -2134,6 +2148,7 @@ arrangeToggle.onclick=()=>{
   const opening=panel.hidden;panel.hidden=!opening;
   document.getElementById("toggleArrange").setAttribute("aria-expanded",opening?"true":"false");
   document.getElementById("toggleArrange").textContent=opening?"↕ Close arrange":"↕ Arrange";
+  updateSelectionCount();
 };
 function setHeightMode(dynamic, persist=true){
   const enabled=!!dynamic;
