@@ -831,6 +831,15 @@ body.show-task-numbers .card{position:relative;padding-top:29px}
 body.show-task-numbers .card .task-number{display:block!important;position:absolute;top:7px;left:10px;min-width:0;padding:0;color:var(--muted);font:600 14px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:left}
 body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-color)}
 
+
+/* Four-step Arrange sequence */
+.arrange-tools{grid-template-columns:repeat(4,minmax(0,1fr))}
+.arrange-number-step{min-width:0}
+.arrange-number-control{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--muted);line-height:1.4;cursor:pointer}
+.arrange-number-control input{flex:none;margin:2px 0 0;accent-color:var(--accent)}
+@media(max-width:760px){.arrange-tools{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.arrange-tools{grid-template-columns:1fr}}
+
 </style>
 
 </head>
@@ -895,12 +904,15 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
         <span class="arrange-selection" id="arrangeSelectionCount">0 selected</span>
       </div>
     </div>
-    <div class="arrange-number-option">
-      <label><input type="checkbox" id="showTaskNumbers"> Show task numbers</label>
-      <small>Medium size · top-left of each task card</small>
+    <div class="arrange-step arrange-number-step">
+      <span class="arrange-step-number">2</span>
+      <div class="arrange-step-content">
+        <div class="arrange-step-title">Show task numbers</div>
+        <label class="arrange-number-control"><input type="checkbox" id="showTaskNumbers"> Show medium numbers at the top-left of each task</label>
+      </div>
     </div>
     <div class="arrange-step">
-      <span class="arrange-step-number">2</span>
+      <span class="arrange-step-number">3</span>
       <div class="arrange-step-content">
         <div class="arrange-step-title">Choose destination</div>
         <div class="arrange-step-controls">
