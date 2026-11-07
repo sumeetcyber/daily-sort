@@ -840,6 +840,41 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
 @media(max-width:760px){.arrange-tools{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.arrange-tools{grid-template-columns:1fr}}
 
+
+
+/* Arrange — clean, connected workflow */
+.arrange-tools{
+  width:100%;max-width:none;margin:10px 0 18px;padding:10px;
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr) minmax(0,1.35fr) minmax(170px,.9fr);
+  gap:8px;align-items:stretch;border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line));
+  border-radius:18px;background:color-mix(in srgb,var(--panel) 94%,var(--accent-soft));
+  box-shadow:0 10px 28px color-mix(in srgb,var(--text) 7%,transparent);
+}
+.arrange-tools[hidden]{display:none}
+.arrange-step{
+  min-width:0;min-height:112px;display:grid;grid-template-columns:30px minmax(0,1fr);
+  align-content:center;align-items:start;gap:10px;padding:16px 15px;
+  border:1px solid var(--line);border-radius:13px;
+  background:color-mix(in srgb,var(--panel) 90%,var(--accent-soft));
+  transition:border-color .18s ease,background .18s ease,transform .18s ease;
+}
+.arrange-step:hover{border-color:color-mix(in srgb,var(--accent) 48%,var(--line));background:color-mix(in srgb,var(--panel) 82%,var(--accent-soft))}
+.arrange-step-number{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:800}
+.arrange-step-content{min-width:0;display:flex;flex-direction:column;gap:8px}
+.arrange-step-title{font-size:13px;line-height:1.25;font-weight:750;letter-spacing:.01em;white-space:normal}
+.arrange-step-help,.arrange-selection{font-size:11px;line-height:1.45;color:var(--muted)}
+.arrange-step-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center}
+.arrange-step-controls label{font-size:11px;color:var(--muted)}
+.arrange-tools #moveTargetZone{width:100%;min-width:0;min-height:38px;border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:var(--input,var(--panel));color:var(--text)}
+.arrange-tools #moveAboveNumber{width:74px;min-height:38px;padding:7px 9px;border-radius:9px}
+.arrange-number-control{display:flex;align-items:flex-start;gap:9px;font-size:11px;line-height:1.45;color:var(--muted);cursor:pointer}
+.arrange-number-control input{width:16px;height:16px;margin:1px 0 0;accent-color:var(--accent);flex:none}
+.arrange-tools .step-action{min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:12px;text-align:left}
+.arrange-tools .step-action .arrange-step-title{padding-left:1px}
+.arrange-tools .step-action .btn{width:100%;min-height:42px;border-radius:11px;font-weight:700;box-shadow:0 5px 16px color-mix(in srgb,var(--accent) 22%,transparent)}
+@media(max-width:1050px){.arrange-tools{grid-template-columns:1fr 1fr}.arrange-step{min-height:100px}.arrange-tools .step-action{min-height:100px}}
+@media(max-width:560px){.arrange-tools{grid-template-columns:1fr;padding:8px;gap:7px}.arrange-step{min-height:0;padding:13px}.arrange-tools .step-action{min-height:0}.arrange-step-controls{grid-template-columns:minmax(0,1fr) auto}}
+
 </style>
 
 </head>
@@ -924,7 +959,7 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
       </div>
     </div>
     <div class="arrange-step step-action">
-      <div class="arrange-step-title">3 · Move tasks</div>
+      <div class="arrange-step-title">4 · Move tasks</div>
       <button class="btn primary" id="moveSelected">Move selected →</button>
     </div>
   </section>
