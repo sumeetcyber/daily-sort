@@ -800,6 +800,22 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
 }
 @media(hover:none){.card:hover .insert-below{opacity:1;pointer-events:auto}}
 
+
+  /* Clock and time-zone settings */
+  .time-zone-controls{display:grid;grid-template-columns:minmax(130px,.65fr) minmax(220px,1.2fr);gap:9px 12px;align-items:center;margin-top:14px}
+  .time-zone-controls label{font-size:12px;font-weight:700;color:var(--muted)}
+  .time-zone-controls select{width:100%;min-width:0;min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--input,var(--panel));color:var(--text)}
+  .time-zone-status{grid-column:1/-1;font-size:11px;color:var(--muted);line-height:1.5}
+  @media(max-width:600px){.time-zone-controls{grid-template-columns:1fr}.time-zone-status{grid-column:auto}}
+  header .clock{display:block;width:max-content;max-width:100%;margin:9px auto 0;text-align:center;font-variant-numeric:tabular-nums}
+  .height-mode-control{user-select:none;-webkit-tap-highlight-color:transparent}
+  .height-mode-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  /* Fixed-height columns must be the scroll containers used by arrow alignment. */
+  body:not(.dynamic-panels) .panel{display:flex;flex-direction:column}
+  body:not(.dynamic-panels) .panel .cards{flex:1 1 auto;min-height:0;overflow-y:auto;scroll-behavior:auto}
+  body.dynamic-panels .panel{height:auto!important;max-height:none!important}
+  body.dynamic-panels .panel .cards{height:auto!important;max-height:none!important;overflow:visible!important}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -948,6 +964,16 @@ My highlighted task
 {{/Color}}</pre><div class="syntax-foot">🎨 Apply a colour: <b>1.</b> Select task square(s) <span aria-hidden="true">→</span> <b>2.</b> Choose a colour <span aria-hidden="true">→</span> <b>3.</b> Click <b>Apply color</b>.</div></article>
       </div>
     </section>
+    </section>
+    <section class="settings-section time-section">
+      <div class="settings-section-head"><span>🕒</span><div><h3>Clock & time zone</h3><p>Choose your device's time zone or a fixed UTC offset.</p></div></div>
+      <div class="time-zone-controls">
+        <label for="timeZoneMode">Time zone source</label>
+        <select id="timeZoneMode"><option value="system">System time zone (online-synced)</option><option value="custom">Custom UTC offset</option></select>
+        <label for="customUtcOffset">Custom offset</label>
+        <select id="customUtcOffset" disabled></select>
+        <div id="timeZoneStatus" class="time-zone-status">Checking online time…</div>
+      </div>
     </section>
     <section class="settings-section appearance-section"><div class="settings-section-head"><span>🎨</span><div><h3>Appearance</h3><p>Choose a theme for this device.</p></div></div>
       <div class="theme-grid" id="themeGrid"></div>
@@ -1240,8 +1266,21 @@ function keepMoveControlInPlace(tid,direction,swappedIds=[],displacedId=null,poi
         const cards=movingButton.closest('.cards');
         const canScrollCards=cards && cards.scrollHeight>cards.clientHeight+1 &&
           (getComputedStyle(cards).overflowY==='auto' || getComputedStyle(cards).overflowY==='scroll');
-        if(canScrollCards) cards.scrollTop+=deltaY;
-        else window.scrollBy({top:deltaY,left:0,behavior:'instant'});
+        if(canScrollCards){
+          cards.scrollTop+=deltaY;
+          requestAnimationFrame(()=>{
+            const after=movingButton.getBoundingClientRect();
+            const residual=(after.top+after.height/2)-pointerPoint.y;
+            if(Math.abs(residual)>1)cards.scrollTop+=residual;
+          });
+        }else{
+          window.scrollBy({top:deltaY,left:0,behavior:"instant"});
+          requestAnimationFrame(()=>{
+            const after=movingButton.getBoundingClientRect();
+            const residual=(after.top+after.height/2)-pointerPoint.y;
+            if(Math.abs(residual)>1)window.scrollBy({top:residual,left:0,behavior:"instant"});
+          });
+        }
       }
     }else if(movingCard){
       movingCard.scrollIntoView({behavior:"auto",block:"center",inline:"nearest"});
@@ -1532,14 +1571,20 @@ function moveSelectedAbove(){
 }
 
 function applyColorToSelected(){
-  if(!selectedTaskIds.size){toast("Select at least one task");return;}
-  const colorName=document.getElementById("selectedColor").value;
+  const ids=[...selectedTaskIds];
+  if(!ids.length){toast("Select task checkboxes first");return;}
+  const picker=document.getElementById("selectedColor");
+  const colorName=picker?.value;
+  if(!colorName || !TASK_COLORS[colorName]){toast("Choose a colour first");return;}
+  let changed=0;
   state.tasks.forEach(t=>{
     if(!selectedTaskIds.has(t.id))return;
     const parsed=parseColorSyntax(t.text);
     t.text=withColorSyntax(parsed.body,colorName);
+    changed++;
   });
-  save();render();toast("Color applied to selected tasks");
+  if(!changed){toast("No selected tasks found");return;}
+  save();render();toast(`🎨 ${changed} task${changed===1?"":"s"} coloured ${colorName}`);
 }
 function removeColorFromSelected(){
   if(!selectedTaskIds.size){toast("Select at least one task");return;}
@@ -1644,7 +1689,15 @@ async function deriveLegacyKey(token,salt){
   derivedKeyCache.set(cacheKey,promise);
   try{return await promise}catch(e){derivedKeyCache.delete(cacheKey);throw e}
 }
-function getSessionToken(){let t=localStorage.getItem(SESSION_KEY);if(!t){t=randomToken();localStorage.setItem(SESSION_KEY,t)}return t}
+function getSessionToken(){
+  let t="";
+  try{t=localStorage.getItem(SESSION_KEY)||""}catch(e){}
+  if(!t.trim()){
+    t=randomToken();
+    try{localStorage.setItem(SESSION_KEY,t)}catch(e){console.error("Could not persist Daily Sort session token",e)}
+  }
+  return t;
+}
 async function legacySalt(token){const b=await crypto.subtle.digest("SHA-256",encoder.encode(LEGACY_SESSION_SALT_PREFIX+token));return new Uint8Array(b).slice(0,16)}
 async function encryptState(token,obj){
   const salt=crypto.getRandomValues(new Uint8Array(16));
@@ -1863,24 +1916,24 @@ document.getElementById("toggleNumbers").onclick=()=>{
   document.getElementById("toggleNumbers").textContent=enabled?"Hide numbers":"Show numbers";
   localStorage.setItem("daily-sort-show-numbers",enabled?"1":"0");
 };
-function setHeightModeUI(dynamic){
+function setHeightMode(dynamic, persist=true){
+  const enabled=!!dynamic;
+  document.body.classList.toggle("dynamic-panels",enabled);
   const control=document.getElementById("togglePanelHeight");
-  if(!control)return;
-  control.classList.toggle("is-dynamic",!!dynamic);
-  control.setAttribute("aria-pressed",dynamic?"true":"false");
+  if(control){
+    control.classList.toggle("is-dynamic",enabled);
+    control.setAttribute("aria-pressed",enabled?"true":"false");
+    control.title=enabled?"Dynamic height: panels grow with their task lists":"Fixed height: task lists scroll inside the panels";
+  }
   const label=document.getElementById("heightModeLabel");
-  if(label)label.textContent=dynamic?"Dynamic":"Fixed";
-  control.title=dynamic?"Dynamic height: panels grow with their task lists":"Fixed height: task lists scroll inside the panels";
+  if(label)label.textContent=enabled?"Dynamic":"Fixed";
+  if(persist)try{localStorage.setItem("daily-sort-panel-height",enabled?"dynamic":"fixed")}catch(e){}
+  requestAnimationFrame(()=>window.dispatchEvent(new Event("resize")));
 }
-document.getElementById("togglePanelHeight").onclick=()=>{
-  const dynamic=document.body.classList.toggle("dynamic-panels");
-  setHeightModeUI(dynamic);
-  localStorage.setItem("daily-sort-panel-height",dynamic?"dynamic":"fixed");
-};
-if(localStorage.getItem("daily-sort-panel-height")==="dynamic"){
-  document.body.classList.add("dynamic-panels");
-  setHeightModeUI(true);
-}
+document.getElementById("togglePanelHeight").addEventListener("click",()=>{
+  setHeightMode(!document.body.classList.contains("dynamic-panels"));
+});
+setHeightMode(localStorage.getItem("daily-sort-panel-height")==="dynamic",false);
 document.getElementById("moveSelected").onclick=moveSelectedAbove;
 document.getElementById("moveTargetZone").addEventListener("change",updateMoveRange);
 document.getElementById("moveAboveNumber").addEventListener("input",updateMoveRange);
@@ -1897,9 +1950,96 @@ if(localStorage.getItem("daily-sort-show-numbers")==="1"){
 }
 applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);
 render();
-setupRealtime().then(()=>pullCloud());
-function updateClock(){const el=document.getElementById("localClock");if(el)el.textContent=new Date().toLocaleTimeString("en-GB",{hour12:false});}
-updateClock();setInterval(updateClock,1000);
+// Lock in the current browser token before any asynchronous cloud work starts.
+const bootSessionToken=getSessionToken();
+const tokenField=document.getElementById("sessionToken");
+if(tokenField)tokenField.value=bootSessionToken;
+setupRealtime(bootSessionToken).then(()=>pullCloud(bootSessionToken)).then(()=>{
+  const field=document.getElementById("sessionToken");
+  if(field)field.value=getSessionToken();
+});
+
+const UTC_OFFSETS=[
+  ["-12:00","Baker Island, Howland Island"],["-11:00","American Samoa, Niue"],["-10:00","Hawaii, United States"],
+  ["-09:30","Marquesas Islands"],["-09:00","Gambier Islands"],["-08:00","Pitcairn Islands, Pacific Standard Time locations"],["-07:00","Northeastern British Columbia, Sonora, Arizona"],
+  ["-06:00","Saskatchewan, Costa Rica, El Salvador, Galápagos, Guatemala, Honduras, Mexico, Nicaragua"],
+  ["-05:00","Colombia, Cuba, Ecuador, Jamaica, Panama, Peru"],["-04:30","Venezuela"],
+  ["-04:00","Bolivia, Amazonas, continental Chile, Dominican Republic, Nova Scotia, Puerto Rico, Barbados, Trinidad and Tobago"],
+  ["-03:00","Argentina, Paraguay"],["-02:00","Fernando de Noronha, South Georgia and the South Sandwich Islands"],
+  ["-01:00","Cape Verde"],["+00:00","Côte d'Ivoire, Faroe Islands, Ghana, Iceland, Senegal"],
+  ["+01:00","Algeria, Angola, Benin, Cameroon, Gabon, Niger, Nigeria, western DR Congo, Tunisia"],
+  ["+02:00","Egypt, Malawi, Mozambique, South Africa, Swaziland, Zambia, Zimbabwe"],
+  ["+03:00","Belarus, Djibouti, Eritrea, Ethiopia, Iraq, Kenya, Madagascar, Saudi Arabia, South Sudan, Sudan, Somalia, Tanzania, Uganda, Yemen"],
+  ["+04:00","Armenia, Azerbaijan, Georgia, Mauritius, Oman, European Russia, Seychelles, UAE"],["+04:30","Afghanistan"],
+  ["+05:00","Western Kazakhstan, Maldives, Pakistan, Uzbekistan"],["+05:30","India, Sri Lanka"],["+05:45","Kathmandu, Nepal"],
+  ["+06:00","Most of Kazakhstan, Bangladesh, Bhutan, Ural Russia"],["+06:30","Cocos Islands, Myanmar"],
+  ["+07:00","Western Indonesia, Novosibirsk, Thailand, Vietnam, Cambodia"],["+08:00","Hong Kong, China, Malaysia, Philippines, Singapore, Taiwan, Mongolia, Western Australia, Macau"],
+  ["+08:45","Eucla, Australia (unofficial)"],["+09:00","Eastern Indonesia, Timor-Leste, Irkutsk, Japan, North Korea, South Korea"],
+  ["+09:30","Northern Territory, Australia"],["+10:00","Zabaykalsky Krai, Papua New Guinea, Queensland, Australia"],
+  ["+11:00","New Caledonia, Primorsky Krai, Solomon Islands"],["+11:30","Norfolk Island"],
+  ["+12:00","Gilbert Islands, Fiji, Kamchatka"],["+13:00","Phoenix Islands, Tonga, Tokelau"],["+14:00","Line Islands, Kiribati"]
+];
+const TIME_PREF_KEY="daily-sort-time-zone-pref-v1";
+let onlineClockBase=0,onlineClockStarted=0,onlineTimeZone=null,onlineUtcOffset="+00:00";
+function offsetMinutes(value){const m=String(value).match(/^([+-])(\d{2}):(\d{2})$/);return m?(m[1]==="-"?-1:1)*(Number(m[2])*60+Number(m[3])):0;}
+function formatAtOffset(epoch,offset){
+  const shifted=new Date(epoch+offsetMinutes(offset)*60000);
+  return shifted.toISOString().slice(0,19).replace("T"," ");
+}
+function selectedClockOffset(){
+  const pref=JSON.parse(localStorage.getItem(TIME_PREF_KEY)||'{"mode":"system","offset":"+05:30"}');
+  if(pref.mode==="custom")return pref.offset;
+  return onlineUtcOffset;
+}
+function renderClock(){
+  const el=document.getElementById("localClock");if(!el)return;
+  const pref=JSON.parse(localStorage.getItem(TIME_PREF_KEY)||'{"mode":"system","offset":"+05:30"}');
+  const now=onlineClockBase?onlineClockBase+(performance.now()-onlineClockStarted):Date.now();
+  if(pref.mode==="custom"){
+    const off=pref.offset||"+05:30";
+    el.textContent=`${formatAtOffset(now,off)} · UTC ${off.replace("+","+")}`;
+  }else{
+    try{
+      const zone=onlineTimeZone||Intl.DateTimeFormat().resolvedOptions().timeZone;
+      el.textContent=new Intl.DateTimeFormat("en-GB",{timeZone:zone,hour12:false,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(new Date(now))+" · "+zone;
+    }catch(e){el.textContent=formatAtOffset(now,onlineUtcOffset)+" · UTC "+onlineUtcOffset;}
+  }
+}
+async function syncOnlineClock(){
+  const status=document.getElementById("timeZoneStatus");
+  try{
+    const response=await fetch("https://worldtimeapi.org/api/ip",{cache:"no-store"});
+    if(!response.ok)throw new Error("Online clock unavailable");
+    const data=await response.json();
+    const serverEpoch=Date.parse(data.utc_datetime);
+    if(!Number.isFinite(serverEpoch))throw new Error("Invalid online time");
+    onlineClockBase=serverEpoch;onlineClockStarted=performance.now();
+    onlineTimeZone=data.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone;
+    onlineUtcOffset=data.utc_offset||"+00:00";
+    if(status)status.textContent=`Online time synced · ${onlineTimeZone} · UTC ${onlineUtcOffset}`;
+  }catch(e){
+    onlineClockBase=Date.now();onlineClockStarted=performance.now();
+    onlineTimeZone=Intl.DateTimeFormat().resolvedOptions().timeZone||"System time zone";
+    const minutes=-new Date().getTimezoneOffset(),sign=minutes>=0?"+":"-",abs=Math.abs(minutes);
+    onlineUtcOffset=sign+String(Math.floor(abs/60)).padStart(2,"0")+":"+String(abs%60).padStart(2,"0");
+    if(status)status.textContent=`Online clock unavailable · using device time · ${onlineTimeZone}`;
+  }
+  renderClock();
+}
+function initTimeZoneSettings(){
+  const mode=document.getElementById("timeZoneMode"),offset=document.getElementById("customUtcOffset");
+  if(!mode||!offset)return;
+  offset.innerHTML=UTC_OFFSETS.map(([value,places])=>`<option value="${value}">UTC ${value.replace("+","+")} — ${escapeHtml(places)}</option>`).join("");
+  let pref;try{pref=JSON.parse(localStorage.getItem(TIME_PREF_KEY)||"null")}catch(e){}
+  if(!pref)pref={mode:"system",offset:"+05:30"};
+  mode.value=pref.mode==="custom"?"custom":"system";offset.value=pref.offset||"+05:30";offset.disabled=mode.value!=="custom";
+  const savePref=()=>{const p={mode:mode.value,offset:offset.value};localStorage.setItem(TIME_PREF_KEY,JSON.stringify(p));offset.disabled=mode.value!=="custom";renderClock();};
+  mode.addEventListener("change",savePref);offset.addEventListener("change",savePref);
+}
+initTimeZoneSettings();
+syncOnlineClock();
+setInterval(renderClock,1000);
+setInterval(syncOnlineClock,15*60*1000);
 
 </script>
 <script>
