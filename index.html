@@ -821,6 +821,16 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
   body.dynamic-panels .panel{display:flex!important;flex-direction:column!important;height:auto!important;max-height:none!important;min-height:0!important}
   body.dynamic-panels .panel .cards{flex:0 0 auto!important;height:auto!important;max-height:none!important;overflow:visible!important}
 
+
+/* Arrange: optional medium task numbers in the top-left corner */
+.arrange-number-option{grid-column:1/-1;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card,var(--panel))}
+.arrange-number-option label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:650;color:var(--text);cursor:pointer}
+.arrange-number-option input{width:16px;height:16px;accent-color:var(--accent)}
+.arrange-number-option small{font-size:11px;color:var(--muted)}
+body.show-task-numbers .card{position:relative;padding-top:29px}
+body.show-task-numbers .card .task-number{display:block!important;position:absolute;top:7px;left:10px;min-width:0;padding:0;color:var(--muted);font:600 14px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:left}
+body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-color)}
+
 </style>
 
 </head>
@@ -857,7 +867,8 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
     <button class="btn" id="exportData">Export</button>
     <button class="btn" id="importBtn">Import</button>
     <button class="btn settings-main-btn" id="sessionBtn">⚙ Settings</button>
-    <button class="btn" id="undoAction" title="Undo the last task change" disabled>↶ Undo</button>
+    <button class="btn" id="undoAction" title="Undo the last change" disabled>↶ Undo</button>
+    <button class="btn" id="redoAction" title="Redo the last undone change" disabled>↷ Redo</button>
     <input type="file" id="importFile" accept=".json" hidden>
   </div>
 
@@ -883,6 +894,10 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
         <div class="arrange-step-help">Tick tasks in either column. You can select from both.</div>
         <span class="arrange-selection" id="arrangeSelectionCount">0 selected</span>
       </div>
+    </div>
+    <div class="arrange-number-option">
+      <label><input type="checkbox" id="showTaskNumbers"> Show task numbers</label>
+      <small>Medium size · top-left of each task card</small>
     </div>
     <div class="arrange-step">
       <span class="arrange-step-number">2</span>
@@ -1046,31 +1061,30 @@ function id(){
   return crypto.randomUUID ? crypto.randomUUID() : Date.now()+"-"+Math.random().toString(16).slice(2);
 }
 
-const undoStack=[];
-let lastSavedSnapshot=null;
-let suppressUndoCapture=false;
-function updateUndoButton(){const b=document.getElementById("undoAction");if(b)b.disabled=!undoStack.length;}
+const undoStack=[],redoStack=[];
+let lastSavedSnapshot=null,suppressUndoCapture=false,lastDraftSnapshot="",suppressDraftCapture=false;
+function currentDraft(){return document.getElementById("bulkInput")?.value||"";}
+function updateUndoButton(){const u=document.getElementById("undoAction"),r=document.getElementById("redoAction");if(u)u.disabled=!undoStack.length;if(r)r.disabled=!redoStack.length;}
+function pushHistory(entry){undoStack.push(entry);if(undoStack.length>100)undoStack.shift();redoStack.length=0;updateUndoButton();}
 function save(){
-  localChangeAt=Date.now();
-  const next=JSON.stringify(state);
-  if(!suppressUndoCapture && lastSavedSnapshot!==null && next!==lastSavedSnapshot){
-    undoStack.push(lastSavedSnapshot);
-    if(undoStack.length>30)undoStack.shift();
-  }
-  localStorage.setItem(STORAGE,next);
-  lastSavedSnapshot=next;
-  updateUndoButton();
-  queueCloudSave();
+ localChangeAt=Date.now();const next=JSON.stringify(state);
+ if(!suppressUndoCapture&&lastSavedSnapshot!==null&&next!==lastSavedSnapshot)pushHistory({type:"tasks",before:lastSavedSnapshot,after:next,draft:currentDraft()});
+ localStorage.setItem(STORAGE,next);lastSavedSnapshot=next;updateUndoButton();queueCloudSave();
 }
+function setDraftValue(value){const box=document.getElementById("bulkInput");if(!box)return;suppressDraftCapture=true;box.value=value;lastDraftSnapshot=value;try{localStorage.setItem(DRAFT_KEY,value);}catch(e){}suppressDraftCapture=false;}
 function undoLastAction(){
-  if(!undoStack.length)return;
-  const previous=undoStack.pop();
-  try{state=JSON.parse(previous);}catch(e){toast("Undo unavailable");return;}
-  suppressUndoCapture=true;
-  localStorage.setItem(STORAGE,JSON.stringify(state));
-  lastSavedSnapshot=JSON.stringify(state);
-  suppressUndoCapture=false;
-  queueCloudSave();render();updateUndoButton();toast("Last change undone ↶");
+ if(!undoStack.length)return;const entry=undoStack.pop();
+ if(entry.type==="draft"){setDraftValue(entry.before);}
+ else{try{const before=JSON.parse(entry.before),after=JSON.parse(entry.after);const ids=new Set((before.tasks||[]).map(t=>t.id));const added=(after.tasks||[]).filter(t=>!ids.has(t.id));state=before;
+ if(added.length){const recovered=added.map(t=>t.text||t.title||"").filter(Boolean).join("\n");const draft=currentDraft();setDraftValue([draft,recovered].filter(Boolean).join(draft&&recovered?"\n":""));}
+ localStorage.setItem(STORAGE,JSON.stringify(state));lastSavedSnapshot=JSON.stringify(state);queueCloudSave();render();}catch(e){toast("Undo unavailable");}}
+ redoStack.push(entry);updateUndoButton();persistDraft();toast("Last change undone ↶");
+}
+function redoLastAction(){
+ if(!redoStack.length)return;const entry=redoStack.pop();
+ if(entry.type==="draft"){setDraftValue(entry.after);}
+ else{try{state=JSON.parse(entry.after);localStorage.setItem(STORAGE,JSON.stringify(state));lastSavedSnapshot=JSON.stringify(state);setDraftValue(entry.draft||"");queueCloudSave();render();}catch(e){toast("Redo unavailable");}}
+ undoStack.push(entry);updateUndoButton();persistDraft();toast("Change redone ↷");
 }
 
 function load(){
@@ -1087,19 +1101,14 @@ function escapeHtml(s){
 }
 
 function persistDraft(){
-  const box=document.getElementById("bulkInput");
-  if(!box)return;
-  try{localStorage.setItem(DRAFT_KEY,box.value);}catch(e){}
-  const status=document.getElementById("draftStatus");
-  if(status)status.textContent="Draft saved locally · "+new Date().toLocaleTimeString("en-GB",{hour12:false});
-  queueCloudSave();
+ const box=document.getElementById("bulkInput");if(!box)return;const value=box.value;
+ if(!suppressDraftCapture&&value!==lastDraftSnapshot)pushHistory({type:"draft",before:lastDraftSnapshot,after:value});
+ lastDraftSnapshot=value;try{localStorage.setItem(DRAFT_KEY,value);}catch(e){}
+ const status=document.getElementById("draftStatus");if(status)status.textContent="Draft saved locally · "+new Date().toLocaleTimeString("en-GB",{hour12:false});queueCloudSave();
 }
 function initDrafts(){
-  try{localStorage.removeItem("daily-sort-bulk-draft-history-v1");}catch(e){}
-  const box=document.getElementById("bulkInput");
-  try{box.value=localStorage.getItem(DRAFT_KEY)||"";}catch(e){}
-  box.addEventListener("input",persistDraft);
-  box.addEventListener("blur",persistDraft);
+ const box=document.getElementById("bulkInput");try{box.value=localStorage.getItem(DRAFT_KEY)||"";}catch(e){}
+ lastDraftSnapshot=box.value;box.addEventListener("input",persistDraft);box.addEventListener("blur",()=>{try{localStorage.setItem(DRAFT_KEY,box.value);}catch(e){}});
 }
 
 function parseBulkTasks(input){
@@ -1930,6 +1939,13 @@ document.getElementById("connectToken").onclick=async()=>{
   }
 };
 
+const showTaskNumbers=document.getElementById("showTaskNumbers");
+showTaskNumbers.checked=localStorage.getItem("daily-sort-show-task-numbers")==="1";
+document.body.classList.toggle("show-task-numbers",showTaskNumbers.checked);
+showTaskNumbers.addEventListener("change",()=>{
+  document.body.classList.toggle("show-task-numbers",showTaskNumbers.checked);
+  localStorage.setItem("daily-sort-show-task-numbers",showTaskNumbers.checked?"1":"0");
+});
 document.getElementById("toggleArrange").onclick=()=>{
   const panel=document.getElementById("arrangeTools");
   const opening=panel.hidden;panel.hidden=!opening;
@@ -1959,6 +1975,7 @@ document.getElementById("moveSelected").onclick=moveSelectedAbove;
 document.getElementById("moveTargetZone").addEventListener("change",updateMoveRange);
 document.getElementById("moveAboveNumber").addEventListener("input",updateMoveRange);
 document.getElementById("undoAction").onclick=undoLastAction;
+document.getElementById("redoAction").onclick=redoLastAction;
 document.getElementById("applySelectedColor").onclick=applyColorToSelected;
 document.getElementById("removeSelectedColor").onclick=removeColorFromSelected;
 
