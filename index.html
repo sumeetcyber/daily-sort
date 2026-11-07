@@ -997,6 +997,8 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
   margin:0!important;accent-color:var(--accent)!important;cursor:pointer!important;
 }
 
+/* v25: keep the Arrange panel genuinely collapsed; later layout rules use !important. */
+.arrange-tools[hidden]{display:none!important;}
 </style>
 
 </head>
@@ -2118,8 +2120,12 @@ showTaskNumbers.addEventListener("change",()=>{
   document.body.classList.toggle("show-task-numbers",showTaskNumbers.checked);
   localStorage.setItem("daily-sort-show-task-numbers",showTaskNumbers.checked?"1":"0");
 });
-document.getElementById("toggleArrange").onclick=()=>{
-  const panel=document.getElementById("arrangeTools");
+const arrangeToggle=document.getElementById("toggleArrange");
+const arrangePanel=document.getElementById("arrangeTools");
+arrangePanel.hidden=true;
+arrangeToggle.setAttribute("aria-expanded","false");
+arrangeToggle.onclick=()=>{
+  const panel=arrangePanel;
   const opening=panel.hidden;panel.hidden=!opening;
   document.getElementById("toggleArrange").setAttribute("aria-expanded",opening?"true":"false");
   document.getElementById("toggleArrange").textContent=opening?"↕ Close arrange":"↕ Arrange";
