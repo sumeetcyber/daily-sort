@@ -910,6 +910,60 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
  .arrange-tools .step-action{gap:10px!important;}
 }
 
+
+/* Arrange: centered, full-card composition */
+.arrange-tools{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+  padding:10px!important;
+  align-items:stretch!important;
+}
+.arrange-tools .arrange-step{
+  min-width:0!important; min-height:190px!important;
+  display:flex!important; flex-direction:column!important;
+  align-items:center!important; justify-content:center!important;
+  text-align:center!important; gap:13px!important;
+  padding:20px 18px!important;
+}
+.arrange-tools .arrange-step-number{
+  width:38px!important;height:38px!important;border-radius:12px!important;
+  display:grid!important;place-items:center!important;font-size:18px!important;
+  margin:0 auto!important;
+}
+.arrange-tools .arrange-step-content{
+  width:100%!important;min-width:0!important;align-items:center!important;
+  justify-content:center!important;gap:10px!important;
+}
+.arrange-tools .arrange-step-title{
+  width:100%!important;text-align:center!important;font-size:19px!important;
+  line-height:1.3!important;font-weight:850!important;white-space:normal!important;
+}
+.arrange-tools .arrange-step-help,.arrange-tools .arrange-selection{
+  width:100%!important;text-align:center!important;font-size:15px!important;
+  line-height:1.5!important;
+}
+.arrange-tools .arrange-number-control{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  flex-wrap:wrap!important;gap:10px!important;width:100%!important;
+  text-align:center!important;font-size:15px!important;line-height:1.45!important;
+}
+.arrange-tools .arrange-number-control input{width:20px!important;height:20px!important;margin:0!important;}
+.arrange-tools .arrange-destination-controls{width:100%!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:12px!important;}
+.arrange-tools #moveTargetZone{width:100%!important;min-height:48px!important;font-size:17px!important;text-align:center!important;}
+.arrange-tools .arrange-position-control{width:100%!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;}
+.arrange-tools .arrange-position-control label{font-size:15px!important;font-weight:750!important;text-align:center!important;}
+.arrange-tools #moveAboveNumber{width:100%!important;min-height:48px!important;font-size:18px!important;text-align:center!important;}
+.arrange-tools .step-action{width:100%!important;align-items:center!important;justify-content:center!important;}
+.arrange-tools .step-action .arrange-step-title{padding:0!important;}
+.arrange-tools .step-action .btn{width:100%!important;min-height:52px!important;font-size:17px!important;font-weight:800!important;border-radius:13px!important;}
+@media(max-width:1050px){.arrange-tools{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}
+@media(max-width:560px){
+ .arrange-tools{grid-template-columns:minmax(0,1fr)!important;padding:8px!important;gap:8px!important;}
+ .arrange-tools .arrange-step{min-height:160px!important;padding:18px 14px!important;}
+ .arrange-tools .arrange-step-title{font-size:18px!important;}
+}
+
 </style>
 
 </head>
@@ -969,7 +1023,7 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
     <div class="arrange-step">
       <span class="arrange-step-number">1</span>
       <div class="arrange-step-content">
-        <div class="arrange-step-title">Select tasks</div>
+        <div class="arrange-step-title">🎯 Select tasks</div>
         <div class="arrange-step-help">Tick tasks in either column. You can select from both.</div>
         <span class="arrange-selection" id="arrangeSelectionCount">0 selected</span>
       </div>
@@ -977,14 +1031,14 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
     <div class="arrange-step arrange-number-step">
       <span class="arrange-step-number">2</span>
       <div class="arrange-step-content">
-        <div class="arrange-step-title">Show task numbers</div>
+        <div class="arrange-step-title">🔢 Show task numbers</div>
         <label class="arrange-number-control"><input type="checkbox" id="showTaskNumbers"> Show medium numbers at the top-left of each task</label>
       </div>
     </div>
     <div class="arrange-step">
       <span class="arrange-step-number">3</span>
       <div class="arrange-step-content">
-        <div class="arrange-step-title">Choose destination</div>
+        <div class="arrange-step-title">📍 Choose destination</div>
         <div class="arrange-destination-controls">
           <select id="moveTargetZone" aria-label="Move selected tasks to"><option value="today">☀️ Today</option><option value="later">🌙 Not Today</option></select>
           <div class="arrange-position-control">
@@ -997,7 +1051,7 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
     </div>
     <div class="arrange-step step-action">
       <span class="arrange-step-number">4</span>
-      <div class="arrange-step-title">Move tasks</div>
+      <div class="arrange-step-title">🚀 Move tasks</div>
       <button class="btn primary" id="moveSelected">Move selected →</button>
     </div>
   </section>
