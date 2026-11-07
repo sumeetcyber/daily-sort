@@ -2012,7 +2012,7 @@ const UTC_OFFSETS=[
 ];
 const TIME_PREF_KEY="daily-sort-time-zone-pref-v1";
 let onlineUtcEpoch=0,onlineClockStarted=0,onlineClockSynced=false;
-function offsetMinutes(value){const m=String(value).match(/^([+-])(\\d{2}):(\\d{2})$/);return m?(m[1]==="-"?-1:1)*(Number(m[2])*60+Number(m[3])):0;}
+function offsetMinutes(value){const m=String(value).match(/^([+-])(\d{2}):(\d{2})$/);return m?(m[1]==="-"?-1:1)*(Number(m[2])*60+Number(m[3])):0;}
 function clockNow(){return onlineUtcEpoch?onlineUtcEpoch+(performance.now()-onlineClockStarted):Date.now();}
 function renderClock(){
   const el=document.getElementById("localClock");if(!el)return;
