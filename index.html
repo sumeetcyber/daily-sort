@@ -212,7 +212,9 @@
   .shortcut-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
   .shortcut-tile{min-width:0;min-height:124px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:0 3px 10px #0000000a}
   .tile-icon{font-size:24px;line-height:1}.tile-action{font-size:17px;line-height:1.15;font-weight:850;letter-spacing:-.25px}
-  .shortcut-tile kbd,.shortcut-tile code{display:inline-block;max-width:100%;white-space:normal;overflow-wrap:anywhere;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:var(--soft,var(--accent-soft));font:600 13px/1.25 ui-monospace,monospace;color:var(--text)}
+  .shortcut-tile kbd,
+  .shortcut-tile .multiline-example{display:block;margin:7px 0 2px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--soft,var(--accent-soft));color:var(--text);font:11px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;text-align:left;overflow-wrap:anywhere}
+.shortcut-tile code{display:inline-block;max-width:100%;white-space:normal;overflow-wrap:anywhere;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:var(--soft,var(--accent-soft));font:600 13px/1.25 ui-monospace,monospace;color:var(--text)}
   .shortcut-tile small{font-size:12px;color:var(--muted);margin-top:-3px}
   .syntax-heading{margin-top:19px}
   .syntax-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -952,7 +954,9 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
         <article class="shortcut-tile"><span class="tile-icon">📥</span><div class="tile-action">Add to Today</div><kbd>Ctrl + Enter</kbd></article>
         <article class="shortcut-tile"><span class="tile-icon">🗓️</span><div class="tile-action">Add to Not Today</div><kbd>Ctrl + Shift + Enter</kbd></article>
         <article class="shortcut-tile"><span class="tile-icon">✍️</span><div class="tile-action">Insert line break</div><kbd>Alt + Enter</kbd><small>While editing a task</small></article>
-        <article class="shortcut-tile"><span class="tile-icon">🧵</span><div class="tile-action">Keep text in one task</div><code>&gt;&gt;&gt;&gt;TEXT&lt;&lt;&lt;&lt;</code><small>Wrap multiline paste</small></article>
+        <article class="shortcut-tile"><span class="tile-icon">🧵</span><div class="tile-action">Keep text in one task</div><pre class="multiline-example">&gt;&gt;&gt;&gt;LINE 1
+LINE 2
+LINE 3&lt;&lt;&lt;&lt;</pre><small>Wrap multiline paste</small></article>
       </div>
       <div class="help-heading syntax-heading"><span>🧩</span><div><h3>Task styling</h3><p>Give tasks structure and colour.</p></div></div>
       <div class="syntax-grid">
