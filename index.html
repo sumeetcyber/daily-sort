@@ -33,7 +33,7 @@
     font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   }
   button,input,textarea{font:inherit}
-  .wrap{max-width:1450px;margin:0 auto;padding:34px 30px 60px}
+  .wrap{width:100%;max-width:1900px;margin:0 auto;padding:34px clamp(16px,2.2vw,42px) 60px}
   header{text-align:center;margin-bottom:28px}
   .brand{display:flex;align-items:center;justify-content:center;gap:10px}
   .brand-mark{width:35px;height:35px;flex:none;color:var(--accent)}
@@ -56,7 +56,7 @@
     gap:10px;
     align-items:flex-end;
     margin:0 auto 18px;
-    max-width:1100px;
+    width:100%;max-width:none;
   }
   .capture textarea{
     flex:1; min-width:0; min-height:84px; resize:vertical;
@@ -88,9 +88,10 @@
     color:var(--muted);font-size:13px
   }
   .board{
+    width:100%;max-width:1800px;margin:0 auto;
     display:grid;
-    grid-template-columns:minmax(420px,1fr) minmax(300px,420px);
-    gap:18px;
+    grid-template-columns:minmax(0,1.35fr) minmax(300px,.9fr);
+    gap:20px;
     align-items:start;
   }
   .panel{
@@ -167,7 +168,7 @@
   .expand{
     border:0;background:none;cursor:pointer;color:#7d756b;padding:2px 5px;font-size:15px
   }
-  .card-tools{display:flex;gap:3px}
+  .card-tools{display:flex;gap:5px;align-items:center}
   .icon-btn{
     border:0;background:transparent;color:#7d756b;cursor:pointer;padding:3px 5px;border-radius:6px
   }
@@ -201,6 +202,27 @@
   .cards{max-height:calc(100vh - 300px);overflow-y:auto}
   @media(max-width:700px){.capture-actions{width:100%;flex-direction:row}.capture-actions .btn{flex:1}.panel-head{gap:8px}.panel-title{font-size:20px}}
   .cards{max-height:calc(100vh - 340px);overflow-y:auto}
+  /* Compact visual help hub: glanceable, not a long instruction page. */
+  .session-modal .session-box{width:min(960px,calc(100vw - 32px))!important;max-width:960px!important;padding:24px!important}
+  .help-hub{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--soft,var(--accent-soft))}
+  .help-heading{display:flex;align-items:center;gap:11px;margin:0 0 13px}
+  .help-heading>span{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--panel);font-size:23px}
+  .help-heading h3{font-size:21px;line-height:1.15;margin:0;font-weight:850;letter-spacing:-.3px}
+  .help-heading p{font-size:14px;color:var(--muted);margin:3px 0 0}
+  .shortcut-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .shortcut-tile{min-width:0;min-height:124px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:0 3px 10px #0000000a}
+  .tile-icon{font-size:24px;line-height:1}.tile-action{font-size:17px;line-height:1.15;font-weight:850;letter-spacing:-.25px}
+  .shortcut-tile kbd,.shortcut-tile code{display:inline-block;max-width:100%;white-space:normal;overflow-wrap:anywhere;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:var(--soft,var(--accent-soft));font:600 13px/1.25 ui-monospace,monospace;color:var(--text)}
+  .shortcut-tile small{font-size:12px;color:var(--muted);margin-top:-3px}
+  .syntax-heading{margin-top:19px}
+  .syntax-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .syntax-tile{min-width:0;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:0 3px 10px #0000000a}
+  .syntax-title{display:flex;align-items:center;gap:10px;margin-bottom:10px}.syntax-title>span{font-size:24px}
+  .syntax-title h4{font-size:18px;line-height:1.1;margin:0;font-weight:850}.syntax-title p{font-size:13px;color:var(--muted);margin:3px 0 0}
+  .syntax-tile pre{margin:0;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--soft,var(--accent-soft));font:13px/1.45 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text)}
+  .syntax-foot{font-size:13px;color:var(--muted);margin-top:8px}
+  @media(max-width:760px){.shortcut-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.help-hub{padding:13px}.shortcut-tile{min-height:112px}}
+  @media(max-width:520px){.syntax-grid{grid-template-columns:1fr}.help-heading h3{font-size:19px}.shortcut-tile{padding:11px}.tile-action{font-size:15px}}
   /* Session modal: keep the entire settings UI inside one contained box. */
   .session-modal{
     position:fixed !important;
@@ -400,9 +422,9 @@
 
   .task-number{display:none;flex:none;min-width:24px;color:var(--muted);font:11px ui-monospace,monospace;text-align:right;padding-top:4px}
   body.show-task-numbers .task-number{display:block}
-  .select-task{width:16px;height:16px;flex:none;margin:3px 0 0;accent-color:var(--accent);cursor:pointer}
+  .select-task{width:17px;height:17px;flex:none;margin:0 2px;accent-color:var(--accent);cursor:pointer;vertical-align:middle}
   .task.selected{outline:2px solid var(--accent);outline-offset:1px}
-  .bulk-tools{max-width:1450px;margin:0 auto 16px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .bulk-tools{width:100%;max-width:none;margin:0 auto 16px;padding:12px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
   .bulk-tools .btn{padding:7px 10px;font-size:13px}
   .bulk-tools input[type=number]{width:76px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:7px;background:var(--input,var(--panel));color:var(--text)}
   .bulk-tools input[type=color]{width:34px;height:32px;padding:2px;border:1px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer}
@@ -410,6 +432,10 @@
   .toggle-list{margin:8px 0 2px 0;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--soft,var(--accent-soft));display:flex;flex-direction:column;gap:6px}
   .toggle-list-row{display:flex;align-items:center;gap:8px;min-width:0}
   .toggle-list-row input[type=checkbox]{accent-color:var(--accent);flex:none}
+  .toggle-row-tools{display:flex;gap:3px;flex:none;opacity:.72}
+  .toggle-row-tools button{width:25px;height:25px;border:1px solid var(--line);border-radius:6px;background:var(--button,var(--panel));color:var(--text);cursor:pointer;font-size:13px;line-height:1}
+  .toggle-row-tools button:hover:not(:disabled){border-color:var(--accent);background:var(--soft,var(--accent-soft))}
+  .toggle-row-tools button:disabled{opacity:.25;cursor:default}
   .toggle-list-row input[type=text]{flex:1;min-width:0;border:1px solid transparent;border-radius:5px;padding:4px 6px;background:transparent;color:var(--text)}
   .toggle-list-row input[type=text]:focus{outline:none;border-color:var(--accent);background:var(--input,var(--panel))}
   .toggle-list-row.done input[type=text]{text-decoration:line-through;color:var(--muted)}
@@ -549,6 +575,231 @@
     body.movement-numbers .task-number{animation:none}
   }
 
+
+  /* Daily Sort visual refresh — all colors remain driven by the active theme. */
+  :root{--radius-xl:22px;--radius-lg:16px;--surface-glass:color-mix(in srgb,var(--panel) 88%,transparent)}
+  body{letter-spacing:-.012em;background:radial-gradient(ellipse at 8% 0%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 36%),var(--bg)}
+  .wrap{padding:clamp(18px,2.3vw,34px) clamp(14px,2.8vw,46px) 38px}
+  header{text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin:0 0 24px;padding:0 2px}
+  .brand{justify-content:flex-start;gap:12px}
+  .brand h1{font:750 clamp(29px,3vw,39px)/1.05 Inter,ui-sans-serif,system-ui,sans-serif;letter-spacing:-1.8px}
+  .brand-mark{width:43px;height:43px}
+  .subtitle{margin:4px 0 0 55px;font-size:14px;color:var(--muted)}
+  .clock{margin:5px 0 0 56px;font-size:11px;letter-spacing:.09em}
+  .capture{max-width:none;width:100%;padding:12px;gap:12px;border-radius:var(--radius-xl);background:var(--surface-glass);border:1px solid var(--line);box-shadow:var(--shadow);align-items:stretch}
+  .capture textarea{min-height:94px;border-radius:14px;padding:15px 16px;font-size:14px;line-height:1.55;background:var(--input,var(--panel));border-color:var(--line)}
+  .capture-actions{justify-content:stretch;min-width:152px}
+  .capture-actions .btn{flex:1;border-radius:12px;font-size:13px;font-weight:700}
+  .draft-tools{margin:-8px 5px 12px;font-size:11px}
+  .hint{text-align:left;margin:0 4px 15px;font-size:12px}
+  .toolbar{justify-content:flex-start;margin:0 0 12px;gap:7px}
+  .btn{border-radius:11px;padding:9px 12px;font-size:12px;font-weight:600;transition:transform .16s,border-color .16s,background .16s,box-shadow .16s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.primary{box-shadow:0 5px 14px color-mix(in srgb,var(--accent) 20%,transparent)}
+  .bulk-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;margin:0 0 16px;border:1px solid var(--line);border-radius:15px;background:var(--surface-glass);box-shadow:0 6px 22px color-mix(in srgb,var(--text) 7%,transparent)}
+  .bulk-tools>label{font-size:11px!important;font-weight:650;letter-spacing:.02em}
+  .bulk-tools .btn{padding:8px 10px}
+  .bulk-tools input[type=number]{height:34px;border-radius:9px;width:78px}
+  #selectedColor{height:34px;border-radius:9px}
+  .selection-count{font-size:11px;color:var(--muted);padding:0 5px}
+  .height-mode-control{display:inline-flex;align-items:center;gap:9px;padding:6px 10px;border:1px solid var(--line);border-radius:12px;background:var(--soft,var(--panel));color:var(--text);cursor:pointer;min-height:42px;transition:.18s ease}
+  .height-mode-control:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .height-mode-icon{width:27px;height:27px;display:grid;place-items:center;border-radius:8px;background:var(--accent-soft);color:var(--accent);font-size:17px;font-weight:700}
+  .height-mode-copy{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.1}
+  .height-mode-copy small{font-size:8px;letter-spacing:.11em;color:var(--muted);font-weight:800}
+  .height-mode-copy strong{font-size:12px;font-weight:750}
+  .height-mode-switch{width:31px;height:18px;border-radius:20px;background:color-mix(in srgb,var(--muted) 35%,var(--line));padding:2px;display:flex;align-items:center;transition:.18s}
+  .height-mode-switch i{width:14px;height:14px;border-radius:50%;background:var(--panel);box-shadow:0 1px 3px #0003;transition:transform .18s}
+  .height-mode-control.is-dynamic .height-mode-switch{background:var(--accent)}
+  .height-mode-control.is-dynamic .height-mode-switch i{transform:translateX(13px)}
+  .board{gap:15px;align-items:stretch}
+  .panel{border-radius:var(--radius-xl);border:1px solid var(--line);box-shadow:0 10px 34px color-mix(in srgb,var(--text) 7%,transparent);background:var(--panel)}
+  .panel-head{padding:17px 19px 15px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,var(--panel)),var(--panel));}
+  .panel-title{font:750 18px/1.2 Inter,ui-sans-serif,system-ui,sans-serif;letter-spacing:-.45px}
+  .panel-head [style*="font-size:12px"]{font-size:11px!important;line-height:1.5}
+  .count{border-radius:10px;min-width:34px;height:29px;font-weight:750;font-variant-numeric:tabular-nums}
+  .cards{padding:12px}
+  .card{border-radius:14px;margin-bottom:9px;border-color:var(--line);background:var(--card,var(--panel));box-shadow:0 2px 7px color-mix(in srgb,var(--text) 4%,transparent);transition:border-color .16s,box-shadow .16s,transform .16s}
+  .card:hover{border-color:color-mix(in srgb,var(--accent) 48%,var(--line));box-shadow:0 7px 18px color-mix(in srgb,var(--text) 8%,transparent);transform:translateY(-1px)}
+  .card-main{padding:13px;gap:10px;align-items:flex-start}
+  .task-title-edit{font-size:14px;line-height:1.5;padding:3px 5px;border-radius:7px}
+  .task-title-edit:focus{background:var(--soft,var(--accent-soft));border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+  .card-tools{gap:2px;align-items:center}
+  .card-tools .icon-btn,.card-tools .expand{width:29px;height:29px;display:grid;place-items:center;border:1px solid transparent;border-radius:9px;font-size:14px;font-weight:700}
+  .card-tools .icon-btn:hover,.card-tools .expand:hover{border-color:var(--line);background:var(--soft,var(--accent-soft))}
+  .details{border-radius:0 0 14px 14px;padding:12px 14px 14px 47px}
+  .details textarea{border-radius:11px;padding:10px 12px;min-height:72px;font-size:13px;line-height:1.5}
+  .empty{border-radius:15px;min-height:160px;font-size:13px;line-height:1.7;background:color-mix(in srgb,var(--soft,var(--accent-soft)) 30%,transparent)}
+  .dump-btn{width:31px;height:31px;border-radius:10px;display:grid;place-items:center;font-weight:750}
+  .footer{margin-top:20px;font-size:11px}
+  .toast{border-radius:12px;box-shadow:0 8px 28px #0002}
+  @media(max-width:850px){.board{grid-template-columns:minmax(0,1fr)}.panel{height:auto;max-height:none;min-height:0}.cards{max-height:65vh;min-height:180px;overflow:auto}body.dynamic-panels .cards{max-height:none;overflow:visible}}
+  @media(max-width:620px){header{margin-bottom:18px}.subtitle,.clock{margin-left:0}.capture{flex-direction:column}.capture-actions{flex-direction:row;min-width:0}.capture-actions .btn{min-height:42px}.bulk-tools{position:static}.panel-head{padding:14px}.card-main{padding:10px}.card-tools .icon-btn{width:26px}.board{gap:12px}}
+
+
+/* Centered, calmer layout and consolidated settings presentation */
+.wrap{width:min(100% - 40px,1240px);margin-inline:auto;padding:30px 0 54px}
+header{text-align:center;margin-inline:auto;max-width:760px}
+.subtitle,.clock{margin-left:0!important;text-align:center}
+.capture,.draft-tools,.hint,.toolbar,.bulk-tools,.board,.footer{width:100%;max-width:1120px;margin-left:auto!important;margin-right:auto!important}
+.capture{justify-content:center}
+.capture textarea{text-align:left}
+.toolbar{justify-content:center!important}
+.bulk-tools{justify-content:center}
+.board{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr);gap:18px;align-items:start}
+.panel{min-width:0}
+.footer{text-align:center}
+.session-modal{padding:20px!important}
+.session-modal .session-box{width:min(820px,calc(100vw - 36px))!important;margin:auto!important;text-align:center;border-radius:22px!important;padding:26px!important}
+.session-box h2{font-size:27px!important;margin-bottom:5px!important}
+.session-box>p{margin:0 auto 18px!important;max-width:520px}
+.session-key{width:min(100%,560px);margin:8px auto!important;display:flex;justify-content:center;gap:8px}
+.session-key input{min-width:0;flex:1;text-align:center}
+.session-actions{justify-content:center!important;flex-wrap:wrap}
+.session-box>div[style*="font-size:12px"]{text-align:center!important}
+.session-box [aria-label="Keyboard shortcuts"],.session-box [aria-label="Multiline task instructions"]{max-width:660px;margin:14px auto 0!important;gap:12px!important}
+.session-box>div[style*="margin-top:20px"]{max-width:700px;margin:24px auto 0!important;padding-top:18px;border-top:1px solid var(--line)}
+.session-box>div[style*="margin-top:18px"]{max-width:700px;margin:22px auto 0!important;padding-top:18px;border-top:1px solid var(--line);text-align:center}
+.session-box>div[style*="margin-top:18px"]>div[style*="display:grid"]{grid-template-columns:repeat(2,minmax(0,1fr))!important;text-align:left}
+#cloudStatus{max-width:560px;margin:18px auto 0!important;padding:10px 14px;border:1px solid var(--line);border-radius:11px;background:var(--soft,var(--panel))}
+.security-note{max-width:600px;margin:18px auto 0!important;text-align:center;line-height:1.5}
+.theme-grid{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
+@media(max-width:850px){.wrap{width:min(100% - 28px,680px)}.board{grid-template-columns:minmax(0,1fr)}.session-modal .session-box{padding:20px!important}}
+@media(max-width:600px){.session-box [aria-label="Keyboard shortcuts"],.session-box [aria-label="Multiline task instructions"]{grid-template-columns:1fr!important}.session-box>div[style*="margin-top:18px"]>div[style*="display:grid"]{grid-template-columns:1fr!important}.wrap{width:calc(100% - 22px);padding-top:20px}}
+
+
+
+  /* Centered, full-width workspace refinements */
+  @media(min-width:1500px){
+    .board{gap:22px}
+    .panel-head{padding-left:22px;padding-right:22px}
+  }
+  @media(max-width:760px){
+    .wrap{padding:20px 12px 36px}
+    .capture{flex-direction:column;align-items:stretch}
+    .capture-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}
+    .bulk-tools{justify-content:flex-start}
+    .board{grid-template-columns:1fr}
+  }
+
+/* Compact, step-by-step arrangement flow */
+.arrange-tools{width:100%;max-width:1120px;margin:8px auto 16px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--panel);display:grid;grid-template-columns:1fr 1fr auto;align-items:stretch;gap:10px;box-shadow:0 4px 16px color-mix(in srgb,var(--text) 5%,transparent)}
+.arrange-tools[hidden]{display:none}
+.arrange-step{min-width:0;display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--accent-soft) 22%,var(--panel))}
+.arrange-step-number{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--accent-soft);color:var(--text);font-weight:800;font-size:14px}
+.arrange-step-content{min-width:0;display:flex;flex-direction:column;gap:5px}
+.arrange-step-title{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap}
+.arrange-step-help{font-size:11px;color:var(--muted);line-height:1.35}
+.arrange-step-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.arrange-step-controls label{font-size:11px;color:var(--muted)}
+.arrange-tools input{width:88px;min-width:0;border:1px solid var(--line);border-radius:9px;padding:8px;background:var(--input,var(--panel));color:var(--text)}
+.arrange-tools .step-action{align-self:stretch;min-width:150px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px}
+.arrange-tools .step-action .btn{width:100%}
+.arrange-selection{font-size:11px;color:var(--muted)}
+@media(max-width:850px){.arrange-tools{grid-template-columns:1fr 1fr}.arrange-tools .step-action{grid-column:1/-1;min-height:76px}}
+@media(max-width:560px){.arrange-tools{grid-template-columns:1fr}.arrange-tools .step-action{grid-column:auto}.arrange-step{padding:10px}}
+.settings-section{max-width:720px;margin:18px auto 0;padding:18px;border:1px solid var(--line);border-radius:17px;background:color-mix(in srgb,var(--soft,var(--panel)) 18%,var(--panel));text-align:left}
+.settings-section-head{display:flex;align-items:center;gap:12px;text-align:left}.settings-section-head>span{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--accent-soft);font-size:21px}.settings-section-head h3{margin:0;font-size:16px;color:var(--text)}.settings-section-head p{margin:3px 0 0;font-size:12px;color:var(--muted)}
+.settings-section .session-key{max-width:100%;margin:10px 0!important}.settings-section .session-actions{justify-content:flex-start!important}.settings-section .help-hub{margin-top:15px}.appearance-section .theme-grid{justify-content:flex-start;margin-top:14px}
+.session-box{max-height:calc(100vh - 40px);overflow:auto}
+@media(max-width:650px){.arrange-tools{justify-content:flex-start}.arrange-heading{width:100%;align-items:flex-start;flex-wrap:wrap}.settings-section{padding:14px}.session-modal .session-box{max-height:calc(100vh - 24px)}}
+
+
+
+
+/* Destination selector and undo affordance */
+#moveTargetZone{min-width:145px;max-width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--input,var(--panel));color:var(--text)}
+#undoAction{margin-left:0}
+#undoAction:disabled{opacity:.42;cursor:not-allowed}
+@media(max-width:640px){#moveTargetZone{width:100%;min-height:42px}.arrange-step-controls{width:100%}.arrange-step-controls input{flex:1;min-width:70px}}
+
+/* Responsive workspace: expansive desktop, touch-friendly mobile */
+html{width:100%;min-height:100%;-webkit-text-size-adjust:100%;}
+body{width:100%;min-width:320px;min-height:100vh;min-height:100dvh;overflow-x:hidden;}
+.wrap{width:100%!important;max-width:none!important;margin:0 auto!important;padding:clamp(16px,2vw,32px) clamp(14px,2.2vw,40px) 34px!important;}
+header,.capture,.draft-tools,.hint,.toolbar,.bulk-tools,.arrange-tools,.board,.footer{width:100%;max-width:none!important;margin-left:auto!important;margin-right:auto!important;}
+header{max-width:1000px!important;margin-bottom:clamp(18px,2vw,30px)!important;}
+.capture{align-items:stretch;}
+.capture textarea{min-height:96px;}
+.toolbar,.bulk-tools{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;}
+.board{grid-template-columns:minmax(0,1.65fr) minmax(300px,.9fr)!important;gap:clamp(14px,1.5vw,24px)!important;align-items:stretch!important;}
+.panel{min-width:0;width:100%;}
+.cards{min-width:0;}
+.arrange-tools{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(150px,.55fr);}
+.session-modal .session-box{max-width:min(900px,calc(100vw - 32px))!important;}
+button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
+
+@media(min-width:1600px){
+  .wrap{padding-left:clamp(36px,3vw,64px)!important;padding-right:clamp(36px,3vw,64px)!important;}
+  .board{grid-template-columns:minmax(0,1.8fr) minmax(360px,.85fr)!important;}
+  .panel-head{padding:20px 24px;}
+  .cards{padding:16px;}
+}
+@media(max-width:900px){
+  .board{grid-template-columns:minmax(0,1fr)!important;}
+  .panel{height:auto!important;max-height:none!important;}
+  .cards{max-height:60vh;max-height:60dvh;min-height:150px;overflow:auto;overscroll-behavior:contain;}
+  body.dynamic-panels .cards{max-height:none;overflow:visible;}
+  .arrange-tools{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;}
+  .arrange-tools .step-action{grid-column:1/-1;min-height:0;}
+}
+@media(max-width:640px){
+  .wrap{padding:14px 12px 28px!important;}
+  header{margin-bottom:17px!important;}
+  h1{font-size:clamp(30px,8vw,38px)!important;}
+  .brand-mark{width:31px;height:31px;}
+  .subtitle{font-size:14px!important;line-height:1.4;padding:0 8px;}
+  .clock{font-size:12px;margin-top:7px;}
+  .capture{display:flex;flex-direction:column;gap:9px;padding:11px;margin-bottom:12px;}
+  .capture textarea{width:100%;min-height:112px;max-height:34vh;resize:vertical;font-size:16px;line-height:1.45;padding:12px;}
+  .capture-actions{display:grid!important;grid-template-columns:1fr 1fr!important;width:100%;gap:8px;}
+  .capture-actions .btn{width:100%;min-width:0;min-height:46px;padding:9px 8px;font-size:13px;white-space:normal;}
+  .draft-tools{font-size:11px;margin:0 auto 12px!important;}
+  .hint{font-size:12px;line-height:1.45;margin-bottom:12px!important;}
+  .toolbar{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px!important;}
+  .toolbar .btn{width:100%;min-width:0;min-height:42px;padding:8px 7px;font-size:13px;}
+  .bulk-tools{display:flex;justify-content:flex-start;gap:7px;padding:10px;margin-bottom:12px;}
+  .bulk-tools .btn,.bulk-tools select,.bulk-tools input{min-height:40px;}
+  .bulk-tools .selection-count{width:100%;text-align:right;}
+  .arrange-tools{grid-template-columns:minmax(0,1fr)!important;padding:9px;gap:8px;margin:8px auto 12px!important;}
+  .arrange-step{padding:10px;gap:9px;}
+  .arrange-step-title{font-size:13px;white-space:normal;}
+  .arrange-step-help{font-size:11px;}
+  .arrange-tools .step-action{grid-column:auto;min-height:0;}
+  .arrange-tools .step-action .btn{min-height:44px;}
+  .board{display:grid;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;}
+  .panel{border-radius:16px;}
+  .panel-head{padding:13px 14px!important;}
+  .panel-title{font-size:19px!important;}
+  .panel-head>div:first-child>div:last-child{font-size:11px!important;}
+  .cards{padding:9px;max-height:58vh;max-height:58dvh;min-height:130px;overflow:auto;}
+  body.dynamic-panels .cards{max-height:none;overflow:visible;}
+  .card{min-width:0;}
+  .card-main{gap:7px;padding:10px!important;}
+  .card-tools{gap:3px;}
+  .card-tools .icon-btn{width:34px!important;height:36px;min-width:34px;}
+  .details{padding:10px 11px!important;}
+  .session-modal{padding:10px!important;}
+  .session-modal .session-box{width:100%!important;max-width:100%!important;max-height:calc(100dvh - 20px)!important;padding:16px!important;border-radius:17px!important;}
+  .session-box h2{font-size:23px!important;}
+  .session-key{gap:6px!important;}
+  .session-key input{font-size:16px!important;}
+  .session-actions{gap:7px!important;}
+  .session-actions .btn{min-height:42px;}
+  .theme-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%;}
+  .theme-grid .theme-btn{min-width:0!important;width:100%!important;}
+  .settings-section{padding:12px!important;margin-top:12px!important;}
+  .footer{font-size:10px;margin-top:16px;}
+}
+@media(max-width:380px){
+  .wrap{padding-left:9px!important;padding-right:9px!important;}
+  .capture-actions .btn{font-size:12px;}
+  .panel-head{padding:11px!important;}
+  .card-tools .icon-btn{width:30px!important;min-width:30px;}
+  .arrange-step{align-items:flex-start;}
+}
+@media(hover:none){.card:hover .insert-below{opacity:1;pointer-events:auto}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -572,8 +823,8 @@
   <section class="capture">
     <textarea id="bulkInput" placeholder="Paste tasks here — one task per line&#10;&#10;study for exam&#10;buy shoe powder&#10;call RTO&#10;finish assignment"></textarea>
     <div class="capture-actions">
-      <button class="btn primary" id="addToday">Add to Today</button>
-      <button class="btn" id="addLater">Add to Not Today</button>
+      <button class="btn primary" id="addToday">📥 Add to Today</button>
+      <button class="btn" id="addLater">🗓️ Add to Not Today</button>
     </div>
   </section>
   <div class="draft-tools"><span id="draftStatus" aria-live="polite">Draft autosave is on</span></div>
@@ -585,15 +836,13 @@
     <button class="btn" id="exportData">Export</button>
     <button class="btn" id="importBtn">Import</button>
     <button class="btn settings-main-btn" id="sessionBtn">⚙ Settings</button>
+    <button class="btn" id="undoAction" title="Undo the last task change" disabled>↶ Undo</button>
     <input type="file" id="importFile" accept=".json" hidden>
   </div>
 
   <div class="bulk-tools" aria-label="Task selection and arrangement">
-    <button class="btn" id="toggleNumbers">Show numbers</button>
-    <button class="btn" id="togglePanelHeight">Fixed height</button>
-    <label style="font-size:12px;color:var(--muted)">Move selected above</label>
-    <input id="moveAboveNumber" type="number" min="1" placeholder="...." aria-label="Target task number">
-    <button class="btn" id="moveSelected">Move selected</button>
+    <button class="btn" id="toggleArrange" aria-expanded="false">↕ Arrange</button>
+    <button class="height-mode-control" id="togglePanelHeight" type="button" aria-label="Panel height mode"><span class="height-mode-icon">↕</span><span class="height-mode-copy"><small>LAYOUT HEIGHT</small><strong id="heightModeLabel">Fixed</strong></span><span class="height-mode-switch"><i></i></span></button>
     <label style="font-size:12px;color:var(--muted)">Color</label>
     <select id="selectedColor" aria-label="Selected task color">
       <option value="Purple">Purple</option><option value="Blue">Blue</option><option value="Cyan">Cyan</option>
@@ -605,12 +854,38 @@
     <button class="btn" id="removeSelectedColor">Remove color</button>
     <span class="selection-count" id="selectionCount">0 selected</span>
   </div>
+  <section class="arrange-tools" id="arrangeTools" hidden aria-label="Move selected tasks step by step">
+    <div class="arrange-step">
+      <span class="arrange-step-number">1</span>
+      <div class="arrange-step-content">
+        <div class="arrange-step-title">Select tasks</div>
+        <div class="arrange-step-help">Tick tasks in either column. You can select from both.</div>
+        <span class="arrange-selection" id="arrangeSelectionCount">0 selected</span>
+      </div>
+    </div>
+    <div class="arrange-step">
+      <span class="arrange-step-number">2</span>
+      <div class="arrange-step-content">
+        <div class="arrange-step-title">Choose destination</div>
+        <div class="arrange-step-controls">
+          <select id="moveTargetZone" aria-label="Move selected tasks to"><option value="today">☀️ Today</option><option value="later">🌙 Not Today</option></select>
+          <label for="moveAboveNumber">Position</label>
+          <input id="moveAboveNumber" type="number" min="1" step="1" value="1" placeholder="1–1" aria-label="Position in destination column">
+        </div>
+        <div class="arrange-step-help" id="moveRangeHelp">Position range updates to match the destination column.</div>
+      </div>
+    </div>
+    <div class="arrange-step step-action">
+      <div class="arrange-step-title">3 · Move tasks</div>
+      <button class="btn primary" id="moveSelected">Move selected →</button>
+    </div>
+  </section>
 
   <main class="board">
     <section class="panel">
       <div class="panel-head">
         <div>
-          <div class="panel-title">Today</div>
+          <div class="panel-title">☀️ Today</div>
           <div style="color:var(--muted);font-size:12px;margin-top:3px">Everything you are considering for today</div>
         </div>
         <div class="panel-head-actions"><button class="dump-btn" id="dumpToday" title="Move all Today task titles into the paste box">↑</button><div class="count" id="todayCount">0</div></div>
@@ -621,7 +896,7 @@
     <section class="panel right">
       <div class="panel-head">
         <div>
-          <div class="panel-title">Not Today</div>
+          <div class="panel-title">🌙 Not Today</div>
           <div style="color:var(--muted);font-size:12px;margin-top:3px">Still saved. Just not today's work.</div>
         </div>
         <div class="panel-head-actions"><button class="dump-btn" id="dumpLater" title="Move all Not Today task titles into the paste box">↑</button><div class="count" id="laterCount">0</div></div>
@@ -642,80 +917,54 @@
         <button class="btn danger" id="confirmNewSession">I SAVED IT — NEW SESSION</button>
       </div>
     </div>
-    <h2 id="sessionTitle">Settings</h2>
-    <p>Save this token. Lose it, all your progress is permanently gone.</p>
+    <h2 id="sessionTitle">⚙️ Settings</h2>
+    <p>Manage your session, appearance and how Daily Sort works. Use ↑ ↓ on a task for quick reordering; drag-and-drop is the alternative.</p>
+    <section class="settings-section"><div class="settings-section-head"><span>🔐</span><div><h3>Session & devices</h3><p>Back up your token or connect another device.</p></div></div>
     <div style="font-size:12px;color:var(--muted);margin-top:12px">Your current session token</div>
     <div class="session-key"><input id="sessionToken" type="password" readonly aria-label="Session token"><button class="btn" id="revealToken">Show</button></div>
     <div class="session-actions"><button class="btn primary" id="copyToken">Copy token</button><button class="btn" id="newToken">New session</button></div>
-    <div style="font-size:12px;color:var(--muted);margin-top:16px">Use an existing token on another computer</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:16px">🔁 Use an existing token on another computer</div>
     <div class="session-key"><input id="sessionImportToken" type="password" placeholder="Paste session token"><button class="btn" id="connectToken">Connect</button></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px" aria-label="Keyboard shortcuts">
-      <div style="border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft,var(--accent-soft));text-align:center"><div style="font-size:11px;color:var(--muted);margin-bottom:5px">ADD TO</div><div style="font-weight:750">Today</div><kbd style="display:inline-block;margin-top:7px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font:12px ui-monospace,monospace">Ctrl + Enter</kbd></div>
-      <div style="border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft,var(--accent-soft));text-align:center"><div style="font-size:11px;color:var(--muted);margin-bottom:5px">ADD TO</div><div style="font-weight:750">Not Today</div><kbd style="display:inline-block;margin-top:7px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font:12px ui-monospace,monospace">Ctrl + Shift + Enter</kbd></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px" aria-label="Multiline task instructions">
-      <div style="border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft,var(--accent-soft));text-align:center;min-width:0">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:5px">INSIDE A TASK BOX</div><div style="font-weight:750">Alt + Enter</div><div style="font-size:12px;margin-top:5px">Break a line inside the task you're editing.</div><div style="font:12px ui-monospace,monospace;white-space:pre-line;margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel)">First line<br>Second line</div>
+    </section>
+    <section class="settings-section"><div class="settings-section-head"><span>🧭</span><div><h3>How to use Daily Sort</h3><p>Shortcuts, task syntax and styling.</p></div></div>
+    <section class="help-hub" aria-label="Daily Sort guide">
+      <div class="help-heading"><span>⚡</span><div><h3>Quick actions</h3><p>Shortcuts that get things done.</p></div></div>
+      <div class="shortcut-grid">
+        <article class="shortcut-tile"><span class="tile-icon">📥</span><div class="tile-action">Add to Today</div><kbd>Ctrl + Enter</kbd></article>
+        <article class="shortcut-tile"><span class="tile-icon">🗓️</span><div class="tile-action">Add to Not Today</div><kbd>Ctrl + Shift + Enter</kbd></article>
+        <article class="shortcut-tile"><span class="tile-icon">✍️</span><div class="tile-action">Insert line break</div><kbd>Alt + Enter</kbd><small>While editing a task</small></article>
+        <article class="shortcut-tile"><span class="tile-icon">🧵</span><div class="tile-action">Keep text in one task</div><code>&gt;&gt;&gt;&gt;TEXT&lt;&lt;&lt;&lt;</code><small>Wrap multiline paste</small></article>
       </div>
-      <div style="border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft,var(--accent-soft));text-align:center;min-width:0">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:5px">INSIDE THE PASTE BOX</div><div style="font-weight:750">&gt;&gt;&gt;&gt;STRING&lt;&lt;&lt;&lt;</div><div style="font-size:12px;margin-top:5px">Wrap multiline text to keep it as one task.</div><div style="font:11px ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;text-align:left;margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel)">&gt;&gt;&gt;&gt;STRING
-EABNDJD&lt;&lt;&lt;&lt;</div><div style="font-size:11px;color:var(--muted);margin-top:5px">Added task becomes:<br><b>STRING<br>EABNDJD</b></div>
-      </div>
-    </div>
-    <div style="margin-top:18px">
-      <div style="font-size:14px;font-weight:750;margin-bottom:4px">🧩 Task syntax toolkit</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Two little shortcuts for giving tasks extra structure.</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
-        <section style="min-width:0;border:1px solid var(--line);border-radius:13px;padding:13px;background:var(--panel);box-shadow:0 5px 16px rgba(0,0,0,.06)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
-            <span style="width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--soft,var(--accent-soft));font-size:17px">☑</span>
-            <div><div style="font-size:13px;font-weight:750">Toggle list</div><div style="font-size:11px;color:var(--muted)">One task · many checkboxes</div></div>
-          </div>
-          <div style="font-size:12px;color:var(--muted);margin:0 0 9px">Wrap the whole checklist in <code>&gt;&gt;&gt;&gt;</code> and <code>&lt;&lt;&lt;&lt;</code>. Give it a title, then put one item on each line.</div>
-          <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,monospace;background:var(--soft,var(--accent-soft));border:1px solid var(--line);border-radius:9px;padding:11px;margin:0 0 9px">&gt;&gt;&gt;&gt;++++ TOGGLE TITLE ////
-task 1
-task 2
-++++&lt;&lt;&lt;&lt;</pre>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)">
-            <span style="color:var(--accent);font-weight:750">↳</span>
-            <span>Creates one titled, expandable checklist. Tick items or edit their labels.</span>
-          </div>
-        </section>
-        <section style="min-width:0;border:1px solid var(--line);border-radius:13px;padding:13px;background:var(--panel);box-shadow:0 5px 16px rgba(0,0,0,.06)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
-            <span style="width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--soft,var(--accent-soft));font-size:17px">🎨</span>
-            <div><div style="font-size:13px;font-weight:750">Task color</div><div style="font-size:11px;color:var(--muted)">Highlight without hex codes</div></div>
-          </div>
-          <div style="font-size:12px;color:var(--muted);margin:0 0 9px">Choose tasks, pick a named color in the toolbar, then Apply color. The syntax stays hidden while you work.</div>
-          <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,monospace;background:var(--soft,var(--accent-soft));border:1px solid var(--line);border-radius:9px;padding:11px;margin:0 0 9px">{{Purple}}
+      <div class="help-heading syntax-heading"><span>🧩</span><div><h3>Task styling</h3><p>Give tasks structure and colour.</p></div></div>
+      <div class="syntax-grid">
+        <article class="syntax-tile"><div class="syntax-title"><span>☑️</span><div><h4>Toggle list</h4><p>One task · multiple checkboxes</p></div></div>
+          <pre>&gt;&gt;&gt;&gt;++++ TITLE ////
+Task one
+Task two
+++++&lt;&lt;&lt;&lt;</pre><div class="syntax-foot">↳ Creates an expandable checklist.</div></article>
+        <article class="syntax-tile"><div class="syntax-title"><span>🎨</span><div><h4>Task colour</h4><p>Highlight with named colours</p></div></div>
+          <pre>{{Purple}}
 My highlighted task
-{{/Color}}</pre>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)">
-            <span style="color:var(--accent);font-weight:750">↳</span>
-            <span>Remove it anytime with <b>Remove color</b>. Your task text stays intact.</span>
-          </div>
-        </section>
+{{/Color}}</pre><div class="syntax-foot">🎨 Apply a colour: <b>1.</b> Select task square(s) <span aria-hidden="true">→</span> <b>2.</b> Choose a colour <span aria-hidden="true">→</span> <b>3.</b> Click <b>Apply color</b>.</div></article>
       </div>
-      <div style="margin-top:11px;padding:10px 12px;border-radius:10px;background:var(--soft,var(--accent-soft));display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text)">
-        <span style="font-size:16px">⌨️</span>
-        <span><b>Quick tip:</b> Paste either format into the big textbox, then add it to Today or Not Today. The outer <code>&gt;&gt;&gt;&gt;...&lt;&lt;&lt;&lt;</code> wrapper keeps the whole block together as one task.</span>
-      </div>
-    </div>
+    </section>
+    </section>
+    <section class="settings-section appearance-section"><div class="settings-section-head"><span>🎨</span><div><h3>Appearance</h3><p>Choose a theme for this device.</p></div></div>
+      <div class="theme-grid" id="themeGrid"></div>
+    </section>
     <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:12px">Cloud: connecting…</div>
     <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
-    <div style="margin-top:20px"><b style="font-size:13px">Theme</b><div class="theme-grid" id="themeGrid"></div></div>
-    <div class="security-note">Local-only security note: a person who already has full access to this browser profile can inspect local browser storage. The key protects exported backups; it cannot make a client-only HTML app invisible to a local attacker.</div>
+    <div class="security-note">🔒 Cloud session data is encrypted before upload using a random salt, HKDF-SHA-256 and AES-256-GCM. Your session token is the secret key material. Anyone with access to this browser profile can still access the token and local tasks.</div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 const STORAGE = "daily-sort-v1";
-const LAST_RESET = "daily-sort-last-reset";
 const SESSION_KEY = "daily-sort-session-key";
 const THEME_KEY="daily-sort-theme";
 const DRAFT_KEY="daily-sort-bulk-draft-v1";
-const SESSION_SALT_PREFIX="daily-sort-session-v1:";
+const LEGACY_SESSION_SALT_PREFIX="daily-sort-session-v1:";
 const SUPABASE_URL = "https://cepdhdpzahqthrtyqogo.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Hjvm2fSk4P1lR46pxIIcKQ_dnen3qS2";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -735,10 +984,31 @@ function id(){
   return crypto.randomUUID ? crypto.randomUUID() : Date.now()+"-"+Math.random().toString(16).slice(2);
 }
 
+const undoStack=[];
+let lastSavedSnapshot=null;
+let suppressUndoCapture=false;
+function updateUndoButton(){const b=document.getElementById("undoAction");if(b)b.disabled=!undoStack.length;}
 function save(){
   localChangeAt=Date.now();
-  localStorage.setItem(STORAGE, JSON.stringify(state));
+  const next=JSON.stringify(state);
+  if(!suppressUndoCapture && lastSavedSnapshot!==null && next!==lastSavedSnapshot){
+    undoStack.push(lastSavedSnapshot);
+    if(undoStack.length>30)undoStack.shift();
+  }
+  localStorage.setItem(STORAGE,next);
+  lastSavedSnapshot=next;
+  updateUndoButton();
   queueCloudSave();
+}
+function undoLastAction(){
+  if(!undoStack.length)return;
+  const previous=undoStack.pop();
+  try{state=JSON.parse(previous);}catch(e){toast("Undo unavailable");return;}
+  suppressUndoCapture=true;
+  localStorage.setItem(STORAGE,JSON.stringify(state));
+  lastSavedSnapshot=JSON.stringify(state);
+  suppressUndoCapture=false;
+  queueCloudSave();render();updateUndoButton();toast("Last change undone ↶");
 }
 
 function load(){
@@ -748,24 +1018,6 @@ function load(){
     state.tasks=Array.isArray(state.tasks)?state.tasks:[];
     state.tasks.forEach(t=>{delete t.groupId;if(!t.zone)t.zone="today";if(!("notes" in t))t.notes="";if(!("open" in t))t.open=false;});
   }catch(e){state={tasks:[]};}
-  dailyResetIfNeeded();
-}
-
-function todayKey(){
-  const d=new Date();
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
-
-function dailyResetIfNeeded(){
-  const key=todayKey();
-  const last=localStorage.getItem(LAST_RESET);
-  if(last !== key){
-    if(last !== null){
-      state.tasks.forEach(t=>{ delete t.groupId; });
-    }
-    localStorage.setItem(LAST_RESET,key);
-    save();
-  }
 }
 
 function escapeHtml(s){
@@ -798,15 +1050,14 @@ function parseBulkTasks(input){
     for(let i=0;i<lines.length;i++){
       const line=lines[i];
       const titled=/^\s*\+\+\+\+[ \t]+.+?[ \t]+\/\/\/\/\s*$/.test(line);
-      const simple=line.trim()==="++++";
-      if(titled||simple){
+      if(titled){
         let end=i+1;
         while(end<lines.length&&lines[end].trim()!=="++++")end++;
         if(end<lines.length){
           flush();
           const content=lines.slice(i+1,end).join("\n").trim();
           const titleMatch=line.match(/^\s*\+\+\+\+[ \t]+(.+?)[ \t]+\/\/\/\/\s*$/);
-          tasks.push(titleMatch?`++++ ${titleMatch[1].trim()} ////\n${content}\n++++`:`++++\n${content}\n++++`);
+          tasks.push(`++++ ${titleMatch[1].trim()} ////\n${content}\n++++`);
           i=end;
           continue;
         }
@@ -828,13 +1079,20 @@ function parseBulkTasks(input){
 function formatTaskForPaste(text){
   return String(text??"").includes("\n") || String(text??"").includes("\r") ? ">>>>"+text+"<<<<" : String(text??"");
 }
+function splitTaskNotes(raw){
+  const value=String(raw??"");
+  const match=value.match(/\n?\s*~~~~Notes:\s*\n([\s\S]*?)\n?~~~~\s*$/i);
+  if(!match) return {text:value.trim(),notes:""};
+  return {text:value.slice(0,match.index).trim(),notes:match[1].trim()};
+}
 function addTasksFromText(zone="today"){
   const box=document.getElementById("bulkInput");
   const lines=parseBulkTasks(box.value);
   if(!lines.length) return;
   persistDraft();
-  lines.forEach(text=>{
-    state.tasks.push({id:id(),text,notes:"",zone,done:false,open:false,created:Date.now()});
+  lines.forEach(raw=>{
+    const parsed=splitTaskNotes(raw);
+    state.tasks.push({id:id(),text:parsed.text,notes:parsed.notes,zone,done:false,open:false,created:Date.now()});
   });
   box.value="";
   persistDraft(false);
@@ -846,7 +1104,7 @@ function dumpZone(zone){
   if(!selected.length){toast("No tasks to dump");return;}
   const box=document.getElementById("bulkInput");
   const existing=box.value.trim();
-  box.value=[existing,...selected.map(t=>formatTaskForPaste(t.text))].filter(Boolean).join("\n");
+  box.value=[existing,...selected.map(t=>{const title=String(t.text??"");const notes=String(t.notes??"").trim();const combined=notes?title+"\n\n~~~~Notes:\n"+notes+"\n~~~~":title;return formatTaskForPaste(combined);})].filter(Boolean).join("\n");
   persistDraft();
   const ids=new Set(selected.map(t=>t.id));
   state.tasks=state.tasks.filter(t=>!ids.has(t.id));
@@ -858,22 +1116,33 @@ const selectedTaskIds = new Set();
 function updateSelectionCount(){
   const el=document.getElementById("selectionCount");
   if(el)el.textContent=selectedTaskIds.size+" selected";
-  const input=document.getElementById("moveAboveNumber");
-  if(input){
-    const zones=["today","later"].filter(zone=>state.tasks.some(t=>selectedTaskIds.has(t.id)&&(t.zone==="later"?"later":"today")===zone));
-    const limits=zones.map(zone=>Math.max(1,state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone).length-1));
-    const max=limits.length?Math.max(...limits):Math.max(1,...["today","later"].map(zone=>state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone).length-1));
-    input.max=String(max);
-    input.placeholder="1–"+max;
-    input.title="Choose a position from 1 to "+max+" (based on the selected column)";
-  }
+  const arrangeCount=document.getElementById("arrangeSelectionCount");
+  if(arrangeCount)arrangeCount.textContent=selectedTaskIds.size+" selected · from either column";
+  updateMoveRange();
 }
+function updateMoveRange(){
+  const input=document.getElementById("moveAboveNumber");
+  const target=document.getElementById("moveTargetZone");
+  if(!input||!target)return;
+  const zone=target.value;
+  const count=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone).length;
+  const selectedInTarget=state.tasks.filter(t=>selectedTaskIds.has(t.id)&&(t.zone==="later"?"later":"today")===zone).length;
+  const remaining=count-selectedInTarget;
+  const max=Math.max(1,remaining+1);
+  input.max=String(max);
+  input.min="1";
+  input.placeholder="1–"+max;
+  const current=Number(input.value);
+  if(!Number.isInteger(current)||current<1||current>max)input.value=String(max);
+  const help=document.getElementById("moveRangeHelp");
+  if(help)help.textContent=`${count} tasks in ${zone==="today"?"Today":"Not Today"} · valid positions 1–${max}`;
+}
+
 const TASK_COLORS={Purple:"#B78CFF",Blue:"#4D8DFF",Cyan:"#35C9E8",Teal:"#28B7A5",Green:"#35B96B",Lime:"#91C83E",Yellow:"#E3C34B",Orange:"#F09A45",Red:"#E45B63",Pink:"#E78ACB",Rose:"#D96B91",White:"#F4F4F4"};
 function parseColorSyntax(text){
   const raw=String(text||"");
   const patterns=[
-    /^\s*\{\{(Purple|Blue|Cyan|Teal|Green|Lime|Yellow|Orange|Red|Pink|Rose|White)\}\}\s*([\s\S]*?)\s*\{\{\/Color\}\}\s*$/i,
-    /^\s*\[\[color=([a-zA-Z]+|#[0-9a-fA-F]{6})\]\]\s*([\s\S]*?)\s*\[\[\/color\]\]\s*$/i
+    /^\s*\{\{(Purple|Blue|Cyan|Teal|Green|Lime|Yellow|Orange|Red|Pink|Rose|White)\}\}\s*([\s\S]*?)\s*\{\{\/Color\}\}\s*$/i
   ];
   for(const re of patterns){
     const m=raw.match(re);if(!m)continue;
@@ -888,14 +1157,12 @@ function parseToggleList(text){
   const source=parseColorSyntax(text).body;
   const raw=String(source||"");
   const titled=raw.match(/^\s*\+\+\+\+[ \t]+(.+?)[ \t]+\/\/\/\/\s*\r?\n([\s\S]*?)\r?\n\+\+\+\+\s*$/);
-  const plain=raw.match(/^\s*\+\+\+\+\s*\r?\n([\s\S]*?)\r?\n\+\+\+\+\s*$/);
-  const m=titled||plain;
-  if(!m)return null;
-  const rows=(titled?m[2]:m[1]).split(/\r?\n/).filter(line=>line.length>0).map((line,index)=>{
+  if(!titled)return null;
+  const rows=titled[2].split(/\r?\n/).filter(line=>line.length>0).map((line,index)=>{
     const item=line.match(/^\s*\[([ xX])\]\s?(.*)$/);
     return {done:!!item&&item[1].toLowerCase()==="x",text:item?item[2]:line,index};
   });
-  rows.title=titled?m[1].trim():"Checklist";
+  rows.title=titled[1].trim();
   return rows;
 }
 function toggleListMarkup(t){
@@ -905,6 +1172,7 @@ function toggleListMarkup(t){
     <div class="toggle-list-row ${item.done?"done":""}" data-list-index="${i}">
       <input type="checkbox" data-action="toggle-item" ${item.done?"checked":""} aria-label="Toggle list item">
       <input type="text" data-action="edit-item" value="${escapeHtml(item.text)}" aria-label="Toggle list item text">
+      <span class="toggle-row-tools"><button type="button" data-action="item-up" aria-label="Move item up" title="Move up" ${i===0?"disabled":""}>↑</button><button type="button" data-action="item-down" aria-label="Move item down" title="Move down" ${i===parsed.length-1?"disabled":""}>↓</button></span>
     </div>`).join("")}</div>`;
 }
 function taskCard(t,number){
@@ -912,7 +1180,6 @@ function taskCard(t,number){
   return `
   <article class="card ${t.done?"done":""} ${t.open?"open":""} ${selectedTaskIds.has(t.id)?"selected":""}" draggable="true" data-id="${t.id}" ${color?`data-task-color style="--task-color:${color}"`:""}>
     <div class="card-main">
-      <input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task">
       <span class="task-number">${number}.</span>
       <button class="check" data-action="complete" title="Complete"></button>
       <div class="task-body">
@@ -923,6 +1190,7 @@ function taskCard(t,number){
         <button class="icon-btn" data-action="up" title="Move up">↑</button>
         <button class="icon-btn" data-action="down" title="Move down">↓</button>
         <button class="icon-btn" data-action="move-later" title="${t.zone==="later"?"Move to Today":"Move to Not Today"}">${t.zone==="later"?"←":"→"}</button>
+        <input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task for bulk actions" title="Select task for bulk actions">
         <button class="expand" data-action="expand" title="Expand">${t.open?"⌃":"⌄"}</button>
       </div>
     </div>
@@ -1042,6 +1310,24 @@ function moveTaskBefore(dragId, targetId){
   render();
 }
 
+function bindToggleRowControls(card,t,syncToggleText){
+  card.querySelectorAll('[data-action="item-up"],[data-action="item-down"]').forEach(button=>{
+    button.onclick=e=>{
+      e.preventDefault();e.stopPropagation();
+      const row=button.closest(".toggle-list-row");
+      const rows=[...card.querySelectorAll(".toggle-list-row")];
+      const index=rows.indexOf(row),direction=button.dataset.action==="item-up"?-1:1;
+      const target=rows[index+direction];
+      if(!row||!target)return;
+      if(direction<0)target.before(row);else target.after(row);
+      syncToggleText();
+      const list=card.querySelector(".toggle-list");
+      if(list)list.outerHTML=toggleListMarkup(t);
+      bindToggleRowControls(card,t,syncToggleText);
+    };
+  });
+}
+
 function bindActions(){
   document.querySelectorAll(".card").forEach(card=>{
     const tid=card.dataset.id;
@@ -1124,6 +1410,7 @@ function bindActions(){
       t.text=colorInfo.name?withColorSyntax(listSource,colorInfo.name):listSource;
       save();
     };
+    bindToggleRowControls(card,t,syncToggleText);
     card.addEventListener("input",e=>{
       if(e.target.matches('[data-action="toggle-list-title"],[data-action="edit-item"]'))syncToggleText();
     });
@@ -1223,25 +1510,27 @@ function bindDnD(){
 }
 
 function moveSelectedAbove(){
-  const target=Number(document.getElementById("moveAboveNumber").value);
   if(!selectedTaskIds.size){toast("Select at least one task");return;}
-  if(!Number.isInteger(target)||target<1){toast("Enter a valid position");return;}
-  let moved=false;
-  for(const zone of ["today","later"]){
-    const ordered=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
-    const selected=ordered.filter(t=>selectedTaskIds.has(t.id));
-    if(!selected.length)continue;
-    const rest=ordered.filter(t=>!selectedTaskIds.has(t.id));
-    const maxPosition=Math.max(1,ordered.length-1);
-    if(target>maxPosition){toast("For "+(zone==="today"?"Today":"Not Today")+", choose a position from 1 to "+maxPosition);continue;}
-    const insertAt=Math.min(target-1,Math.max(0,rest.length-1));
-    rest.splice(insertAt,0,...selected);
-    let cursor=0;
-    state.tasks=state.tasks.map(t=>(t.zone==="later"?"later":"today")===zone?rest[cursor++]:t);
-    moved=true;
-  }
-  if(moved){save();render();toast("Selected tasks repositioned");}
+  const zone=document.getElementById("moveTargetZone").value;
+  const target=Number(document.getElementById("moveAboveNumber").value);
+  const destination=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
+  const selected=state.tasks.filter(t=>selectedTaskIds.has(t.id));
+  if(!selected.length){toast("Select at least one task");return;}
+  const selectedInDestination=selected.filter(t=>(t.zone==="later"?"later":"today")===zone).length;
+  const max=Math.max(1,destination.length-selectedInDestination+1);
+  if(!Number.isInteger(target)||target<1||target>max){toast(`Choose a position from 1 to ${max}`);updateMoveRange();return;}
+  const selectedIds=new Set(selected.map(t=>t.id));
+  const moving=state.tasks.filter(t=>selectedIds.has(t.id));
+  const rest=state.tasks.filter(t=>!selectedIds.has(t.id));
+  moving.forEach(t=>t.zone=zone);
+  const destinationRest=rest.filter(t=>(t.zone==="later"?"later":"today")===zone);
+  const insertIndex=Math.min(target-1,destinationRest.length);
+  destinationRest.splice(insertIndex,0,...moving);
+  const otherZoneTasks=rest.filter(t=>(t.zone==="later"?"later":"today")!==zone);
+  state.tasks=[...destinationRest,...otherZoneTasks];
+  save();render();toast(`${moving.length} task${moving.length===1?"":"s"} moved to ${zone==="today"?"Today":"Not Today"} · position ${target}`);
 }
+
 function applyColorToSelected(){
   if(!selectedTaskIds.size){toast("Select at least one task");return;}
   const colorName=document.getElementById("selectedColor").value;
@@ -1262,9 +1551,27 @@ function removeColorFromSelected(){
   save();render();toast("Color removed from selected tasks");
 }
 function clearCompleted(){
-  const n=state.tasks.length;
+  const before=state.tasks.length;
+  let removedItems=0;
   state.tasks=state.tasks.filter(t=>!t.done);
-  save();render();toast((n-state.tasks.length)+" completed task"+(n-state.tasks.length===1?"":"s")+" cleared");
+  state.tasks.forEach(t=>{
+    const parsed=parseToggleList(t.text);
+    if(!parsed)return;
+    const remaining=parsed.filter(item=>{
+      if(item.done){removedItems++;return false;}
+      return true;
+    });
+    if(remaining.length!==parsed.length){
+      const colorInfo=parseColorSyntax(t.text);
+      const title=parsed.title;
+      const rebuilt="++++ "+title+" ////\n"+remaining.map(item=>"[ ] "+item.text).join("\n")+"\n++++";
+      t.text=colorInfo.name?withColorSyntax(rebuilt,colorInfo.name):rebuilt;
+    }
+  });
+  const removedTasks=before-state.tasks.length;
+  save();render();
+  const total=removedTasks+removedItems;
+  toast(total+" completed item"+(total===1?"":"s")+" cleared 🧹");
 }
 
 function exportData(){
@@ -1317,11 +1624,44 @@ function randomToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);retu
 function applyTheme(name, sync=true){const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;const hex=t.bg.replace("#","");const rgb=hex.length===3?hex.split("").map(x=>parseInt(x+x,16)):hex.match(/.{2}/g).map(x=>parseInt(x,16));const luminance=(0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2])/255;r.style.colorScheme=luminance<0.48?"dark":"light";r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);r.style.setProperty("--input",t.input||t.panel);r.style.setProperty("--button",t.button||t.panel);r.style.setProperty("--card",t.card||t.panel);r.style.setProperty("--details",t.details||t.panel);r.style.setProperty("--soft",t.soft||t.accentSoft);r.style.setProperty("--later-bg",t.laterBg||t.panel);r.style.setProperty("--later-head",t.laterHead||t.panel);r.style.setProperty("--red",t.red||"#b56b67");localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));if(sync) queueCloudSave();}
 function renderThemes(){const grid=document.getElementById("themeGrid");grid.innerHTML=Object.keys(THEMES).map(n=>`<button class="theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");grid.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme));applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);}
 const derivedKeyCache=new Map();
-async function deriveKey(token,salt){if(derivedKeyCache.has(token))return derivedKeyCache.get(token);const promise=(async()=>{const base=await crypto.subtle.importKey("raw",encoder.encode(token),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:180000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);})();derivedKeyCache.set(token,promise);try{return await promise}catch(e){derivedKeyCache.delete(token);throw e}}
+async function deriveV2Key(token,salt){
+  const cacheKey="v2:"+token+":"+bytesToB64(salt);
+  if(derivedKeyCache.has(cacheKey))return derivedKeyCache.get(cacheKey);
+  const promise=(async()=>{
+    const base=await crypto.subtle.importKey("raw",encoder.encode(token),"HKDF",false,["deriveKey"]);
+    return crypto.subtle.deriveKey({name:"HKDF",hash:"SHA-256",salt,info:encoder.encode("Daily Sort session encryption v2")},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+  })();
+  derivedKeyCache.set(cacheKey,promise);
+  try{return await promise}catch(e){derivedKeyCache.delete(cacheKey);throw e}
+}
+async function deriveLegacyKey(token,salt){
+  const cacheKey="v1:"+token;
+  if(derivedKeyCache.has(cacheKey))return derivedKeyCache.get(cacheKey);
+  const promise=(async()=>{
+    const base=await crypto.subtle.importKey("raw",encoder.encode(token),"PBKDF2",false,["deriveKey"]);
+    return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:180000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+  })();
+  derivedKeyCache.set(cacheKey,promise);
+  try{return await promise}catch(e){derivedKeyCache.delete(cacheKey);throw e}
+}
 function getSessionToken(){let t=localStorage.getItem(SESSION_KEY);if(!t){t=randomToken();localStorage.setItem(SESSION_KEY,t)}return t}
-async function deterministicSalt(token){const b=await crypto.subtle.digest("SHA-256",encoder.encode(SESSION_SALT_PREFIX+token));return new Uint8Array(b).slice(0,16)}
-async function encryptState(token,obj){const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const iv=crypto.getRandomValues(new Uint8Array(12));const plain=encoder.encode(JSON.stringify(obj));const cipher=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,plain));return JSON.stringify({v:1,iv:bytesToB64(iv),data:bytesToB64(cipher)})}
-async function decryptState(token,payload){const x=typeof payload==="string"?JSON.parse(payload):payload;const salt=await deterministicSalt(token);const key=await deriveKey(token,salt);const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(x.iv)},key,b64ToBytes(x.data));return JSON.parse(new TextDecoder().decode(plain))}
+async function legacySalt(token){const b=await crypto.subtle.digest("SHA-256",encoder.encode(LEGACY_SESSION_SALT_PREFIX+token));return new Uint8Array(b).slice(0,16)}
+async function encryptState(token,obj){
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const key=await deriveV2Key(token,salt);
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const plain=encoder.encode(JSON.stringify(obj));
+  const cipher=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,plain));
+  return JSON.stringify({v:2,kdf:"HKDF-SHA-256",cipher:"AES-256-GCM",salt:bytesToB64(salt),iv:bytesToB64(iv),data:bytesToB64(cipher)});
+}
+async function decryptState(token,payload){
+  const x=typeof payload==="string"?JSON.parse(payload):payload;
+  let key;
+  if(x?.v===2 && x.salt){key=await deriveV2Key(token,b64ToBytes(x.salt));}
+  else {const salt=await legacySalt(token);key=await deriveLegacyKey(token,salt);}
+  const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(x.iv)},key,b64ToBytes(x.data));
+  return JSON.parse(new TextDecoder().decode(plain));
+}
 async function setupRealtime(token=getSessionToken()){
   if(realtimeToken===token && realtimeChannel)return;
   if(realtimeChannel){try{await sb.removeChannel(realtimeChannel);}catch(e){}}
@@ -1476,7 +1816,6 @@ document.getElementById("confirmNewSession").onclick=async()=>{
   // Clear the current browser session completely, but never delete the old cloud session.
   state={tasks:[]};
   localStorage.setItem(STORAGE,JSON.stringify(state));
-  localStorage.setItem(LAST_RESET,todayKey());
   localStorage.removeItem(DRAFT_KEY);
   document.getElementById("bulkInput").value="";
   localStorage.setItem(DRAFT_KEY,"");
@@ -1513,25 +1852,44 @@ document.getElementById("connectToken").onclick=async()=>{
   }
 };
 
+document.getElementById("toggleArrange").onclick=()=>{
+  const panel=document.getElementById("arrangeTools");
+  const opening=panel.hidden;panel.hidden=!opening;
+  document.getElementById("toggleArrange").setAttribute("aria-expanded",opening?"true":"false");
+  document.getElementById("toggleArrange").textContent=opening?"↕ Close arrange":"↕ Arrange";
+};
 document.getElementById("toggleNumbers").onclick=()=>{
   const enabled=document.body.classList.toggle("show-task-numbers");
   document.getElementById("toggleNumbers").textContent=enabled?"Hide numbers":"Show numbers";
   localStorage.setItem("daily-sort-show-numbers",enabled?"1":"0");
 };
+function setHeightModeUI(dynamic){
+  const control=document.getElementById("togglePanelHeight");
+  if(!control)return;
+  control.classList.toggle("is-dynamic",!!dynamic);
+  control.setAttribute("aria-pressed",dynamic?"true":"false");
+  const label=document.getElementById("heightModeLabel");
+  if(label)label.textContent=dynamic?"Dynamic":"Fixed";
+  control.title=dynamic?"Dynamic height: panels grow with their task lists":"Fixed height: task lists scroll inside the panels";
+}
 document.getElementById("togglePanelHeight").onclick=()=>{
   const dynamic=document.body.classList.toggle("dynamic-panels");
-  document.getElementById("togglePanelHeight").textContent=dynamic?"Dynamic height":"Fixed height";
+  setHeightModeUI(dynamic);
   localStorage.setItem("daily-sort-panel-height",dynamic?"dynamic":"fixed");
 };
 if(localStorage.getItem("daily-sort-panel-height")==="dynamic"){
   document.body.classList.add("dynamic-panels");
-  document.getElementById("togglePanelHeight").textContent="Dynamic height";
+  setHeightModeUI(true);
 }
 document.getElementById("moveSelected").onclick=moveSelectedAbove;
+document.getElementById("moveTargetZone").addEventListener("change",updateMoveRange);
+document.getElementById("moveAboveNumber").addEventListener("input",updateMoveRange);
+document.getElementById("undoAction").onclick=undoLastAction;
 document.getElementById("applySelectedColor").onclick=applyColorToSelected;
 document.getElementById("removeSelectedColor").onclick=removeColorFromSelected;
 
 load();
+lastSavedSnapshot=JSON.stringify(state);
 initDrafts();
 if(localStorage.getItem("daily-sort-show-numbers")==="1"){
   document.body.classList.add("show-task-numbers");
@@ -1543,15 +1901,6 @@ setupRealtime().then(()=>pullCloud());
 function updateClock(){const el=document.getElementById("localClock");if(el)el.textContent=new Date().toLocaleTimeString("en-GB",{hour12:false});}
 updateClock();setInterval(updateClock,1000);
 
-// If the browser stays open across midnight, check every minute and reset automatically.
-setInterval(()=>{
-  const key=todayKey();
-  if(localStorage.getItem(LAST_RESET)!==key){
-    dailyResetIfNeeded();
-    render();
-    toast("New day — Today survived");
-  }
-},60000);
 </script>
 <script>
 if("serviceWorker" in navigator && location.protocol==="https:"){
