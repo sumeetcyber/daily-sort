@@ -638,7 +638,7 @@
 
 
 /* Centered, calmer layout and consolidated settings presentation */
-.wrap{width:min(100% - 40px,1240px);margin-inline:auto;padding:30px 0 54px}
+.wrap{width:100%;max-width:none;margin-inline:auto;padding:clamp(14px,1.8vw,28px) clamp(14px,2.6vw,48px) 30px}
 header{text-align:center;margin-inline:auto;max-width:760px}
 .subtitle,.clock{margin-left:0!important;text-align:center}
 .capture,.draft-tools,.hint,.toolbar,.bulk-tools,.board,.footer{width:100%;max-width:1120px;margin-left:auto!important;margin-right:auto!important}
@@ -718,7 +718,10 @@ html{width:100%;min-height:100%;-webkit-text-size-adjust:100%;}
 body{width:100%;min-width:320px;min-height:100vh;min-height:100dvh;overflow-x:hidden;}
 .wrap{width:100%!important;max-width:none!important;margin:0 auto!important;padding:clamp(16px,2vw,32px) clamp(14px,2.2vw,40px) 34px!important;}
 header,.capture,.draft-tools,.hint,.toolbar,.bulk-tools,.arrange-tools,.board,.footer{width:100%;max-width:none!important;margin-left:auto!important;margin-right:auto!important;}
-header{max-width:1000px!important;margin-bottom:clamp(18px,2vw,30px)!important;}
+header{max-width:none!important;width:100%!important;margin:0 auto clamp(18px,2vw,30px)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;}
+  .brand{width:100%;justify-content:center!important}
+  .subtitle{width:100%;margin:5px auto 0!important;text-align:center!important}
+  header .clock,.clock{width:100%!important;display:block!important;margin:8px auto 0!important;text-align:center!important;font-variant-numeric:tabular-nums}
 .capture{align-items:stretch;}
 .capture textarea{min-height:96px;}
 .toolbar,.bulk-tools{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;}
@@ -811,13 +814,13 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
   .height-mode-control{user-select:none;-webkit-tap-highlight-color:transparent}
   .height-mode-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
   /* Fixed-height columns must be the scroll containers used by arrow alignment. */
-  body:not(.dynamic-panels) .panel{display:flex;flex-direction:column}
-  body:not(.dynamic-panels) .panel .cards{flex:1 1 auto;min-height:0;overflow-y:auto;scroll-behavior:auto}
-  body.dynamic-panels .panel{height:auto!important;max-height:none!important}
-  body.dynamic-panels .panel .cards{height:auto!important;max-height:none!important;overflow:visible!important}
+  body:not(.dynamic-panels) .panel{display:flex!important;flex-direction:column!important;height:calc(100vh - 300px)!important;min-height:320px!important;max-height:calc(100vh - 180px)!important}
+  body:not(.dynamic-panels) .panel .cards{flex:1 1 0!important;min-height:0!important;height:0!important;overflow-y:auto!important;scroll-behavior:auto}
+  body.dynamic-panels .panel{display:flex!important;flex-direction:column!important;height:auto!important;max-height:none!important;min-height:0!important}
+  body.dynamic-panels .panel .cards{flex:0 0 auto!important;height:auto!important;max-height:none!important;overflow:visible!important}
 
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 <body>
 <div class="wrap">
@@ -993,7 +996,37 @@ const DRAFT_KEY="daily-sort-bulk-draft-v1";
 const LEGACY_SESSION_SALT_PREFIX="daily-sort-session-v1:";
 const SUPABASE_URL = "https://cepdhdpzahqthrtyqogo.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Hjvm2fSk4P1lR46pxIIcKQ_dnen3qS2";
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let sb = window.supabase?.createClient
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+  : null;
+let supabaseLoadPromise = null;
+async function ensureSupabase(){
+  if(sb)return sb;
+  if(supabaseLoadPromise)return supabaseLoadPromise;
+  supabaseLoadPromise=(async()=>{
+    const urls=[
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
+      "https://unpkg.com/@supabase/supabase-js@2"
+    ];
+    for(const url of urls){
+      try{
+        await new Promise((resolve,reject)=>{
+          const script=document.createElement("script");
+          script.src=url;script.async=true;
+          script.onload=resolve;script.onerror=()=>reject(new Error("Could not load Supabase client"));
+          document.head.appendChild(script);
+        });
+        if(window.supabase?.createClient){
+          sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+          return sb;
+        }
+      }catch(err){console.warn("Supabase CDN attempt failed",url,err)}
+    }
+    throw new Error("Supabase client library unavailable. Check network or content blockers.");
+  })();
+  try{return await supabaseLoadPromise}
+  catch(err){supabaseLoadPromise=null;throw err}
+}
 let cloudTimer = null;
 let cloudReady = false;
 let syncingCloud = false;
@@ -1202,7 +1235,7 @@ function toggleListMarkup(t){
     </div>`).join("")}</div>`;
 }
 function taskCard(t,number){
-  const color=parseColorSyntax(t.text).color;
+  const color=t.colorHex || parseColorSyntax(t.text).color;
   return `
   <article class="card ${t.done?"done":""} ${t.open?"open":""} ${selectedTaskIds.has(t.id)?"selected":""}" draggable="true" data-id="${t.id}" ${color?`data-task-color style="--task-color:${color}"`:""}>
     <div class="card-main">
@@ -1371,7 +1404,9 @@ function bindActions(){
   document.querySelectorAll(".card").forEach(card=>{
     const tid=card.dataset.id;
     const t=state.tasks.find(x=>x.id===tid);
-    card.querySelector('[data-action="select-task"]').onchange=e=>{
+    const selectionBox=card.querySelector('[data-action="select-task"]');
+    selectionBox.addEventListener("click",e=>e.stopPropagation());
+    selectionBox.onchange=e=>{
       if(e.target.checked)selectedTaskIds.add(tid);else selectedTaskIds.delete(tid);
       card.classList.toggle("selected",e.target.checked);updateSelectionCount();
     };
@@ -1581,6 +1616,8 @@ function applyColorToSelected(){
     if(!selectedTaskIds.has(t.id))return;
     const parsed=parseColorSyntax(t.text);
     t.text=withColorSyntax(parsed.body,colorName);
+    t.colorHex=TASK_COLORS[colorName];
+    t.colorName=colorName;
     changed++;
   });
   if(!changed){toast("No selected tasks found");return;}
@@ -1592,6 +1629,7 @@ function removeColorFromSelected(){
     if(!selectedTaskIds.has(t.id))return;
     const parsed=parseColorSyntax(t.text);
     t.text=parsed.body;
+    delete t.colorHex;delete t.colorName;
   });
   save();render();toast("Color removed from selected tasks");
 }
@@ -1691,11 +1729,23 @@ async function deriveLegacyKey(token,salt){
 }
 function getSessionToken(){
   let t="";
-  try{t=localStorage.getItem(SESSION_KEY)||""}catch(e){}
-  if(!t.trim()){
-    t=randomToken();
-    try{localStorage.setItem(SESSION_KEY,t)}catch(e){console.error("Could not persist Daily Sort session token",e)}
-  }
+  try{
+    t=localStorage.getItem(SESSION_KEY)||"";
+    if(!t.trim()){
+      // Recover a token saved by an earlier Daily Sort build before generating anything new.
+      const legacyKeys=["daily-sort-session","dailySortSessionToken","daily-sort-token","daily-sort-session-token"];
+      for(const key of legacyKeys){
+        const candidate=localStorage.getItem(key);
+        if(candidate&&candidate.trim()){t=candidate.trim();break;}
+      }
+    }
+    if(!t.trim()){
+      t=randomToken();
+      localStorage.setItem(SESSION_KEY,t);
+    }else{
+      localStorage.setItem(SESSION_KEY,t);
+    }
+  }catch(e){console.error("Daily Sort could not read/write its session token",e)}
   return t;
 }
 async function legacySalt(token){const b=await crypto.subtle.digest("SHA-256",encoder.encode(LEGACY_SESSION_SALT_PREFIX+token));return new Uint8Array(b).slice(0,16)}
@@ -1716,6 +1766,7 @@ async function decryptState(token,payload){
   return JSON.parse(new TextDecoder().decode(plain));
 }
 async function setupRealtime(token=getSessionToken()){
+  await ensureSupabase();
   if(realtimeToken===token && realtimeChannel)return;
   if(realtimeChannel){try{await sb.removeChannel(realtimeChannel);}catch(e){}}
   realtimeChannel=null;realtimeToken=token;
@@ -1746,6 +1797,7 @@ async function setupRealtime(token=getSessionToken()){
 
 async function pullCloud(tokenOverride=null){
   const token=tokenOverride||getSessionToken();
+  await ensureSupabase();
   updateCloudStatus("Cloud: connecting…");
   try{
     const {data,error}=await sb.rpc("daily_sort_get_session",{p_token:token});
@@ -1780,6 +1832,7 @@ async function pullCloud(tokenOverride=null){
   }
 }
 async function pushCloud(tokenOverride=null){
+  try{await ensureSupabase()}catch(err){updateCloudStatus("Cloud: unavailable · "+err.message);return false;}
   if(syncingCloud){
     // A newer edit arrived while a save was running; the finally block will flush it.
     return false;
@@ -1820,7 +1873,7 @@ function queueCloudSave(){
 function updateCloudStatus(msg){const el=document.getElementById("cloudStatus");if(el)el.textContent=msg;}
 function openSession(){
   const x=document.getElementById("sessionToken");
-  x.value=getSessionToken();
+  x.value=localStorage.getItem(SESSION_KEY)||getSessionToken();
   document.getElementById("sessionModal").classList.add("show");
   renderThemes();
 }
@@ -1928,7 +1981,10 @@ function setHeightMode(dynamic, persist=true){
   const label=document.getElementById("heightModeLabel");
   if(label)label.textContent=enabled?"Dynamic":"Fixed";
   if(persist)try{localStorage.setItem("daily-sort-panel-height",enabled?"dynamic":"fixed")}catch(e){}
-  requestAnimationFrame(()=>window.dispatchEvent(new Event("resize")));
+  requestAnimationFrame(()=>{
+    document.querySelectorAll(".panel .cards").forEach(el=>{el.style.display="none";void el.offsetHeight;el.style.display="";});
+    window.dispatchEvent(new Event("resize"));
+  });
 }
 document.getElementById("togglePanelHeight").addEventListener("click",()=>{
   setHeightMode(!document.body.classList.contains("dynamic-panels"));
@@ -1954,14 +2010,28 @@ render();
 const bootSessionToken=getSessionToken();
 const tokenField=document.getElementById("sessionToken");
 if(tokenField)tokenField.value=bootSessionToken;
-setupRealtime(bootSessionToken).then(()=>pullCloud(bootSessionToken)).then(()=>{
+(async()=>{
   const field=document.getElementById("sessionToken");
-  if(field)field.value=getSessionToken();
-});
+  if(field)field.value=bootSessionToken;
+  try{
+    await ensureSupabase();
+    const results=await Promise.allSettled([
+      setupRealtime(bootSessionToken),
+      pullCloud(bootSessionToken)
+    ]);
+    const failure=results.find(x=>x.status==="rejected");
+    if(failure)throw failure.reason;
+    if(field)field.value=localStorage.getItem(SESSION_KEY)||bootSessionToken;
+  }catch(err){
+    console.error("Daily Sort cloud startup failed",err);
+    updateCloudStatus("Cloud: unavailable · local tasks remain available · "+(err?.message||"connection failed"));
+    if(field)field.value=localStorage.getItem(SESSION_KEY)||bootSessionToken;
+  }
+})();
 
 const UTC_OFFSETS=[
   ["-12:00","Baker Island, Howland Island"],["-11:00","American Samoa, Niue"],["-10:00","Hawaii, United States"],
-  ["-09:30","Marquesas Islands"],["-09:00","Gambier Islands"],["-08:00","Pitcairn Islands, Pacific Standard Time locations"],["-07:00","Northeastern British Columbia, Sonora, Arizona"],
+  ["-09:30","Marquesas Islands"],["-09:00","Gambier Islands"],["-07:00","Northeastern British Columbia, Sonora, Arizona"],
   ["-06:00","Saskatchewan, Costa Rica, El Salvador, Galápagos, Guatemala, Honduras, Mexico, Nicaragua"],
   ["-05:00","Colombia, Cuba, Ecuador, Jamaica, Panama, Peru"],["-04:30","Venezuela"],
   ["-04:00","Bolivia, Amazonas, continental Chile, Dominican Republic, Nova Scotia, Puerto Rico, Barbados, Trinidad and Tobago"],
@@ -1980,49 +2050,36 @@ const UTC_OFFSETS=[
   ["+12:00","Gilbert Islands, Fiji, Kamchatka"],["+13:00","Phoenix Islands, Tonga, Tokelau"],["+14:00","Line Islands, Kiribati"]
 ];
 const TIME_PREF_KEY="daily-sort-time-zone-pref-v1";
-let onlineClockBase=0,onlineClockStarted=0,onlineTimeZone=null,onlineUtcOffset="+00:00";
-function offsetMinutes(value){const m=String(value).match(/^([+-])(\d{2}):(\d{2})$/);return m?(m[1]==="-"?-1:1)*(Number(m[2])*60+Number(m[3])):0;}
-function formatAtOffset(epoch,offset){
-  const shifted=new Date(epoch+offsetMinutes(offset)*60000);
-  return shifted.toISOString().slice(0,19).replace("T"," ");
-}
-function selectedClockOffset(){
-  const pref=JSON.parse(localStorage.getItem(TIME_PREF_KEY)||'{"mode":"system","offset":"+05:30"}');
-  if(pref.mode==="custom")return pref.offset;
-  return onlineUtcOffset;
-}
+let onlineUtcEpoch=0,onlineClockStarted=0,onlineClockSynced=false;
+function offsetMinutes(value){const m=String(value).match(/^([+-])(\\d{2}):(\\d{2})$/);return m?(m[1]==="-"?-1:1)*(Number(m[2])*60+Number(m[3])):0;}
+function clockNow(){return onlineUtcEpoch?onlineUtcEpoch+(performance.now()-onlineClockStarted):Date.now();}
 function renderClock(){
   const el=document.getElementById("localClock");if(!el)return;
-  const pref=JSON.parse(localStorage.getItem(TIME_PREF_KEY)||'{"mode":"system","offset":"+05:30"}');
-  const now=onlineClockBase?onlineClockBase+(performance.now()-onlineClockStarted):Date.now();
+  let pref={mode:"system",offset:"+05:30"};
+  try{pref={...pref,...JSON.parse(localStorage.getItem(TIME_PREF_KEY)||"{}")}}catch(e){}
+  const now=new Date(clockNow());
   if(pref.mode==="custom"){
-    const off=pref.offset||"+05:30";
-    el.textContent=`${formatAtOffset(now,off)} · UTC ${off.replace("+","+")}`;
+    const shifted=new Date(now.getTime()+offsetMinutes(pref.offset||"+05:30")*60000);
+    el.textContent=shifted.toISOString().slice(0,19).replace("T"," ")+" · UTC "+(pref.offset||"+05:30");
   }else{
-    try{
-      const zone=onlineTimeZone||Intl.DateTimeFormat().resolvedOptions().timeZone;
-      el.textContent=new Intl.DateTimeFormat("en-GB",{timeZone:zone,hour12:false,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(new Date(now))+" · "+zone;
-    }catch(e){el.textContent=formatAtOffset(now,onlineUtcOffset)+" · UTC "+onlineUtcOffset;}
+    const zone=Intl.DateTimeFormat().resolvedOptions().timeZone||"System";
+    try{el.textContent=new Intl.DateTimeFormat("en-GB",{timeZone:zone,hour12:false,year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(now)+" · "+zone;}
+    catch(e){el.textContent=now.toLocaleString()+" · System time";}
   }
 }
 async function syncOnlineClock(){
   const status=document.getElementById("timeZoneStatus");
   try{
-    const response=await fetch("https://worldtimeapi.org/api/ip",{cache:"no-store"});
-    if(!response.ok)throw new Error("Online clock unavailable");
+    const response=await fetch("https://worldtimeapi.org/api/timezone/Etc/UTC",{cache:"no-store"});
+    if(!response.ok)throw new Error("HTTP "+response.status);
     const data=await response.json();
-    const serverEpoch=Date.parse(data.utc_datetime);
-    if(!Number.isFinite(serverEpoch))throw new Error("Invalid online time");
-    onlineClockBase=serverEpoch;onlineClockStarted=performance.now();
-    onlineTimeZone=data.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone;
-    onlineUtcOffset=data.utc_offset||"+00:00";
-    if(status)status.textContent=`Online time synced · ${onlineTimeZone} · UTC ${onlineUtcOffset}`;
-  }catch(e){
-    onlineClockBase=Date.now();onlineClockStarted=performance.now();
-    onlineTimeZone=Intl.DateTimeFormat().resolvedOptions().timeZone||"System time zone";
-    const minutes=-new Date().getTimezoneOffset(),sign=minutes>=0?"+":"-",abs=Math.abs(minutes);
-    onlineUtcOffset=sign+String(Math.floor(abs/60)).padStart(2,"0")+":"+String(abs%60).padStart(2,"0");
-    if(status)status.textContent=`Online clock unavailable · using device time · ${onlineTimeZone}`;
+    const epoch=Date.parse(data.utc_datetime||data.datetime);
+    if(!Number.isFinite(epoch))throw new Error("Invalid time response");
+    onlineUtcEpoch=epoch;onlineClockStarted=performance.now();onlineClockSynced=true;
+    if(status)status.textContent="Online clock synced · system time-zone rules from this device";
+  }catch(err){
+    if(!onlineClockSynced){onlineUtcEpoch=Date.now();onlineClockStarted=performance.now();}
+    if(status)status.textContent="Online clock unavailable · displaying device time";
   }
   renderClock();
 }
@@ -2037,6 +2094,7 @@ function initTimeZoneSettings(){
   mode.addEventListener("change",savePref);offset.addEventListener("change",savePref);
 }
 initTimeZoneSettings();
+renderClock();
 syncOnlineClock();
 setInterval(renderClock,1000);
 setInterval(syncOnlineClock,15*60*1000);
