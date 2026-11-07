@@ -983,7 +983,6 @@ My highlighted task
     </section>
     <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:12px">Cloud: connecting…</div>
     <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
-    <div class="security-note">🔒 Cloud session data is encrypted before upload using a random salt, HKDF-SHA-256 and AES-256-GCM. Your session token is the secret key material. Anyone with access to this browser profile can still access the token and local tasks.</div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -1288,56 +1287,25 @@ function keepMoveControlInPlace(tid,direction,swappedIds=[],displacedId=null,poi
   requestAnimationFrame(()=>{
     const movingCard=document.querySelector(`.card[data-id="${tid}"]`);
     const movingButton=movingCard?.querySelector(`[data-action="${direction<0?"up":"down"}"]`);
-    if(movingButton){
-      // Keep keyboard focus, then align the arrow's exact center with the original
-      // pointer tip. Fixed-height panels scroll their own card list; dynamic panels
-      // scroll the document because their card lists grow with their contents.
-      movingButton.focus({preventScroll:true});
-      if(pointerPoint){
-        const arrowRect=movingButton.getBoundingClientRect();
-        const deltaY=(arrowRect.top+arrowRect.height/2)-pointerPoint.y;
-        const cards=movingButton.closest('.cards');
-        const canScrollCards=cards && cards.scrollHeight>cards.clientHeight+1 &&
-          (getComputedStyle(cards).overflowY==='auto' || getComputedStyle(cards).overflowY==='scroll');
-        if(canScrollCards){
-          cards.scrollTop+=deltaY;
-          requestAnimationFrame(()=>{
-            const after=movingButton.getBoundingClientRect();
-            const residual=(after.top+after.height/2)-pointerPoint.y;
-            if(Math.abs(residual)>1)cards.scrollTop+=residual;
-          });
-        }else{
-          window.scrollBy({top:deltaY,left:0,behavior:"instant"});
-          requestAnimationFrame(()=>{
-            const after=movingButton.getBoundingClientRect();
-            const residual=(after.top+after.height/2)-pointerPoint.y;
-            if(Math.abs(residual)>1)window.scrollBy({top:residual,left:0,behavior:"instant"});
-          });
-        }
-      }
-    }else if(movingCard){
-      movingCard.scrollIntoView({behavior:"auto",block:"center",inline:"nearest"});
+    if(!movingButton)return;
+    movingButton.focus({preventScroll:true});
+    if(pointerPoint){
+      const cards=movingButton.closest(".cards");
+      const fixed=document.body.dataset.panelHeight!=="dynamic";
+      const canScrollCards=fixed&&cards&&cards.scrollHeight>cards.clientHeight+1;
+      const rect=movingButton.getBoundingClientRect();
+      const dx=rect.left+rect.width/2-pointerPoint.x,dy=rect.top+rect.height/2-pointerPoint.y;
+      if(canScrollCards)cards.scrollTop+=dy;else window.scrollBy({left:dx,top:dy,behavior:"instant"});
+      requestAnimationFrame(()=>{
+        const after=movingButton.getBoundingClientRect();
+        const rx=after.left+after.width/2-pointerPoint.x,ry=after.top+after.height/2-pointerPoint.y;
+        if(canScrollCards)cards.scrollTop+=ry;else window.scrollBy({left:rx,top:ry,behavior:"instant"});
+      });
     }
-
-    // The displaced task gets the directional arrow cue: down when pushed down,
-    // up when pushed up. Also spotlight both exchanged task bodies.
-    const displacedCard=displacedId?document.querySelector(`.card[data-id="${displacedId}"]`):null;
+    const displacedCard=displacedId&&document.querySelector(`.card[data-id="${displacedId}"]`);
     const displacedArrow=displacedCard?.querySelector(`[data-action="${direction<0?"down":"up"}"]`);
-    if(displacedArrow){
-      displacedArrow.classList.remove("movement-arrow-pulse");
-      void displacedArrow.offsetWidth;
-      displacedArrow.classList.add("movement-arrow-pulse");
-      setTimeout(()=>displacedArrow.classList.remove("movement-arrow-pulse"),650);
-    }
-    swappedIds.forEach(id=>{
-      const card=document.querySelector(`.card[data-id="${id}"]`);
-      if(card){
-        card.classList.remove("task-swap-flash");
-        void card.offsetWidth;
-        card.classList.add("task-swap-flash");
-        setTimeout(()=>card.classList.remove("task-swap-flash"),650);
-      }
-    });
+    if(displacedArrow){displacedArrow.classList.remove("movement-arrow-pulse");void displacedArrow.offsetWidth;displacedArrow.classList.add("movement-arrow-pulse");setTimeout(()=>displacedArrow.classList.remove("movement-arrow-pulse"),650);}
+    swappedIds.forEach(id=>{const card=document.querySelector(`.card[data-id="${id}"]`);if(card){card.classList.remove("task-swap-flash");void card.offsetWidth;card.classList.add("task-swap-flash");setTimeout(()=>card.classList.remove("task-swap-flash"),650);}});
   });
 }
 function moveTask(tid, direction, pointerPoint=null){
@@ -1400,6 +1368,7 @@ function bindToggleRowControls(card,t,syncToggleText){
   });
 }
 
+let lastArrowPointer=null;
 function bindActions(){
   document.querySelectorAll(".card").forEach(card=>{
     const tid=card.dataset.id;
@@ -1413,12 +1382,11 @@ function bindActions(){
     card.querySelector('[data-action="complete"]').onclick=e=>{
       e.stopPropagation(); t.done=!t.done; save();render();
     };
-    card.querySelector('[data-action="up"]').onclick=e=>{
-      e.stopPropagation(); moveTask(tid,-1,{x:e.clientX,y:e.clientY});
-    };
-    card.querySelector('[data-action="down"]').onclick=e=>{
-      e.stopPropagation(); moveTask(tid,1,{x:e.clientX,y:e.clientY});
-    };
+    const upButton=card.querySelector('[data-action="up"]');
+    const downButton=card.querySelector('[data-action="down"]');
+    [upButton,downButton].forEach(button=>button.addEventListener("pointerdown",e=>{lastArrowPointer={x:e.clientX,y:e.clientY};},{passive:true}));
+    upButton.onclick=e=>{e.preventDefault();e.stopPropagation();moveTask(tid,-1,lastArrowPointer||{x:e.clientX,y:e.clientY});lastArrowPointer=null;};
+    downButton.onclick=e=>{e.preventDefault();e.stopPropagation();moveTask(tid,1,lastArrowPointer||{x:e.clientX,y:e.clientY});lastArrowPointer=null;};
     card.querySelector('[data-action="expand"]').onclick=e=>{
       e.stopPropagation(); t.open=!t.open; save();render();
     };
@@ -1972,23 +1940,21 @@ document.getElementById("toggleNumbers").onclick=()=>{
 function setHeightMode(dynamic, persist=true){
   const enabled=!!dynamic;
   document.body.classList.toggle("dynamic-panels",enabled);
+  document.body.dataset.panelHeight=enabled?"dynamic":"fixed";
   const control=document.getElementById("togglePanelHeight");
-  if(control){
-    control.classList.toggle("is-dynamic",enabled);
-    control.setAttribute("aria-pressed",enabled?"true":"false");
-    control.title=enabled?"Dynamic height: panels grow with their task lists":"Fixed height: task lists scroll inside the panels";
-  }
+  if(control){control.classList.toggle("is-dynamic",enabled);control.setAttribute("aria-pressed",enabled?"true":"false");control.dataset.mode=enabled?"dynamic":"fixed";}
   const label=document.getElementById("heightModeLabel");
   if(label)label.textContent=enabled?"Dynamic":"Fixed";
-  if(persist)try{localStorage.setItem("daily-sort-panel-height",enabled?"dynamic":"fixed")}catch(e){}
-  requestAnimationFrame(()=>{
-    document.querySelectorAll(".panel .cards").forEach(el=>{el.style.display="none";void el.offsetHeight;el.style.display="";});
-    window.dispatchEvent(new Event("resize"));
+  document.querySelectorAll(".panel").forEach(panel=>{
+    const cards=panel.querySelector(".cards");
+    if(enabled){panel.style.height="auto";panel.style.minHeight="0";panel.style.maxHeight="none";if(cards){cards.style.height="auto";cards.style.minHeight="0";cards.style.maxHeight="none";cards.style.flex="0 0 auto";cards.style.overflowY="visible";}}
+    else{const h=Math.max(420,window.innerHeight-260);panel.style.height=h+"px";panel.style.minHeight="420px";panel.style.maxHeight="none";if(cards){cards.style.height="0";cards.style.minHeight="0";cards.style.maxHeight="none";cards.style.flex="1 1 0";cards.style.overflowY="auto";}}
   });
+  if(persist)try{localStorage.setItem("daily-sort-panel-height",enabled?"dynamic":"fixed")}catch(e){}
+  requestAnimationFrame(()=>window.dispatchEvent(new Event("resize")));
 }
-document.getElementById("togglePanelHeight").addEventListener("click",()=>{
-  setHeightMode(!document.body.classList.contains("dynamic-panels"));
-});
+document.getElementById("togglePanelHeight").addEventListener("click",e=>{e.preventDefault();e.stopPropagation();setHeightMode(document.body.dataset.panelHeight!=="dynamic");});
+window.addEventListener("resize",()=>{if(document.body.dataset.panelHeight==="fixed"){document.querySelectorAll(".panel").forEach(panel=>panel.style.height=Math.max(420,window.innerHeight-260)+"px");}});
 setHeightMode(localStorage.getItem("daily-sort-panel-height")==="dynamic",false);
 document.getElementById("moveSelected").onclick=moveSelectedAbove;
 document.getElementById("moveTargetZone").addEventListener("change",updateMoveRange);
@@ -2069,8 +2035,9 @@ function renderClock(){
 }
 async function syncOnlineClock(){
   const status=document.getElementById("timeZoneStatus");
+  if(status)status.textContent="Syncing online clock…";
   try{
-    const response=await fetch("https://worldtimeapi.org/api/timezone/Etc/UTC",{cache:"no-store"});
+    const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),4500);let response;try{response=await fetch("https://worldtimeapi.org/api/timezone/Etc/UTC",{cache:"no-store",signal:controller.signal});}finally{clearTimeout(timeout)}
     if(!response.ok)throw new Error("HTTP "+response.status);
     const data=await response.json();
     const epoch=Date.parse(data.utc_datetime||data.datetime);
