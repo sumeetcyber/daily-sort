@@ -956,7 +956,7 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
         <article class="shortcut-tile"><span class="tile-icon">✍️</span><div class="tile-action">Insert line break</div><kbd>Alt + Enter</kbd><small>While editing a task</small></article>
         <article class="shortcut-tile"><span class="tile-icon">🧵</span><div class="tile-action">Keep text in one task</div><pre class="multiline-example">&gt;&gt;&gt;&gt;LINE 1
 LINE 2
-LINE 3&lt;&lt;&lt;&lt;</pre><small>Wrap multiline paste</small></article>
+LINE 3&lt;&lt;&lt;&lt;</pre><small>Wrap multiline paste to keep every line in one task.</small></article>
       </div>
       <div class="help-heading syntax-heading"><span>🧩</span><div><h3>Task styling</h3><p>Give tasks structure and colour.</p></div></div>
       <div class="syntax-grid">
@@ -1936,11 +1936,6 @@ document.getElementById("toggleArrange").onclick=()=>{
   document.getElementById("toggleArrange").setAttribute("aria-expanded",opening?"true":"false");
   document.getElementById("toggleArrange").textContent=opening?"↕ Close arrange":"↕ Arrange";
 };
-document.getElementById("toggleNumbers").onclick=()=>{
-  const enabled=document.body.classList.toggle("show-task-numbers");
-  document.getElementById("toggleNumbers").textContent=enabled?"Hide numbers":"Show numbers";
-  localStorage.setItem("daily-sort-show-numbers",enabled?"1":"0");
-};
 function setHeightMode(dynamic, persist=true){
   const enabled=!!dynamic;
   document.body.classList.toggle("dynamic-panels",enabled);
@@ -1970,10 +1965,6 @@ document.getElementById("removeSelectedColor").onclick=removeColorFromSelected;
 load();
 lastSavedSnapshot=JSON.stringify(state);
 initDrafts();
-if(localStorage.getItem("daily-sort-show-numbers")==="1"){
-  document.body.classList.add("show-task-numbers");
-  document.getElementById("toggleNumbers").textContent="Hide numbers";
-}
 applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);
 render();
 // Lock in the current browser token before any asynchronous cloud work starts.
