@@ -698,6 +698,8 @@ header{text-align:center;margin-inline:auto;max-width:760px}
 .arrange-tools .step-action{align-self:stretch;min-width:150px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px}
 .arrange-tools .step-action .btn{width:100%}
 .arrange-selection{font-size:11px;color:var(--muted)}
+.clear-selection-btn{width:max-content!important;min-height:30px;padding:5px 10px!important;font-size:12px!important;border-color:var(--line)!important;color:var(--muted)!important;background:transparent!important}
+.clear-selection-btn[hidden]{display:none!important}
 @media(max-width:850px){.arrange-tools{grid-template-columns:1fr 1fr}.arrange-tools .step-action{grid-column:1/-1;min-height:76px}}
 @media(max-width:560px){.arrange-tools{grid-template-columns:1fr}.arrange-tools .step-action{grid-column:auto}.arrange-step{padding:10px}}
 .settings-section{max-width:720px;margin:18px auto 0;padding:18px;border:1px solid var(--line);border-radius:17px;background:color-mix(in srgb,var(--soft,var(--panel)) 18%,var(--panel));text-align:left}
@@ -1061,6 +1063,7 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
         <div class="arrange-step-title">🎯 Select tasks</div>
         <div class="arrange-step-help arrange-select-help"><span>Tick tasks in either column.</span><span>You can select from both.</span></div>
         <span class="arrange-selection" id="arrangeSelectionCount">0 selected · from either column</span>
+        <button class="btn clear-selection-btn" id="clearSelection" type="button" hidden>✕ Unselect all</button>
       </div>
     </div>
     <div class="arrange-step arrange-number-step">
@@ -1363,6 +1366,8 @@ function updateSelectionCount(){
   if(el)el.textContent=selectedTaskIds.size+" selected";
   const arrangeCount=document.getElementById("arrangeSelectionCount");
   if(arrangeCount)arrangeCount.textContent=selectedTaskIds.size+" selected · from either column";
+  const clearButton=document.getElementById("clearSelection");
+  if(clearButton)clearButton.hidden=selectedTaskIds.size===0;
   updateMoveRange();
 }
 function updateMoveRange(){
@@ -2149,6 +2154,12 @@ function setHeightMode(dynamic, persist=true){
 document.getElementById("togglePanelHeight").addEventListener("click",e=>{e.preventDefault();e.stopPropagation();setHeightMode(document.body.dataset.panelHeight!=="dynamic");});
 window.addEventListener("resize",()=>{if(document.body.dataset.panelHeight==="fixed"){document.querySelectorAll(".panel").forEach(panel=>panel.style.height=Math.max(420,window.innerHeight-260)+"px");}});
 setHeightMode(localStorage.getItem("daily-sort-panel-height")==="dynamic",false);
+document.getElementById("clearSelection").onclick=()=>{
+  selectedTaskIds.clear();
+  document.querySelectorAll('[data-action="select-task"]').forEach(box=>{box.checked=false;});
+  document.querySelectorAll(".card.selected").forEach(card=>card.classList.remove("selected"));
+  updateSelectionCount();
+};
 document.getElementById("moveSelected").onclick=moveSelectedAbove;
 document.getElementById("moveTargetZone").addEventListener("change",updateMoveRange);
 document.getElementById("moveAboveNumber").addEventListener("input",updateMoveRange);
