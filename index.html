@@ -875,6 +875,41 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
 @media(max-width:1050px){.arrange-tools{grid-template-columns:1fr 1fr}.arrange-step{min-height:100px}.arrange-tools .step-action{min-height:100px}}
 @media(max-width:560px){.arrange-tools{grid-template-columns:1fr;padding:8px;gap:7px}.arrange-step{min-height:0;padding:13px}.arrange-tools .step-action{min-height:0}.arrange-step-controls{grid-template-columns:minmax(0,1fr) auto}}
 
+
+/* Arrange v21 — compact, aligned, readable four-step workflow */
+.arrange-tools{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;padding:10px!important;margin:10px 0 16px!important;
+  align-items:stretch!important;
+}
+.arrange-step{
+  min-height:0!important;min-width:0;display:flex!important;flex-direction:column!important;
+  align-items:stretch!important;justify-content:flex-start!important;gap:12px!important;
+  padding:15px 16px!important;border-radius:13px!important;
+}
+.arrange-step-number{width:30px!important;height:30px!important;border-radius:9px!important;font-size:15px!important;}
+.arrange-step-content{gap:9px!important;}
+.arrange-step-title{font-size:16px!important;line-height:1.25!important;font-weight:800!important;letter-spacing:0!important;}
+.arrange-step-help,.arrange-selection{font-size:13px!important;line-height:1.45!important;}
+.arrange-number-control{font-size:13px!important;line-height:1.4!important;align-items:center!important;gap:10px!important;}
+.arrange-number-control input{width:18px!important;height:18px!important;}
+.arrange-destination-controls{display:flex;flex-direction:column;align-items:stretch;gap:10px;}
+.arrange-tools #moveTargetZone{width:100%!important;min-height:42px!important;font-size:15px!important;padding:8px 11px!important;}
+.arrange-position-control{display:grid;grid-template-columns:auto minmax(70px,1fr);align-items:center;gap:12px;}
+.arrange-position-control label{font-size:14px!important;font-weight:650;color:var(--muted);}
+.arrange-tools #moveAboveNumber{width:100%!important;min-height:42px!important;font-size:16px!important;padding:8px 10px!important;}
+.arrange-tools .step-action{justify-content:flex-start!important;gap:12px!important;}
+.arrange-tools .step-action .arrange-step-number{flex:none!important;}
+.arrange-tools .step-action .arrange-step-title{font-size:16px!important;padding:0!important;}
+.arrange-tools .step-action .btn{min-height:46px!important;font-size:15px!important;border-radius:11px!important;}
+@media(max-width:1050px){.arrange-tools{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}
+@media(max-width:560px){
+ .arrange-tools{grid-template-columns:minmax(0,1fr)!important;padding:8px!important;gap:8px!important;}
+ .arrange-step{padding:13px!important;gap:9px!important;}
+ .arrange-step-content{gap:7px!important;}
+ .arrange-tools .step-action{gap:10px!important;}
+}
+
 </style>
 
 </head>
@@ -950,16 +985,19 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
       <span class="arrange-step-number">3</span>
       <div class="arrange-step-content">
         <div class="arrange-step-title">Choose destination</div>
-        <div class="arrange-step-controls">
+        <div class="arrange-destination-controls">
           <select id="moveTargetZone" aria-label="Move selected tasks to"><option value="today">☀️ Today</option><option value="later">🌙 Not Today</option></select>
-          <label for="moveAboveNumber">Position</label>
-          <input id="moveAboveNumber" type="number" min="1" step="1" value="1" placeholder="1–1" aria-label="Position in destination column">
+          <div class="arrange-position-control">
+            <label for="moveAboveNumber">Position</label>
+            <input id="moveAboveNumber" type="number" min="1" step="1" value="1" placeholder="1–1" aria-label="Position in destination column">
+          </div>
         </div>
         <div class="arrange-step-help" id="moveRangeHelp">Position range updates to match the destination column.</div>
       </div>
     </div>
     <div class="arrange-step step-action">
-      <div class="arrange-step-title">4 · Move tasks</div>
+      <span class="arrange-step-number">4</span>
+      <div class="arrange-step-title">Move tasks</div>
       <button class="btn primary" id="moveSelected">Move selected →</button>
     </div>
   </section>
