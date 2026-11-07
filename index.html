@@ -2011,78 +2011,63 @@ const UTC_OFFSETS=[
   ["+12:00","Gilbert Islands, Fiji, Kamchatka"],["+13:00","Phoenix Islands, Tonga, Tokelau"],["+14:00","Line Islands, Kiribati"]
 ];
 const TIME_PREF_KEY="daily-sort-time-zone-pref-v1";
-let onlineUtcEpoch=0,onlineClockStarted=0,onlineClockSynced=false;
+let onlineUtcEpoch=0,onlineClockStarted=0,onlineClockSynced=false,clockDisplayMode="system",clockDisplayZone="UTC",clockDisplayOffset="+05:30";
 function offsetMinutes(value){const m=String(value).match(/^([+-])(\d{2}):(\d{2})$/);return m?(m[1]==="-"?-1:1)*(Number(m[2])*60+Number(m[3])):0;}
 function clockNow(){return onlineUtcEpoch?onlineUtcEpoch+(performance.now()-onlineClockStarted):Date.now();}
-function renderClock(){
-  const el=document.getElementById("localClock");if(!el)return;
+function getClockPreference(){
   let pref={mode:"system",offset:"+05:30"};
   try{pref={...pref,...JSON.parse(localStorage.getItem(TIME_PREF_KEY)||"{}")}}catch(e){}
+  return pref;
+}
+function renderClock(){
+  const el=document.getElementById("localClock");if(!el)return;
   const now=new Date(clockNow());
-  if(pref.mode==="custom"){
-    const shifted=new Date(now.getTime()+offsetMinutes(pref.offset||"+05:30")*60000);
-    el.textContent=shifted.toISOString().slice(0,19).replace("T"," ")+" · UTC "+(pref.offset||"+05:30");
+  if(onlineClockSynced){
+    // onlineUtcEpoch stores the provider's requested-zone wall time as UTC components.
+    el.textContent=new Intl.DateTimeFormat("en-GB",{timeZone:"UTC",hour12:false,year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(now)+" · "+(clockDisplayMode==="custom"?"UTC "+clockDisplayOffset:clockDisplayZone);
   }else{
-    const zone=Intl.DateTimeFormat().resolvedOptions().timeZone||"System";
-    try{el.textContent=new Intl.DateTimeFormat("en-GB",{timeZone:zone,hour12:false,year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(now)+" · "+zone;}
-    catch(e){el.textContent=now.toLocaleString()+" · System time";}
+    const pref=getClockPreference();
+    if(pref.mode==="custom"){
+      const shifted=new Date(now.getTime()+offsetMinutes(pref.offset||"+05:30")*60000);
+      el.textContent=shifted.toISOString().slice(0,19).replace("T"," ")+" · UTC "+(pref.offset||"+05:30");
+    }else{
+      const zone=Intl.DateTimeFormat().resolvedOptions().timeZone||"System";
+      try{el.textContent=new Intl.DateTimeFormat("en-GB",{timeZone:zone,hour12:false,year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(now)+" · "+zone;}
+      catch(e){el.textContent=now.toLocaleString()+" · System time";}
+    }
   }
 }
 async function syncOnlineClock(){
   const status=document.getElementById("timeZoneStatus");
   if(status)status.textContent="Syncing online clock…";
-  const sources=[
-    {
-      url:"https://timeapi.io/api/Time/current/zone?timeZone=UTC",
-      parse:data=>{
-        const value=data.dateTime||data.date||"";
-        if(!value)return NaN;
-        // The endpoint is explicitly queried for UTC. If it omits a zone,
-        // interpret its timestamp as UTC rather than the browser's local zone.
-        return Date.parse(/(?:Z|[+-]\d{2}:\d{2})$/i.test(value)?value:value+"Z");
-      }
-    },
-    {
-      url:"https://worldtimeapi.org/api/timezone/Etc/UTC",
-      parse:data=>{
-        const value=data.utc_datetime||"";
-        return value?Date.parse(value):NaN;
-      }
-    }
-  ];
-  for(const source of sources){
-    const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),4000);
-    try{
-      const response=await fetch(source.url,{cache:"no-store",signal:controller.signal});
-      if(!response.ok)throw new Error("HTTP "+response.status);
-      // Prefer the HTTP Date header: it is an absolute UTC timestamp and
-      // avoids guessing the timezone of a provider's dateTime string.
-      const headerDate=response.headers.get("Date");
-      let epoch=headerDate?Date.parse(headerDate):NaN;
-      if(!Number.isFinite(epoch)){
-        const data=await response.json();
-        epoch=source.parse(data);
-      }
-      if(!Number.isFinite(epoch))throw new Error("Invalid UTC time response");
-      onlineUtcEpoch=epoch;
-      onlineClockStarted=performance.now();
-      onlineClockSynced=true;
-      if(status)status.textContent="Online clock synced · displayed in your selected time zone";
-      renderClock();
-      return;
-    }catch(err){
-      // Try the next provider; do not replace a previously valid online clock.
-    }finally{
-      clearTimeout(timeout);
-    }
-  }
-  if(!onlineClockSynced){
-    onlineUtcEpoch=Date.now();
+  const pref=getClockPreference();
+  const custom=pref.mode==="custom";
+  const zone=custom?"UTC":(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC");
+  const url="https://timeapi.io/api/Time/current/zone?timeZone="+encodeURIComponent(zone);
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),6000);
+  try{
+    const response=await fetch(url,{cache:"no-store",signal:controller.signal});
+    if(!response.ok)throw new Error("HTTP "+response.status);
+    const data=await response.json();
+    const parts=[data.year,data.month,data.day,data.hour,data.minute,data.seconds];
+    if(parts.some(v=>!Number.isFinite(Number(v))))throw new Error("Invalid time response");
+    // Treat the returned wall-clock components as UTC components. This preserves
+    // the requested zone's displayed time without relying on ambiguous dateTime parsing.
+    let wallEpoch=Date.UTC(Number(data.year),Number(data.month)-1,Number(data.day),Number(data.hour),Number(data.minute),Number(data.seconds));
+    if(custom)wallEpoch+=offsetMinutes(pref.offset||"+05:30")*60000;
+    onlineUtcEpoch=wallEpoch;
     onlineClockStarted=performance.now();
-  }
-  if(status)status.textContent="Online clock unavailable · displaying device time";
-  renderClock();
+    onlineClockSynced=true;
+    clockDisplayMode=custom?"custom":"system";
+    clockDisplayZone=custom?"UTC "+(pref.offset||"+05:30"):zone;
+    clockDisplayOffset=pref.offset||"+05:30";
+    if(status)status.textContent="Online clock synced · "+(custom?"UTC "+clockDisplayOffset:zone);
+    renderClock();
+  }catch(err){
+    if(status)status.textContent="Online clock unavailable · displaying device time";
+    renderClock();
+  }finally{clearTimeout(timeout);}
 }
 function initTimeZoneSettings(){
   const mode=document.getElementById("timeZoneMode"),offset=document.getElementById("customUtcOffset");
@@ -2091,7 +2076,7 @@ function initTimeZoneSettings(){
   let pref;try{pref=JSON.parse(localStorage.getItem(TIME_PREF_KEY)||"null")}catch(e){}
   if(!pref)pref={mode:"system",offset:"+05:30"};
   mode.value=pref.mode==="custom"?"custom":"system";offset.value=pref.offset||"+05:30";offset.disabled=mode.value!=="custom";
-  const savePref=()=>{const p={mode:mode.value,offset:offset.value};localStorage.setItem(TIME_PREF_KEY,JSON.stringify(p));offset.disabled=mode.value!=="custom";renderClock();};
+  const savePref=()=>{const p={mode:mode.value,offset:offset.value};localStorage.setItem(TIME_PREF_KEY,JSON.stringify(p));offset.disabled=mode.value!=="custom";syncOnlineClock();};
   mode.addEventListener("change",savePref);offset.addEventListener("change",savePref);
 }
 initTimeZoneSettings();
