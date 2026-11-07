@@ -2034,31 +2034,45 @@ async function syncOnlineClock(){
   const sources=[
     {
       url:"https://timeapi.io/api/Time/current/zone?timeZone=UTC",
-      parse:data=>Date.parse(data.dateTime||data.date||"")
+      parse:data=>{
+        const value=data.dateTime||data.date||"";
+        if(!value)return NaN;
+        // The endpoint is explicitly queried for UTC. If it omits a zone,
+        // interpret its timestamp as UTC rather than the browser's local zone.
+        return Date.parse(/(?:Z|[+-]\d{2}:\d{2})$/i.test(value)?value:value+"Z");
+      }
     },
     {
       url:"https://worldtimeapi.org/api/timezone/Etc/UTC",
-      parse:data=>Date.parse(data.utc_datetime||data.datetime||"")
+      parse:data=>{
+        const value=data.utc_datetime||"";
+        return value?Date.parse(value):NaN;
+      }
     }
   ];
-  let lastError=null;
   for(const source of sources){
     const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),3500);
+    const timeout=setTimeout(()=>controller.abort(),4000);
     try{
       const response=await fetch(source.url,{cache:"no-store",signal:controller.signal});
       if(!response.ok)throw new Error("HTTP "+response.status);
-      const data=await response.json();
-      const epoch=source.parse(data);
-      if(!Number.isFinite(epoch))throw new Error("Invalid time response");
+      // Prefer the HTTP Date header: it is an absolute UTC timestamp and
+      // avoids guessing the timezone of a provider's dateTime string.
+      const headerDate=response.headers.get("Date");
+      let epoch=headerDate?Date.parse(headerDate):NaN;
+      if(!Number.isFinite(epoch)){
+        const data=await response.json();
+        epoch=source.parse(data);
+      }
+      if(!Number.isFinite(epoch))throw new Error("Invalid UTC time response");
       onlineUtcEpoch=epoch;
       onlineClockStarted=performance.now();
       onlineClockSynced=true;
-      if(status)status.textContent="Online clock synced · system time-zone rules from this device";
+      if(status)status.textContent="Online clock synced · displayed in your selected time zone";
       renderClock();
       return;
     }catch(err){
-      lastError=err;
+      // Try the next provider; do not replace a previously valid online clock.
     }finally{
       clearTimeout(timeout);
     }
