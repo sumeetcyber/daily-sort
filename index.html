@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" id="themeColorMeta" content="#101f32">
-<meta name="daily-sort-build" content="2026-11-26-v29">
-<link rel="manifest" id="appManifest" href="./manifest.webmanifest">
-<link rel="icon" id="dynamicFavicon" type="image/svg+xml" href="./icons/daily-sort.svg">
-<link rel="apple-touch-icon" href="./icons/daily-sort-192.png">
+<meta name="daily-sort-build" content="2026-11-26-v31">
+<link rel="manifest" id="appManifest" href="./manifest.webmanifest?v=31">
+<link rel="icon" id="dynamicFavicon" type="image/svg+xml" href="./icons/daily-sort.svg?v=31">
+<link rel="shortcut icon" href="./favicon.ico?v=31">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/daily-sort-192.png?v=31">
+<link rel="apple-touch-icon" href="./icons/daily-sort-192.png?v=31">
 <title>Daily Sort</title>
 <style>
   :root{
@@ -1211,6 +1213,172 @@ body[data-theme-motion="neon"]::before{opacity:.23;background:linear-gradient(11
 body[data-theme-motion="deepsea"]::before{opacity:.22;background:radial-gradient(ellipse at 20% 80%,#00c2a8,transparent 35%),radial-gradient(ellipse at 80% 20%,#087ca7,transparent 40%),linear-gradient(120deg,#031b35,#064663);animation:dsVivid 17s ease-in-out infinite alternate}
 @keyframes dsVivid{0%{background-position:0% 0%;filter:hue-rotate(0deg)}100%{background-position:100% 100%;filter:hue-rotate(24deg)}}
 
+
+
+/* v31 — coherent palettes, restrained theme motion, balanced workspace and deletion safeguards. */
+.theme-library{grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:start!important;gap:14px!important}
+.theme-family{min-width:0!important;padding:13px!important;background:var(--card)!important}
+.theme-family .theme-pair{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:start!important;gap:12px!important}
+.theme-family .theme-mode{display:flex!important;flex-direction:column!important;min-width:0!important}
+.theme-family .theme-mode .theme-grid{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;align-items:stretch!important;justify-content:flex-start!important;gap:6px!important;width:100%!important;margin:0!important}
+.theme-family .theme-mode .theme-btn{display:block!important;flex:0 0 auto!important;width:100%!important;min-width:0!important;min-height:36px!important;padding:8px 10px!important;white-space:normal!important;text-align:left!important;line-height:1.25!important;font-size:12px!important;border-radius:9px!important;background:var(--button,var(--panel))!important;color:var(--text)!important;border:1px solid var(--line)!important;overflow-wrap:anywhere}
+.theme-family .theme-mode .theme-btn.active{background:var(--accent-soft)!important;color:var(--text)!important;border:2px solid var(--accent)!important;box-shadow:inset 3px 0 0 var(--accent)!important}
+.theme-mode h5{font-size:12px!important;font-weight:800!important;color:var(--muted)!important;margin:0 0 7px!important}
+.theme-family h4{font-size:16px!important;color:var(--text)!important;margin-bottom:12px!important}
+
+/* Modal surfaces and calls to action use the active palette instead of default white text. */
+.delete-prank-dialog,.delete-final-confirm{background:var(--panel)!important;color:var(--text)!important;border:1px solid var(--line)!important;box-shadow:0 22px 80px #0007!important}
+.delete-prank-copy{color:var(--text)!important}
+.delete-prank-copy p:first-child{color:var(--accent)!important}
+.delete-prank-copy p:nth-child(2){color:var(--text)!important}
+.delete-prank-copy p:last-child{color:var(--muted)!important}
+.delete-prank-actions .btn{background:var(--soft,var(--accent-soft))!important;color:var(--text)!important;border:1px solid var(--line)!important;box-shadow:none!important}
+.delete-prank-actions .prank-danger{background:var(--danger-bg)!important;color:var(--danger-text)!important;border-color:var(--danger-border)!important}
+.delete-prank-actions .prank-oops{background:var(--accent-soft)!important;color:var(--text)!important;border-color:color-mix(in srgb,var(--accent) 34%,var(--line))!important}
+.prank-close{background:var(--button,var(--panel))!important;color:var(--text)!important;border-color:var(--line)!important}
+.kiss-screen{color:var(--text)!important}
+.kiss-close{background:var(--accent-soft)!important;color:var(--text)!important;border:1px solid color-mix(in srgb,var(--accent) 38%,var(--line))!important;box-shadow:none!important}
+.account-delete-trigger{background:var(--danger-bg)!important;color:var(--danger-text)!important;border:1px solid var(--danger-border)!important;font-weight:850!important}
+.account-delete-trigger:hover{filter:brightness(.96);background:var(--danger-bg)!important}
+.delete-final-confirm{position:relative;z-index:5;width:min(540px,94vw);max-height:calc(100dvh - 36px);overflow:auto;border-radius:22px;padding:27px;text-align:center;animation:prank-dialog-pop .35s ease both}
+.delete-final-confirm[hidden]{display:none!important}
+.delete-final-icon{font-size:32px}
+.delete-final-confirm h2{margin:9px 0;font-size:clamp(22px,4vw,30px);color:var(--text)}
+.delete-final-confirm p{font-size:14px;line-height:1.55;color:var(--muted);margin:9px 0 17px}
+.delete-final-confirm label{display:block;margin:15px 0 6px;text-align:left;font-size:12px;color:var(--muted)}
+.delete-final-confirm input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--input,var(--panel));color:var(--text);font-size:16px;letter-spacing:.08em}
+.delete-final-confirm input:focus{outline:2px solid var(--accent);outline-offset:2px}
+.delete-final-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:15px}
+.delete-final-actions .btn{min-height:43px;background:var(--soft,var(--accent-soft));color:var(--text);border-color:var(--line)}
+.delete-final-actions .delete-final-danger{background:var(--danger-bg)!important;color:var(--danger-text)!important;border-color:var(--danger-border)!important}
+.delete-final-actions button:disabled{opacity:.38;cursor:not-allowed}
+.delete-final-status{min-height:20px!important;margin:12px 0 0!important;font-size:12px!important}
+
+/* Align the three card movement controls to the vertical centre of task text. */
+.card-main{align-items:center!important}
+.card-main>.check,.card-main>.task-number{align-self:flex-start!important;margin-top:3px!important}
+.card-main>.task-body{align-self:center!important}
+.card-main>.card-tools{align-self:center!important;justify-self:end!important;align-items:center!important;justify-content:center!important}
+.card-tools .reorder-arrow,.card-tools .zone-arrow{display:grid!important;place-items:center!important;line-height:1!important;text-align:center!important;align-content:center!important;justify-content:center!important;padding:0!important}
+
+/* Desktop proportions: Today gets 70%, Not Today gets 30%. */
+@media(min-width:901px){
+  .board{grid-template-columns:minmax(0,7fr) minmax(0,3fr)!important;align-items:stretch!important}
+  .board>.panel{min-width:0!important;width:100%!important}
+}
+/* Portrait is intentionally stacked; phone landscape remains side-by-side at 50/50. */
+@media(max-width:700px) and (orientation:portrait){
+  .board{grid-template-columns:minmax(0,1fr)!important;gap:13px!important}
+  .panel{width:100%!important}
+  .panel-head{padding:14px 15px!important}
+  .panel-title{font-size:19px!important}
+  .panel-head>div:first-child>div:last-child{font-size:11px!important}
+  .cards{max-height:none!important;min-height:130px!important;overflow:visible!important;padding:9px!important}
+  .card-main{grid-template-columns:22px minmax(0,1fr) auto!important;align-items:center!important;padding:11px 10px!important;gap:9px!important}
+  .card-main>.card-tools{grid-column:3!important;grid-row:1!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;width:auto!important;min-width:0!important;align-self:center!important}
+  .card-tools .icon-btn,.card-tools .expand{width:30px!important;min-width:30px!important;height:30px!important;min-height:30px!important}
+  .task-title-edit{font-size:16px!important;line-height:1.45!important}
+  body.show-task-numbers .card-main{grid-template-columns:22px 20px minmax(0,1fr) auto!important}
+  body.show-task-numbers .card-main>.task-number{grid-column:1!important;width:20px!important;height:20px!important;min-width:20px!important}
+  body.show-task-numbers .card-main>.check{grid-column:2!important}
+  body.show-task-numbers .card-main>.task-body{grid-column:3!important}
+  body.show-task-numbers .card-main>.card-tools{grid-column:4!important}
+}
+@media(max-width:900px) and (orientation:landscape){
+  .board{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:stretch!important}
+  .board>.panel{min-width:0!important;width:100%!important;min-height:0!important}
+  .panel-head{padding:8px 10px!important}
+  .panel-title{font-size:16px!important}
+  .panel-head>div:first-child>div:last-child{font-size:9px!important;line-height:1.2!important}
+  .cards{min-width:0!important;padding:7px!important}
+  .card-main{grid-template-columns:19px minmax(0,1fr) 28px!important;align-items:center!important;gap:5px!important;padding:7px!important}
+  .card-main>.card-tools{grid-column:3!important;grid-row:1!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;width:28px!important;min-width:28px!important;align-self:center!important}
+  .card-tools .icon-btn,.card-tools .expand{width:27px!important;min-width:27px!important;height:27px!important;min-height:27px!important}
+  .task-title-edit{font-size:13px!important;line-height:1.35!important}
+  .toolbar{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:5px!important;padding:5px 6px!important;margin-bottom:5px!important}
+  .toolbar .btn{min-width:0!important;min-height:30px!important;padding:4px 5px!important;font-size:10px!important;white-space:nowrap!important}
+  .bulk-tools{display:flex!important;flex-wrap:nowrap!important;justify-content:flex-start!important;gap:5px!important;padding:5px 6px!important;margin-bottom:5px!important;top:40px!important;overflow-x:auto!important;scrollbar-width:none}
+  .bulk-tools::-webkit-scrollbar{display:none}
+  .bulk-tools .btn,.bulk-tools select,.bulk-tools input{min-height:29px!important;height:29px!important;padding:3px 6px!important;font-size:10px!important}
+  .bulk-tools>label{font-size:10px!important}
+  .bulk-tools .height-mode-control{min-height:31px!important;height:31px!important;padding:3px 6px!important;gap:4px!important}
+  .height-mode-copy small{font-size:7px!important}.height-mode-copy strong{font-size:10px!important}
+  .bulk-tools .selection-count{font-size:9px!important;white-space:nowrap!important}
+  .bulk-tools .selection-count{width:auto!important}
+  .task-search{margin:4px 0 7px!important;padding:5px 8px!important;min-height:30px!important}
+  .task-search-icon{font-size:18px!important}.task-search input{font-size:11px!important;padding:2px 0!important}.search-result-count{font-size:9px!important}
+  .footer{font-size:8px!important;margin-top:5px!important;opacity:.62!important}
+}
+
+/* Landscape panel height is calculated from the actual board position by JS; this
+   keeps the panel bottoms roughly 3 cm above the physical viewport edge. */
+@media(max-width:900px) and (orientation:landscape){
+  body:not(.dynamic-panels) .panel{min-height:0!important;max-height:none!important}
+  body:not(.dynamic-panels) .panel .cards{flex:1 1 0!important;height:0!important;min-height:0!important;max-height:none!important;overflow-y:auto!important}
+}
+
+/* Moving theme visuals: cloudy sky, breaking wave bands, powder-soft Holi, Dasain details,
+   subtle Diwali fireworks, actual aurora ribbons, restrained club lights and random mesh gradients. */
+body::before{z-index:0;pointer-events:none;filter:blur(0);}
+body[data-theme-motion="sky"]::before{
+  opacity:.32!important;background-image:
+    radial-gradient(ellipse 95px 32px at 12% 34%,rgba(255,255,255,.9) 0 42%,transparent 72%),
+    radial-gradient(ellipse 145px 40px at 21% 31%,rgba(255,255,255,.85) 0 42%,transparent 72%),
+    radial-gradient(ellipse 110px 31px at 75% 22%,rgba(255,255,255,.78) 0 42%,transparent 73%),
+    radial-gradient(ellipse 160px 42px at 83% 20%,rgba(255,255,255,.84) 0 40%,transparent 72%),
+    linear-gradient(180deg,#72c9ff22,#b8e7ff0c);
+  background-size:100% 100%;filter:drop-shadow(0 10px 22px #ffffff12);animation:dsClouds 42s ease-in-out infinite alternate!important
+}
+@keyframes dsClouds{0%{background-position:-5vw 0,0 0,5vw 0,0 0}100%{background-position:8vw 0,10vw 0,-8vw 0,-12vw 0}}
+body[data-theme-motion="ocean"]::before{
+  opacity:.27!important;background-image:
+    repeating-radial-gradient(ellipse at 50% 115%,transparent 0 24px,rgba(255,255,255,.26) 26px 30px,transparent 32px 62px),
+    linear-gradient(165deg,transparent 0 36%,#5bc4da55 48%,#159bb344 56%,transparent 70%),
+    linear-gradient(180deg,#8cdef055,#1e9dbb22);
+  background-size:145% 150%,180% 130%,100% 100%;background-position:0 0,0 0,0 0;filter:blur(1px);animation:dsOceanCrash 13s cubic-bezier(.45,0,.55,1) infinite alternate!important
+}
+@keyframes dsOceanCrash{0%{background-position:0 10%,0 0,0 0;transform:translateY(2%) scale(1)}48%{background-position:40% 50%,35% 20%,0 0;transform:translateY(-2%) scale(1.03)}100%{background-position:100% 90%,100% 35%,0 0;transform:translateY(2%) scale(1.06)}}
+body[data-theme-motion="holi"]::before{
+  opacity:.2!important;filter:blur(34px) saturate(1.12)!important;
+  background-image:radial-gradient(ellipse at 15% 35%,#f2a2d2aa 0 10%,transparent 44%),radial-gradient(ellipse at 70% 28%,#9bc9f4aa 0 11%,transparent 45%),radial-gradient(ellipse at 52% 82%,#f7d99aaa 0 12%,transparent 46%),radial-gradient(ellipse at 90% 75%,#a7d8b1aa 0 8%,transparent 38%);
+  animation:dsHoliSmudge 26s ease-in-out infinite alternate!important
+}
+@keyframes dsHoliSmudge{0%{background-position:0 0,100% 0,50% 100%,100% 100%;transform:scale(1)}100%{background-position:18% 18%,80% 24%,36% 70%,90% 68%;transform:scale(1.08)}}
+body[data-theme-motion="dasain"]::before{opacity:.1!important;background:radial-gradient(ellipse at 50% 0%,#f3c98e55,transparent 55%);}
+body[data-theme-motion="diwali"]::before{opacity:.13!important;background-image:radial-gradient(circle at 18% 26%,#ffbe4280 0 2px,transparent 5px),radial-gradient(circle at 72% 32%,#ff784c80 0 2px,transparent 5px),radial-gradient(circle at 54% 75%,#f8db806e 0 2px,transparent 5px);background-size:160px 170px,210px 190px,180px 180px;animation:dsFireworks 4.8s ease-in-out infinite alternate!important}
+@keyframes dsFireworks{0%{background-position:0 0,80px 20px,30px 60px;filter:brightness(.86)}100%{background-position:15px -20px,60px 2px,50px 30px;filter:brightness(1.18)}}
+body[data-theme-motion="holiday"]::before{opacity:.16!important;background-image:radial-gradient(circle,#fff 0 1.5px,transparent 2px),radial-gradient(circle,#d6f4e4 0 1.2px,transparent 2px);background-size:90px 90px,137px 137px;animation:dsSnow 18s linear infinite!important}
+body[data-theme-motion="northernlights"]::before{opacity:.42!important;filter:blur(20px) saturate(1.25)!important;background-image:linear-gradient(104deg,transparent 0 8%,#25f0a055 17%,#37dfbf55 24%,transparent 34%,#61c7ff55 46%,transparent 58%,#8e73ff44 70%,transparent 82%),radial-gradient(ellipse at 42% 20%,#36e4b833,transparent 56%);background-size:220% 180%;animation:dsNorthernAurora 22s ease-in-out infinite alternate!important}
+@keyframes dsNorthernAurora{0%{background-position:0% 15%;transform:skewX(-9deg) scale(1.05);filter:hue-rotate(0deg) blur(20px)}50%{background-position:55% 60%;transform:skewX(4deg) scale(1.12);filter:hue-rotate(20deg) blur(24px)}100%{background-position:100% 5%;transform:skewX(-5deg) scale(1.08);filter:hue-rotate(-16deg) blur(18px)}}
+body[data-theme-motion="strobe"]::before{opacity:.16!important;filter:blur(46px)!important;background-image:radial-gradient(ellipse at 12% 35%,#ab8cff 0 7%,transparent 34%),radial-gradient(ellipse at 82% 24%,#ff8ab0 0 6%,transparent 34%),radial-gradient(ellipse at 55% 85%,#67d8e7 0 7%,transparent 36%);animation:dsClubLights 9s ease-in-out infinite alternate!important}
+@keyframes dsClubLights{0%{background-position:0 0,100% 0,40% 100%;opacity:.1}50%{background-position:35% 22%,65% 30%,55% 70%;opacity:.19}100%{background-position:70% 0,10% 40%,100% 20%;opacity:.12}}
+body[data-theme-motion="gradient-light"]::before,body[data-theme-motion="gradient-dark"]::before{opacity:.26!important;filter:blur(42px) saturate(1.2)!important;background-image:radial-gradient(ellipse at 12% 24%,var(--mesh-a),transparent 48%),radial-gradient(ellipse at 83% 20%,var(--mesh-b),transparent 50%),radial-gradient(ellipse at 52% 87%,var(--mesh-c),transparent 49%),radial-gradient(ellipse at 95% 78%,var(--mesh-d),transparent 42%);background-size:170% 170%;animation:dsMeshDrift 25s ease-in-out infinite alternate!important}
+body[data-theme-motion="gradient-dark"]::before{opacity:.32!important}
+@keyframes dsMeshDrift{0%{background-position:0% 10%;transform:scale(1)}100%{background-position:100% 90%;transform:scale(1.12)}}
+body[data-theme-motion="cloud"]::before,body[data-theme-motion="meadow"]::before,body[data-theme-motion="ember"]::before,body[data-theme-motion="moonlit"]::before{opacity:.18!important;filter:blur(28px)!important;background-image:radial-gradient(ellipse at 18% 30%,var(--accent-soft),transparent 45%),radial-gradient(ellipse at 82% 70%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 45%);animation:dsGradient 24s ease-in-out infinite alternate!important}
+.theme-particles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;contain:strict}
+.theme-particle{position:absolute;top:-8vh;left:var(--left);font-size:var(--size);opacity:var(--alpha);filter:drop-shadow(0 2px 5px #0001);animation:themeFall var(--duration) linear var(--delay) infinite;will-change:transform}
+@keyframes themeFall{0%{transform:translate3d(0,-8vh,0) rotate(0)}100%{transform:translate3d(var(--drift),112vh,0) rotate(var(--spin))}}
+body[data-theme-motion="dasain"] .theme-particle{font-size:var(--size)}
+body[data-theme-motion="diwali"] .theme-particle{animation-name:themeFirework;top:var(--top);left:var(--left)}
+@keyframes themeFirework{0%,100%{transform:translateY(8px) scale(.65);opacity:.12}35%{transform:translateY(-30px) scale(1.06);opacity:.72}70%{transform:translateY(-12px) scale(.85);opacity:.3}}
+
+@media(max-width:700px){.theme-library{grid-template-columns:1fr!important}.theme-family .theme-pair{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(prefers-reduced-motion:reduce){body[data-theme-motion]::before,.theme-particle{animation:none!important}}
+
+
+@media(max-width:900px) and (orientation:landscape){
+  header{margin:0 0 4px!important;gap:0!important}
+  header .brand-mark{width:25px!important;height:25px!important}
+  header .brand h1{font-size:19px!important}
+  header .subtitle,header .clock{display:none!important}
+  .capture{display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:5px!important;padding:5px!important;margin:0 0 4px!important}
+  .capture textarea{min-height:36px!important;height:38px!important;max-height:48px!important;padding:5px 8px!important;font-size:12px!important;resize:none!important}
+  .capture-actions{display:grid!important;grid-template-columns:1fr!important;grid-template-rows:1fr 1fr!important;width:120px!important;min-width:120px!important;gap:3px!important}
+  .capture-actions .btn{min-height:17px!important;height:17px!important;padding:1px 4px!important;font-size:9px!important;line-height:1!important;white-space:nowrap!important}
+  .draft-tools{display:none!important}
+}
+
 </style>
 
 </head>
@@ -1402,6 +1570,7 @@ My highlighted task
     <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
   </div>
 </div>
+<div id="themeParticles" class="theme-particles" aria-hidden="true"></div>
 <div class="delete-prank-overlay" id="deletePrankOverlay" hidden aria-live="assertive">
   <div class="delete-prank-rain" id="deletePrankRain" aria-hidden="true"></div><div class="delete-flood" id="deleteFlood"></div><div class="delete-flood-label" id="deleteFloodLabel">account deleted :(</div>
   <section class="delete-prank-dialog" id="deletePrankDialog" role="dialog" aria-modal="true" aria-labelledby="deletePrankTitle" hidden>
@@ -1413,9 +1582,21 @@ My highlighted task
     </div>
     <div class="delete-prank-actions" id="deletePrankActions">
       <button class="btn prank-danger" id="prankConfirmDelete" type="button">delete my account</button>
-      <button class="btn primary" id="prankOops" type="button">oops, nevermind</button>
+      <button class="btn prank-oops" id="prankOops" type="button">oops, nevermind</button>
     </div>
     <button class="prank-close" id="closeDeletePrank" type="button" aria-label="Close">✕</button>
+  </section>
+  <section class="delete-final-confirm" id="deleteFinalConfirm" hidden role="dialog" aria-modal="true" aria-labelledby="deleteFinalTitle">
+    <div class="delete-final-icon">🗑️</div>
+    <h2 id="deleteFinalTitle">One last confirmation.</h2>
+    <p>This permanently deletes the current Daily Sort session from Supabase, revokes its token on every device, clears this device, and creates a fresh empty session with a new token. The old session cannot be recovered.</p>
+    <label for="deleteFinalWord">Type <strong>DELETE</strong> to confirm</label>
+    <input id="deleteFinalWord" type="text" autocomplete="off" spellcheck="false" placeholder="DELETE">
+    <div class="delete-final-actions">
+      <button class="btn" id="cancelFinalDelete" type="button">Keep my session</button>
+      <button class="btn delete-final-danger" id="executeFinalDelete" type="button" disabled>Delete permanently</button>
+    </div>
+    <p class="delete-final-status" id="deleteFinalStatus" aria-live="polite"></p>
   </section>
   <section class="kiss-screen" id="kissScreen" hidden aria-label="A kiss for Daily Sort">
     <div class="kiss-confetti" aria-hidden="true"><span>💋</span><span>💋</span><span>💋</span><span>💋</span><span>💋</span></div>
@@ -1427,7 +1608,7 @@ My highlighted task
       <path d="M78 137c30 23 58 31 82 5 24 26 52 18 82-5-28 36-56 42-82 17-26 25-54 19-82-17Z" fill="#ff8caf" opacity=".66"/>
     </svg>
     <div class="kiss-caption">MWAH. 💋</div>
-    <button class="btn primary kiss-close" id="closeKiss" type="button">back to Daily Sort</button>
+    <button class="btn kiss-close" id="closeKiss" type="button">back to Daily Sort</button>
   </section>
 </div>
 <div class="toast" id="toast"></div>
@@ -2136,32 +2317,37 @@ function importData(file){
 
 const THEMES={
   "Paper":{"bg":"#f7f5f0","panel":"#fffdf9","line":"#e4ded4","text":"#171513","muted":"#746e65","accent":"#4d8f70","accentSoft":"#e3f1e9"},
-  "Midnight":{"bg":"#101114","panel":"#17191d","line":"#2a2d33","text":"#f2f3f5","muted":"#a4a8b0","accent":"#78c7a0","accentSoft":"#193327"},
-  "AMOLED":{"bg":"#000000","panel":"#080808","line":"#222222","text":"#ffffff","muted":"#929292","accent":"#00e676","accentSoft":"#062b18"},
   "Forest":{"bg":"#eef4ec","panel":"#fbfdf9","line":"#cfdccc","text":"#1d2c1e","muted":"#687568","accent":"#4f8a54","accentSoft":"#e2f0e2"},
   "Lavender":{"bg":"#f4f0fa","panel":"#fdfbff","line":"#ddd2ea","text":"#282039","muted":"#766b85","accent":"#8064a8","accentSoft":"#eee7f7"},
   "Rose":{"bg":"#fbf0f2","panel":"#fffafb","line":"#ead1d6","text":"#321d23","muted":"#80666d","accent":"#b45d72","accentSoft":"#f6e2e7"},
   "Solarized":{"bg":"#fdf6e3","panel":"#fffaf0","line":"#eee8d5","text":"#073642","muted":"#657b83","accent":"#268bd2","accentSoft":"#e1f0fb"},
+  "Soft Bloom":{"bg":"#f5f2ff","panel":"#fffefe","line":"#e0d8f3","text":"#30264a","muted":"#766a91","accent":"#9273d6","accentSoft":"#eee8ff"},
+  "Sandstone":{"bg":"#f3eee5","panel":"#fcf8ef","line":"#ddd0bd","text":"#382d20","muted":"#85745e","accent":"#a56f37","accentSoft":"#f0e2cf"},
   "Dracula":{"bg":"#282a36","panel":"#343746","line":"#494c5e","text":"#f8f8f2","muted":"#b8b8c6","accent":"#bd93f9","accentSoft":"#403450"},
   "Gruvbox":{"bg":"#282828","panel":"#32302f","line":"#504945","text":"#ebdbb2","muted":"#a89984","accent":"#b8bb26","accentSoft":"#3b421d"},
   "Cyber":{"bg":"#080b10","panel":"#101722","line":"#263344","text":"#d9f7ff","muted":"#7da0ad","accent":"#00d9ff","accentSoft":"#082d36"},
-  "Terminal":{"bg":"#071107","panel":"#0d190d","line":"#1d351d","text":"#b7ffb7","muted":"#6aa56a","accent":"#39ff74","accentSoft":"#10351b"},
+  "Terminal":{"bg":"#071107","panel":"#0d190d","line":"#1d351d","text":"#b7ffb7","muted":"#6aa56a","accent":"#39d86c","accentSoft":"#10351b"},
+  "Midnight":{"bg":"#101114","panel":"#17191d","line":"#2a2d33","text":"#f2f3f5","muted":"#a4a8b0","accent":"#78c7a0","accentSoft":"#193327"},
+  "AMOLED":{"bg":"#000000","panel":"#080808","line":"#222222","text":"#ffffff","muted":"#929292","accent":"#00e676","accentSoft":"#062b18"},
   "Plum":{"bg":"#241b28","panel":"#302333","line":"#4c384f","text":"#f5e8f2","muted":"#bba7b7","accent":"#d78bc1","accentSoft":"#4b2f45"},
+
   "Water Ocean":{"bg":"#eaf8fb","panel":"#f8feff","line":"#b9e0e9","text":"#103743","muted":"#547d88","accent":"#159bb3","accentSoft":"#d7f2f6"},
   "Blue Blue Sky":{"bg":"#edf6ff","panel":"#fbfdff","line":"#c9def2","text":"#172f4a","muted":"#647f9b","accent":"#438bd8","accentSoft":"#deedff"},
-  "Holi":{"bg":"#fff3fb","panel":"#fffaff","line":"#f0d2e9","text":"#3c2140","muted":"#846781","accent":"#d54fa2","accentSoft":"#fbe0f2"},
-  "Dasain":{"bg":"#fff5ed","panel":"#fffdf9","line":"#ecd6c2","text":"#3d2721","muted":"#86695e","accent":"#b94d42","accentSoft":"#f7e4d7"},
-  "Soft Bloom":{"bg":"#f5f2ff","panel":"#fffefe","line":"#e0d8f3","text":"#30264a","muted":"#766a91","accent":"#9273d6","accentSoft":"#eee8ff"},
-  "Diwali":{"bg":"#17101f","panel":"#281b31","line":"#574064","text":"#fff2d6","muted":"#c5a987","accent":"#ffb72e","accentSoft":"#50331b"},
-  "Christmas":{"bg":"#10201b","panel":"#1a3028","line":"#365a4b","text":"#effbf1","muted":"#a8c6b4","accent":"#e45e69","accentSoft":"#3b292c"},
-  "Aurora":{"bg":"#081b25","panel":"#102a35","line":"#28515b","text":"#e1fff7","muted":"#8ebbb9","accent":"#55e0c1","accentSoft":"#15443f"},
-  "Neon Nights":{"bg":"#100b20","panel":"#1d1633","line":"#40315e","text":"#f5efff","muted":"#b2a2d3","accent":"#e66cff","accentSoft":"#3e2354"},
-  "Deep Sea":{"bg":"#071722","panel":"#0d2635","line":"#21495a","text":"#e3f7ff","muted":"#8cabb9","accent":"#35bde0","accentSoft":"#123e51"},
-  "Rainbow":{"bg":"#20152c","panel":"#2b2038","line":"#594361","text":"#fff7ff","muted":"#c6b0d0","accent":"#ff77ad","accentSoft":"#4b2c54"},
-  "Gradients":{"bg":"#17152b","panel":"#24213d","line":"#48436a","text":"#f7f4ff","muted":"#b4afd0","accent":"#9c8cff","accentSoft":"#39345f"}
+  "Holi":{"bg":"#fff5fb","panel":"#fffaff","line":"#f0dbe9","text":"#3c2940","muted":"#846f83","accent":"#b95f9b","accentSoft":"#f7e7f2"},
+  "Dasain":{"bg":"#fff6ef","panel":"#fffdf9","line":"#ecdcc9","text":"#3d2d25","muted":"#866f60","accent":"#ad6147","accentSoft":"#f5e7d9"},
+  "Gradient Light":{"bg":"#f4f2fa","panel":"#fcfbff","line":"#dcd9ea","text":"#28243a","muted":"#77718c","accent":"#7f75c7","accentSoft":"#e9e6f8"},
+  "Cloud Drift":{"bg":"#eef7ff","panel":"#fbfdff","line":"#cbdff0","text":"#1e3448","muted":"#657e92","accent":"#5a9fcf","accentSoft":"#e0effb"},
+  "Meadow Breeze":{"bg":"#eff8ef","panel":"#fbfef9","line":"#cfe3cf","text":"#203a27","muted":"#6c876f","accent":"#5d9a68","accentSoft":"#e1f1e2"},
+  "Diwali":{"bg":"#17101f","panel":"#281b31","line":"#574064","text":"#f5e9d8","muted":"#bda98e","accent":"#d99a38","accentSoft":"#50331b"},
+  "Christmas":{"bg":"#10201b","panel":"#1a3028","line":"#365a4b","text":"#effbf1","muted":"#a8c6b4","accent":"#cf6570","accentSoft":"#3b292c"},
+  "Northern Lights":{"bg":"#081b25","panel":"#102a35","line":"#28515b","text":"#e1fff7","muted":"#8ebbb9","accent":"#55cdb9","accentSoft":"#15443f"},
+  "Strobe Lights":{"bg":"#141322","panel":"#201d31","line":"#3e395b","text":"#eeeaff","muted":"#aaa4c8","accent":"#8c80dc","accentSoft":"#35304f"},
+  "Gradient Dark":{"bg":"#111323","panel":"#1b1e34","line":"#3d4267","text":"#f1f0ff","muted":"#aaaed0","accent":"#8b8be2","accentSoft":"#30345c"},
+  "Ember Glow":{"bg":"#211613","panel":"#30201b","line":"#55382e","text":"#fff0e6","muted":"#c3a493","accent":"#df8755","accentSoft":"#4a2b25"},
+  "Moonlit":{"bg":"#101827","panel":"#1b273b","line":"#344864","text":"#edf5ff","muted":"#9dafc8","accent":"#83a8da","accentSoft":"#293e5b"}
 };
-const THEME_MOTION={"Water Ocean":"ocean","Blue Blue Sky":"sky","Holi":"holi","Dasain":"dasain","Diwali":"diwali","Christmas":"holiday","Aurora":"aurora","Neon Nights":"neon","Deep Sea":"deepsea","Rainbow":"rainbow","Gradients":"gradient"};
-const THEME_ALIASES={"Ocean":"Water Ocean","Slate":"Blue Blue Sky","Nord":"Blue Blue Sky","Paper Blue":"Blue Blue Sky","Paper Green":"Forest","Monochrome":"Paper"};
+const THEME_MOTION={"Water Ocean":"ocean","Blue Blue Sky":"sky","Holi":"holi","Dasain":"dasain","Gradient Light":"gradient-light","Cloud Drift":"cloud","Meadow Breeze":"meadow","Diwali":"diwali","Christmas":"holiday","Northern Lights":"northernlights","Strobe Lights":"strobe","Gradient Dark":"gradient-dark","Ember Glow":"ember","Moonlit":"moonlit"};
+const THEME_ALIASES={"Ocean":"Water Ocean","Slate":"Blue Blue Sky","Nord":"Blue Blue Sky","Paper Blue":"Blue Blue Sky","Paper Green":"Forest","Monochrome":"Paper","Aurora":"Northern Lights","Neon Nights":"Strobe Lights","Deep Sea":"Water Ocean","Rainbow":"Gradient Dark","Gradients":"Gradient Dark"};
 const encoder=new TextEncoder();
 function bytesToB64(bytes){let s="";bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");}
 function b64ToBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";const bin=atob(s);return Uint8Array.from(bin,c=>c.charCodeAt(0));}
@@ -2182,10 +2368,29 @@ function buildDynamicLogoSvg(primary,secondary,shell){
 }
 function updateDynamicBrandAssets(primary,secondary,shell,bg){
   const svg=buildDynamicLogoSvg(primary,secondary,shell);const favicon=document.getElementById('dynamicFavicon');
-  if(favicon)favicon.href='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+  if(favicon){favicon.href='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);favicon.type='image/svg+xml';}
   const meta=document.getElementById('themeColorMeta');if(meta)meta.content=bg;
   const appName=document.querySelector('meta[name="application-name"]');if(appName)appName.content='Daily Sort';
 }
+let themeParticleTimer=null,gradientMeshTimer=null;
+function refreshThemeParticles(name){
+  const host=document.getElementById("themeParticles");if(!host)return;host.innerHTML="";
+  const motion=THEME_MOTION[name]||"";let symbols=[];
+  if(motion==="dasain")symbols=["🍂","❤️","🌾","🍂","🌺","🌾","🔴"];
+  if(motion==="diwali")symbols=["🎆","✨","🎇","🪔","🧨","✨","🚀"];
+  if(!symbols.length)return;
+  const count=motion==="diwali"?14:24;
+  for(let i=0;i<count;i++){
+    const el=document.createElement("span");el.className="theme-particle";el.textContent=symbols[i%symbols.length];
+    el.style.setProperty("--left",(Math.random()*100)+"vw");el.style.setProperty("--size",(motion==="diwali"?14+Math.random()*13:13+Math.random()*12)+"px");
+    el.style.setProperty("--alpha",motion==="diwali"?(.1+Math.random()*.22):(.1+Math.random()*.2));
+    el.style.setProperty("--duration",(motion==="diwali"?4+Math.random()*5:13+Math.random()*13)+"s");el.style.setProperty("--delay",(-Math.random()*18)+"s");
+    el.style.setProperty("--drift",((Math.random()-.5)*180)+"px");el.style.setProperty("--spin",((Math.random()-.5)*620)+"deg");el.style.setProperty("--top",(12+Math.random()*70)+"vh");host.appendChild(el);
+  }
+}
+function randomMeshColor(dark){const h=Math.floor(Math.random()*360);const s=dark?65+Math.random()*25:58+Math.random()*26;const l=dark?38+Math.random()*28:65+Math.random()*24;return `hsla(${h},${s}%,${l}%,.7)`;}
+function updateGradientMesh(){const dark=document.documentElement.dataset.themeDark==="true";const root=document.documentElement;["a","b","c","d"].forEach(k=>root.style.setProperty(`--mesh-${k}`,randomMeshColor(dark)));}
+function startGradientMesh(name){if(gradientMeshTimer){clearInterval(gradientMeshTimer);gradientMeshTimer=null;}if(name==="Gradient Light"||name==="Gradient Dark"){updateGradientMesh();gradientMeshTimer=setInterval(()=>{if(document.visibilityState!=="hidden")updateGradientMesh();},2400);}}
 function applyTheme(name, sync=true){
   name=THEME_ALIASES[name]||name;const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;
   const hex=t.bg.replace('#','');const rgb=hex.length===3?hex.split('').map(x=>parseInt(x+x,16)):hex.match(/.{2}/g).map(x=>parseInt(x,16));
@@ -2196,18 +2401,19 @@ function applyTheme(name, sync=true){
   r.style.setProperty('--bg',t.bg);r.style.setProperty('--panel',t.panel);r.style.setProperty('--line',t.line);r.style.setProperty('--text',t.text);r.style.setProperty('--muted',t.muted);r.style.setProperty('--accent',t.accent);r.style.setProperty('--accent-soft',t.accentSoft);
   r.style.setProperty('--input',t.input||t.panel);r.style.setProperty('--button',t.button||t.panel);r.style.setProperty('--card',t.card||t.panel);r.style.setProperty('--details',t.details||t.panel);r.style.setProperty('--soft',t.soft||t.accentSoft);r.style.setProperty('--later-bg',t.laterBg||t.panel);r.style.setProperty('--later-head',t.laterHead||t.panel);r.style.setProperty('--red',t.red||'#b56b67');
   r.style.setProperty('--logo-primary',t.accent);r.style.setProperty('--logo-secondary',secondary);r.style.setProperty('--logo-shell',shell);r.style.setProperty('--logo-wave',wave);
+  r.style.setProperty('--danger-bg',isDark?'#641f2b':'#ffe6e9');r.style.setProperty('--danger-text',isDark?'#ffb8c2':'#8b1e2d');r.style.setProperty('--danger-border',isDark?'#b64a5c':'#e8a2ad');
   r.style.setProperty('--zone-arrow-bg',isDark?'#e4f5ff':'#17364f');r.style.setProperty('--zone-arrow-fg',isDark?'#102a3e':'#f2faff');r.style.setProperty('--zone-arrow-border',isDark?'#9bcbe5':'#315b78');r.style.setProperty('--zone-arrow-hover',isDark?'#b9e9ff':'#285c80');r.style.setProperty('--zone-arrow-hover-fg',isDark?'#0b2637':'#ffffff');
   document.body.dataset.activeTheme=name;document.body.dataset.themeMotion=THEME_MOTION[name]||'';localStorage.setItem(THEME_KEY,name);
   document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===name));
-  updateDynamicBrandAssets(t.accent,secondary,shell,t.bg);if(sync)queueCloudSave();
+  updateDynamicBrandAssets(t.accent,secondary,shell,t.bg);refreshThemeParticles(name);startGradientMesh(name);if(sync)queueCloudSave();
 }
 const STATIC_THEME_GROUPS={
-  "Light":["Paper","Forest","Lavender","Rose","Solarized","Soft Bloom"],
-  "Dark":["Dracula","Gruvbox","Cyber","Terminal","Midnight","AMOLED"]
+  "Light":["Paper","Forest","Lavender","Rose","Solarized","Soft Bloom","Sandstone"],
+  "Dark":["Dracula","Gruvbox","Cyber","Terminal","Midnight","AMOLED","Plum"]
 };
 const LIVE_THEME_GROUPS={
-  "Light":["Water Ocean","Blue Blue Sky","Holi","Dasain"],
-  "Dark":["Diwali","Christmas","Aurora","Neon Nights","Deep Sea","Rainbow","Gradients","Plum"]
+  "Light":["Water Ocean","Blue Blue Sky","Holi","Dasain","Gradient Light","Cloud Drift","Meadow Breeze"],
+  "Dark":["Diwali","Christmas","Northern Lights","Strobe Lights","Gradient Dark","Ember Glow","Moonlit"]
 };
 function themeButtons(names){return names.map(n=>`<button class="theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");}
 function renderThemes(){
@@ -2284,6 +2490,7 @@ async function setupRealtime(token=getSessionToken()){
   const digest=await crypto.subtle.digest("SHA-256",encoder.encode("daily-sort-channel:"+token));
   const channelId=Array.from(new Uint8Array(digest).slice(0,12)).map(b=>b.toString(16).padStart(2,"0")).join("");
   realtimeChannel=sb.channel("daily-sort-live-"+channelId,{config:{broadcast:{self:false}}})
+    .on("broadcast",{event:"deleted"},async()=>{await rotateRevokedSessionOnThisDevice(token,"This session was deleted remotely");})
     .on("broadcast",{event:"state"},async({payload})=>{
       if(!payload?.encrypted || applyingRemote)return;
       try{
@@ -2333,9 +2540,10 @@ async function pullCloud(tokenOverride=null){
       }
     }
     cloudReady=true;
-    await pushCloud(token);
-    updateCloudStatus("Cloud: connected");
-    return true;
+    const created=await pushCloud(token);
+    if(!created){await new Promise(resolve=>setTimeout(resolve,80));if(getSessionToken()!==token)return true;}
+    updateCloudStatus(created?"Cloud: connected":"Cloud: unavailable — local session preserved");
+    return !!created;
   }catch(e){
     console.warn("Daily Sort cloud sync unavailable",e);
     updateCloudStatus("Cloud: unavailable — local session preserved");
@@ -2343,6 +2551,7 @@ async function pullCloud(tokenOverride=null){
   }
 }
 async function pushCloud(tokenOverride=null){
+  let token=tokenOverride||getSessionToken();
   try{await ensureSupabase()}catch(err){updateCloudStatus("Cloud: unavailable · "+err.message);return false;}
   if(syncingCloud){
     // A newer edit arrived while a save was running; the finally block will flush it.
@@ -2351,7 +2560,6 @@ async function pushCloud(tokenOverride=null){
   syncingCloud=true;
   const changeSnapshot=localChangeAt;
   try{
-    const token=tokenOverride||getSessionToken();
     // Freeze one consistent version so edits during encryption are not lost.
     const payload={
       state:JSON.parse(JSON.stringify(state)),
@@ -2369,7 +2577,7 @@ async function pushCloud(tokenOverride=null){
     const {error}=await sb.rpc("daily_sort_save_session",{p_token:token,p_data:JSON.parse(encrypted)});
     if(error) throw error;
     return true;
-  }catch(e){console.warn("Daily Sort cloud save failed",e);return false}
+  }catch(e){console.warn("Daily Sort cloud save failed",e);if(/revoked|deleted session/i.test(String(e?.message||e))){const revokedToken=token;setTimeout(()=>rotateRevokedSessionOnThisDevice(revokedToken,"This session was deleted remotely"),0);}return false}
   finally{
     syncingCloud=false;
     if(cloudReady && localChangeAt>changeSnapshot)queueCloudSave();
@@ -2432,13 +2640,21 @@ document.getElementById("sessionModal").onclick=e=>{if(e.target.id==="sessionMod
 document.getElementById("revealToken").onclick=()=>{const x=document.getElementById("sessionToken");x.type=x.type==="password"?"text":"password";document.getElementById("revealToken").textContent=x.type==="password"?"Show":"Hide"};
 document.getElementById("copyToken").onclick=async()=>{try{await navigator.clipboard.writeText(getSessionToken());toast("Token copied ✅")}catch(e){toast("Could not copy token — check clipboard permission")}};
 
-// The delete-account sequence is intentionally a harmless UI gag: it never calls Supabase or changes local data.
+// Account deletion: the flood is the theatrical confirmation; actual deletion is explicit in the next step.
 const deletePrankOverlay=document.getElementById("deletePrankOverlay");
 const deletePrankRain=document.getElementById("deletePrankRain");
 const deletePrankDialog=document.getElementById("deletePrankDialog");
 const kissScreen=document.getElementById("kissScreen");
-let deletePrankTimer=null;
-function closeDeletePrank(){if(deletePrankTimer)clearTimeout(deletePrankTimer);deletePrankOverlay.hidden=true;deletePrankDialog.hidden=true;kissScreen.hidden=true;deletePrankRain.innerHTML="";const flood=document.getElementById("deleteFlood"),label=document.getElementById("deleteFloodLabel");if(flood)flood.classList.remove("flooding","retreat");if(label)label.classList.remove("visible");}
+const deleteFinalConfirm=document.getElementById("deleteFinalConfirm");
+let deletePrankTimers=[];
+function clearDeletePrankTimers(){deletePrankTimers.forEach(clearTimeout);deletePrankTimers=[];}
+function closeDeletePrank(){
+  clearDeletePrankTimers();
+  deletePrankOverlay.hidden=true;deletePrankDialog.hidden=true;kissScreen.hidden=true;deleteFinalConfirm.hidden=true;
+  deletePrankRain.innerHTML="";document.getElementById("deleteFinalWord").value="";document.getElementById("executeFinalDelete").disabled=true;
+  const flood=document.getElementById("deleteFlood"),label=document.getElementById("deleteFloodLabel");
+  if(flood)flood.classList.remove("flooding","retreat");if(label)label.classList.remove("visible");
+}
 function makePrankRain(symbols,count=46){
   deletePrankRain.innerHTML="";
   for(let i=0;i<count;i++){
@@ -2447,20 +2663,71 @@ function makePrankRain(symbols,count=46){
   }
 }
 function beginDeletePrank(){
-  deletePrankOverlay.hidden=false;deletePrankDialog.hidden=true;kissScreen.hidden=true;deletePrankRain.hidden=false;
+  clearDeletePrankTimers();
+  deletePrankOverlay.hidden=false;deletePrankDialog.hidden=true;kissScreen.hidden=true;deleteFinalConfirm.hidden=true;deletePrankRain.hidden=false;
+  document.getElementById("deleteFinalWord").value="";document.getElementById("executeFinalDelete").disabled=true;
   makePrankRain(["🚨","🔔","💥","🧨","💣","🚨"],52);
-  deletePrankTimer=setTimeout(()=>{deletePrankDialog.hidden=false;deletePrankDialog.querySelector(".prank-siren").textContent="🚨 🔔 💥";},1700);
+  deletePrankTimers.push(setTimeout(()=>{deletePrankDialog.hidden=false;deletePrankDialog.querySelector(".prank-siren").textContent="🚨 🔔 💥";},1700));
 }
-document.getElementById("deleteAccountPrank").onclick=beginDeletePrank;
-document.getElementById("prankConfirmDelete").onclick=()=>{
-  deletePrankRain.hidden=true;
+function showFinalDeleteConfirmation(){
+  deletePrankDialog.hidden=true;deletePrankRain.hidden=true;
   const flood=document.getElementById("deleteFlood"),label=document.getElementById("deleteFloodLabel");
   flood.classList.remove("retreat");flood.classList.add("flooding");
-  deletePrankDialog.hidden=true;
-  deletePrankTimer=setTimeout(()=>{label.classList.add("visible");},5300);
-  deletePrankTimer=setTimeout(()=>{label.classList.remove("visible");flood.classList.add("retreat");},7600);
-  deletePrankTimer=setTimeout(()=>{flood.classList.remove("flooding","retreat");deletePrankOverlay.hidden=true;toast("No account was deleted. Secure account deletion needs a server-side auth endpoint.");},11100);
-};
+  clearDeletePrankTimers();
+  deletePrankTimers.push(setTimeout(()=>label.classList.add("visible"),5300));
+  deletePrankTimers.push(setTimeout(()=>{label.classList.remove("visible");flood.classList.add("retreat");},7600));
+  deletePrankTimers.push(setTimeout(()=>{flood.classList.remove("flooding","retreat");deleteFinalConfirm.hidden=false;document.getElementById("deleteFinalWord").focus();},11100));
+}
+async function waitForCloudIdle(maxWait=12000){const until=Date.now()+maxWait;while(syncingCloud&&Date.now()<until)await new Promise(resolve=>setTimeout(resolve,50));return !syncingCloud;}
+async function rotateRevokedSessionOnThisDevice(oldToken, message="This session was deleted on another device"){
+  if(getSessionToken()!==oldToken)return;
+  try{clearTimeout(cloudTimer);if(realtimeChannel){try{await sb.removeChannel(realtimeChannel)}catch(e){}}}catch(e){}
+  realtimeChannel=null;realtimeToken=null;cloudReady=false;
+  const newToken=randomToken();state={tasks:[]};selectedTaskIds.clear();undoStack.length=0;redoStack.length=0;
+  localStorage.setItem(STORAGE,JSON.stringify(state));localStorage.setItem(DRAFT_KEY,"");localStorage.setItem(SESSION_KEY,newToken);
+  setDraftValue("");lastSavedSnapshot=JSON.stringify(state);setDraftValue("");
+  render();
+  const tokenField=document.getElementById("sessionToken");if(tokenField)tokenField.value=newToken;
+  try{await waitForCloudIdle();await setupRealtime(newToken);cloudReady=true;const ok=await pushCloud(newToken);updateCloudStatus(ok?"Cloud: connected · fresh session created":"Cloud: fresh session created locally · cloud save pending");if(!ok)setTimeout(()=>pushCloud(newToken),1200);}
+  catch(e){updateCloudStatus("Cloud: fresh local session · sync unavailable");}
+  toast(message+" · fresh token created");
+}
+async function permanentlyDeleteCurrentSession(){
+  const button=document.getElementById("executeFinalDelete"),status=document.getElementById("deleteFinalStatus");
+  const oldToken=getSessionToken();button.disabled=true;status.textContent="Deleting the encrypted session from Supabase…";
+  try{
+    await ensureSupabase();
+    const {data,error}=await sb.rpc("daily_sort_delete_session",{p_token:oldToken});
+    if(error)throw error;
+    // Tell connected devices to clear the deleted token; database revocation blocks sleeping/offline devices too.
+    if(realtimeChannel){try{await realtimeChannel.send({type:"broadcast",event:"deleted",payload:{at:Date.now()}})}catch(e){}try{await sb.removeChannel(realtimeChannel)}catch(e){}}
+    realtimeChannel=null;realtimeToken=null;clearTimeout(cloudTimer);cloudReady=false;
+    await waitForCloudIdle();
+    const freshToken=randomToken();state={tasks:[]};selectedTaskIds.clear();undoStack.length=0;redoStack.length=0;
+    localStorage.setItem(STORAGE,JSON.stringify(state));localStorage.setItem(DRAFT_KEY,"");localStorage.setItem(SESSION_KEY,freshToken);
+    setDraftValue("");lastSavedSnapshot=JSON.stringify(state);render();
+    const tokenField=document.getElementById("sessionToken");if(tokenField)tokenField.value=freshToken;
+    const importField=document.getElementById("sessionImportToken");if(importField)importField.value="";
+    await setupRealtime(freshToken);cloudReady=true;
+    const saved=await pushCloud(freshToken);
+    if(!saved)setTimeout(()=>pushCloud(freshToken),1200);
+    updateCloudStatus(saved?"Cloud: connected · previous session deleted, fresh session ready":"Cloud: old session deleted · new token created locally; cloud save pending");
+    deleteFinalConfirm.hidden=true;deletePrankOverlay.hidden=true;toast(saved?"Session deleted. Fresh token created.":"Old session deleted. Fresh local token created; cloud save pending.");
+    if(document.getElementById("sessionModal").classList.contains("show"))document.getElementById("sessionToken").value=freshToken;
+  }catch(error){
+    console.error("Daily Sort account deletion failed",error);
+    button.disabled=false;
+    const detail=String(error?.message||error);
+    status.textContent=/daily_sort_delete_session|function .* does not exist|schema cache/i.test(detail)
+      ?"Deletion is not configured yet. Run supabase/delete-account.sql in the Supabase SQL Editor, then retry. Nothing was deleted."
+      :"Deletion failed: "+detail+". Your existing token and data were left unchanged.";
+  }
+}
+document.getElementById("deleteAccountPrank").onclick=beginDeletePrank;
+document.getElementById("prankConfirmDelete").onclick=showFinalDeleteConfirmation;
+document.getElementById("deleteFinalWord").addEventListener("input",e=>{document.getElementById("executeFinalDelete").disabled=e.target.value.trim()!=="DELETE";});
+document.getElementById("executeFinalDelete").onclick=permanentlyDeleteCurrentSession;
+document.getElementById("cancelFinalDelete").onclick=closeDeletePrank;
 document.getElementById("prankOops").onclick=()=>{deletePrankDialog.hidden=true;deletePrankRain.hidden=true;kissScreen.hidden=false;};
 document.getElementById("closeDeletePrank").onclick=closeDeletePrank;
 document.getElementById("closeKiss").onclick=closeDeletePrank;
@@ -2691,7 +2958,7 @@ setInterval(syncOnlineClock,15*60*1000);
 <script>
 /* v28 cache freshness: check after tab return, focus, and page restore. */
 if("serviceWorker" in navigator && location.protocol==="https:"){
-  const DS_SW_BUILD="2026-11-26-v29";
+  const DS_SW_BUILD="2026-11-26-v31";
   let dsRegistration=null,dsLastFreshCheck=0;
   let dsHadController=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{
@@ -2714,6 +2981,27 @@ if("serviceWorker" in navigator && location.protocol==="https:"){
   window.addEventListener("focus",()=>checkDailySortCache());
   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkDailySortCache(true);});
 }
+
+// Phone landscape: stretch both task columns to the visible viewport, leaving ~3 cm below.
+function fitLandscapeBoard(){
+  const mq=window.matchMedia("(max-width: 900px) and (orientation: landscape)");
+  if(!mq.matches || document.body.classList.contains("dynamic-panels"))return;
+  const board=document.querySelector(".board");if(!board)return;
+  const top=board.getBoundingClientRect().top;
+  const gap=Math.max(34,Math.min(64,window.innerHeight*.065));
+  const height=Math.max(220,window.innerHeight-top-gap);
+  document.querySelectorAll(".board>.panel").forEach(panel=>{
+    panel.style.setProperty("height",height+"px","important");
+    panel.style.setProperty("min-height","0px","important");
+    panel.style.setProperty("max-height","none","important");
+  });
+}
+let landscapeFitFrame=0;
+function scheduleLandscapeFit(){cancelAnimationFrame(landscapeFitFrame);landscapeFitFrame=requestAnimationFrame(()=>requestAnimationFrame(fitLandscapeBoard));}
+window.addEventListener("resize",scheduleLandscapeFit,{passive:true});window.addEventListener("orientationchange",()=>setTimeout(scheduleLandscapeFit,160),{passive:true});
+if(window.visualViewport)window.visualViewport.addEventListener("resize",scheduleLandscapeFit,{passive:true});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")scheduleLandscapeFit();});
+setTimeout(scheduleLandscapeFit,80);
 </script>
 </body>
 </html>
