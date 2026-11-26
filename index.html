@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#171923">
+<meta name="daily-sort-build" content="2026-11-26-v28">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="./icons/daily-sort.svg">
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
@@ -829,8 +830,8 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
 .arrange-number-option label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:650;color:var(--text);cursor:pointer}
 .arrange-number-option input{width:16px;height:16px;accent-color:var(--accent)}
 .arrange-number-option small{font-size:11px;color:var(--muted)}
-body.show-task-numbers .card{position:relative;padding-top:29px}
-body.show-task-numbers .card .task-number{display:block!important;position:absolute;top:7px;left:10px;min-width:0;padding:0;color:var(--muted);font:600 14px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:left}
+body.show-task-numbers .card{position:relative;padding-top:0}
+body.show-task-numbers .card .task-number{display:grid!important;place-items:center;align-self:flex-start;position:static;min-width:24px;width:24px;height:24px;padding:0;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:750 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center}
 body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-color)}
 
 
@@ -1004,6 +1005,116 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
 .clear-selection-btn{white-space:nowrap!important;min-height:30px!important;padding:5px 10px!important;font-size:12px!important;}
 .bulk-tools #clearSelection{align-self:center;}
 .arrange-step-content #clearSelection{align-self:center;margin-top:2px;}
+
+
+/* v28 — compact numbering, mobile two-column board, usable action rail */
+.task-number{display:none!important}
+body.show-task-numbers .card .task-number{display:grid!important;place-items:center;align-self:flex-start;position:static!important;flex:none;width:24px;height:24px;min-width:24px;padding:0!important;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:750 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center}
+body.show-task-numbers .card{padding-top:0!important}
+body.show-task-numbers .card-main{display:grid;grid-template-columns:24px 20px minmax(0,1fr) auto;gap:8px;align-items:start}
+body.show-task-numbers .task-number{grid-column:1}
+body.show-task-numbers .card-main>.check{grid-column:2}
+body.show-task-numbers .card-main>.task-body{grid-column:3}
+body.show-task-numbers .card-main>.card-tools{grid-column:4}
+.card-tools .reorder-arrow{color:var(--accent);background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 22%,transparent)}
+.card-tools .zone-arrow{color:#277fba;background:#e3f1fb;border:1px solid #bfdef2;font-weight:900}
+.card-tools .reorder-arrow:hover{background:var(--accent);color:white}
+.card-tools .zone-arrow:hover{background:#277fba;color:white;border-color:#277fba}
+.dump-btn{background:#e3f1fb!important;color:#236f9f!important;border:1px solid #b8d9ef!important;font-size:18px!important}
+.dump-btn:hover{background:#cce8fa!important;color:#15577f!important}
+
+/* Keep the primary action strip visible while scrolling. */
+.toolbar{position:sticky!important;top:0!important;z-index:30!important;padding:8px 10px!important;margin:0 0 10px!important;border:1px solid var(--line);border-radius:14px;background:var(--surface-glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 7px 22px color-mix(in srgb,var(--text) 9%,transparent)}
+.bulk-tools{position:sticky!important;top:58px!important;z-index:29!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+
+/* Search */
+.task-search{width:100%;display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:9px 13px;border:1px solid var(--line);border-radius:14px;background:var(--surface-glass);box-shadow:0 4px 14px color-mix(in srgb,var(--text) 5%,transparent)}
+.task-search-icon{font-size:25px;line-height:1;color:var(--accent);font-weight:800}
+.task-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font-size:15px;padding:5px 0}
+.task-search input::placeholder{color:var(--muted);opacity:.85}
+.search-result-count{flex:none;color:var(--muted);font-size:12px;font-weight:650;font-variant-numeric:tabular-nums}
+.search-empty{min-height:105px}
+.delete-selected-btn{border-color:color-mix(in srgb,var(--red) 42%,var(--line))!important;color:var(--red)!important;background:color-mix(in srgb,var(--red) 9%,var(--panel))!important}
+.delete-selected-btn:hover{background:color-mix(in srgb,var(--red) 17%,var(--panel))!important}
+
+/* Moving seasonal and gradient atmospheres: subtle behind the usable surfaces. */
+.wrap{position:relative;z-index:1}
+body::before{content:"";position:fixed;inset:-25%;z-index:0;pointer-events:none;opacity:0;background-size:260% 260%;transform:translateZ(0)}
+body[data-theme-motion="rainbow"]::before{opacity:.15;background-image:linear-gradient(120deg,#ff4d6d,#ffb84d,#f5ef62,#62df9a,#53b9ff,#a77bff,#ff4dce);animation:dsRainbow 22s linear infinite}
+body[data-theme-motion="gradient"]::before{opacity:.2;background-image:radial-gradient(at 20% 20%,#a16cff,transparent 38%),radial-gradient(at 80% 30%,#38c9d7,transparent 38%),radial-gradient(at 50% 85%,#e45ba8,transparent 42%);animation:dsGradient 19s ease-in-out infinite alternate}
+body[data-theme-motion="aurora"]::before{opacity:.22;background-image:radial-gradient(ellipse at 25% 35%,#1dc9a2,transparent 40%),radial-gradient(ellipse at 72% 38%,#3989d8,transparent 42%),radial-gradient(ellipse at 52% 85%,#a05ce6,transparent 38%);animation:dsAurora 24s ease-in-out infinite alternate}
+body[data-theme-motion="ocean"]::before{opacity:.16;background-image:linear-gradient(130deg,#b9f4ef,#56c6df,#a2ddf5,#6bcdb9);animation:dsOcean 18s ease-in-out infinite alternate}
+body[data-theme-motion="diwali"]::before{opacity:.12;background-image:radial-gradient(circle at 25% 25%,#ffbe42,transparent 12%),radial-gradient(circle at 75% 40%,#ff6a33,transparent 13%),radial-gradient(circle at 50% 78%,#f8db80,transparent 10%);animation:dsDiwali 11s ease-in-out infinite alternate}
+body[data-theme-motion="holiday"]::before{opacity:.13;background-image:radial-gradient(circle at 15% 22%,#e7fff2 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,#e7fff2 0 2px,transparent 3px),radial-gradient(circle at 48% 36%,#e7fff2 0 2px,transparent 3px);background-size:120px 120px;animation:dsSnow 18s linear infinite}
+@keyframes dsRainbow{0%{background-position:0% 50%;transform:rotate(0deg) scale(1.1)}100%{background-position:100% 50%;transform:rotate(360deg) scale(1.1)}}
+@keyframes dsGradient{0%{background-position:0% 0%;transform:scale(1)}100%{background-position:100% 100%;transform:scale(1.12)}}
+@keyframes dsAurora{0%{background-position:0% 30%;filter:hue-rotate(0deg)}100%{background-position:100% 70%;filter:hue-rotate(55deg)}}
+@keyframes dsOcean{0%{background-position:0% 30%;transform:translateY(-2%)}100%{background-position:100% 70%;transform:translateY(2%)}}
+@keyframes dsDiwali{0%{filter:brightness(.9);transform:scale(1)}100%{filter:brightness(1.3);transform:scale(1.05)}}
+@keyframes dsSnow{0%{background-position:0 -100px}100%{background-position:30px 100vh}}
+@media(prefers-reduced-motion:reduce){body[data-theme-motion]::before{animation:none!important}.card,.btn{transition:none!important}}
+
+/* Mobile: two usable columns, task text gets the width, tools become a slim vertical rail. */
+@media(max-width:640px){
+  .wrap{padding:12px 9px 24px!important}
+  .toolbar{top:0!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;padding:7px!important;margin:0 0 8px!important}
+  .toolbar .btn{min-width:0!important;min-height:39px!important;padding:7px 5px!important;font-size:12px!important}
+  .bulk-tools{top:104px!important;padding:8px!important;gap:6px!important}
+  .bulk-tools .selection-count{width:auto!important;text-align:left!important;margin-left:0!important}
+  .task-search{gap:7px;padding:7px 9px;margin-bottom:9px}
+  .task-search-icon{font-size:22px}
+  .task-search input{font-size:14px}
+  .search-result-count{font-size:10px}
+  .board{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;align-items:stretch!important}
+  .panel{height:auto!important;min-height:0!important;max-height:none!important;border-radius:13px!important}
+  .panel-head{padding:10px 8px!important;gap:4px}
+  .panel-head>div:first-child{min-width:0}
+  .panel-title{font-size:15px!important;white-space:nowrap}
+  .panel-head>div:first-child>div:last-child{font-size:9px!important;line-height:1.25!important}
+  .panel-head-actions{gap:4px!important}
+  .dump-btn{width:25px!important;height:25px!important;font-size:16px!important}
+  .count{min-width:25px!important;height:25px!important;font-size:11px!important}
+  .cards{padding:6px!important;min-height:220px!important;max-height:58dvh!important;overflow-y:auto!important;overscroll-behavior:contain}
+  body.dynamic-panels .cards{min-height:0!important;max-height:none!important;overflow:visible!important}
+  .card{margin-bottom:6px!important;border-radius:10px!important}
+  .card-main{display:grid!important;grid-template-columns:18px minmax(0,1fr) 25px!important;gap:5px!important;padding:7px 5px!important;align-items:start!important}
+  .card-main>.check{grid-column:1!important;width:16px!important;height:16px!important;margin-top:3px!important}
+  .card-main>.task-body{grid-column:2!important;min-width:0!important}
+  .card-main>.card-tools{grid-column:3!important;grid-row:1!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:2px!important;width:25px!important;min-width:25px!important}
+  .card-tools .icon-btn,.card-tools .expand{width:25px!important;min-width:25px!important;height:25px!important;min-height:25px!important;padding:0!important;font-size:14px!important;border-radius:7px!important}
+  .card-tools .insert-below{width:22px!important;height:22px!important;min-width:22px!important;opacity:1!important;pointer-events:auto!important}
+  .select-task{width:16px!important;height:16px!important;margin:0!important;align-self:center}
+  .task-title-edit{font-size:13px!important;line-height:1.4!important;padding:2px!important;min-height:27px!important;overflow-wrap:anywhere;word-break:break-word}
+  .details{padding:8px!important}
+  .details textarea{font-size:13px!important}
+  body.show-task-numbers .card-main{grid-template-columns:20px 17px minmax(0,1fr) 25px!important}
+  body.show-task-numbers .card-main>.task-number{grid-column:1!important;width:20px!important;height:20px!important;min-width:20px!important;font-size:10px!important;margin-top:1px}
+  body.show-task-numbers .card-main>.check{grid-column:2!important;width:15px!important;height:15px!important}
+  body.show-task-numbers .card-main>.task-body{grid-column:3!important}
+  body.show-task-numbers .card-main>.card-tools{grid-column:4!important}
+  .toggle-list-heading{flex-wrap:wrap;font-size:12px!important;gap:4px}
+  .toggle-list-row{gap:4px!important;flex-wrap:wrap}
+  .toggle-row-tools{flex:none}
+  .arrange-tools{position:static!important}
+}
+@media(max-width:900px) and (pointer:coarse){
+  .board{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  .panel{height:auto!important;min-height:0!important;max-height:none!important}
+  .cards{max-height:58dvh!important;min-height:190px!important;overflow-y:auto!important}
+  body.dynamic-panels .cards{max-height:none!important;overflow:visible!important}
+  .card-tools{flex-direction:column!important;align-items:stretch!important;width:26px!important;min-width:26px!important}
+  .card-tools .icon-btn,.card-tools .expand{width:26px!important;min-width:26px!important;height:26px!important}
+}
+@media(max-width:380px){
+ .panel-head{padding:8px 6px!important}
+ .panel-title{font-size:14px!important}
+ .cards{padding:4px!important}
+ .card-main{gap:4px!important;padding:6px 4px!important}
+ .task-title-edit{font-size:12px!important}
+ .card-main>.card-tools{width:23px!important;min-width:23px!important}
+ .card-tools .icon-btn,.card-tools .expand{width:23px!important;min-width:23px!important;height:23px!important}
+}
+
 </style>
 
 </head>
@@ -1059,6 +1170,7 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
     <button class="btn" id="removeSelectedColor">Remove color</button>
     <span class="selection-count" id="selectionCount">0 selected</span>
     <button class="btn clear-selection-btn" id="clearSelection" type="button" hidden>✕ Unselect all</button>
+    <button class="btn delete-selected-btn" id="deleteSelected" type="button" hidden>🗑️ Delete selected</button>
   </div>
   <section class="arrange-tools" id="arrangeTools" hidden aria-label="Move selected tasks step by step">
     <div class="arrange-step">
@@ -1097,6 +1209,12 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
     </div>
   </section>
 
+  <div class="task-search" role="search">
+    <span class="task-search-icon" aria-hidden="true">⌕</span>
+    <input id="taskSearch" type="search" placeholder="Search tasks and notes…" autocomplete="off" aria-label="Search tasks and notes">
+    <span id="searchResultCount" class="search-result-count" aria-live="polite">All tasks</span>
+  </div>
+
   <main class="board">
     <section class="panel">
       <div class="panel-head">
@@ -1104,7 +1222,7 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
           <div class="panel-title">☀️ Today</div>
           <div style="color:var(--muted);font-size:12px;margin-top:3px">Everything you are considering for today</div>
         </div>
-        <div class="panel-head-actions"><button class="dump-btn" id="dumpToday" title="Move all Today task titles into the paste box">↑</button><div class="count" id="todayCount">0</div></div>
+        <div class="panel-head-actions"><button class="dump-btn" id="dumpToday" title="Move all Today task titles into the paste box">⇧</button><div class="count" id="todayCount">0</div></div>
       </div>
       <div class="cards" id="todayCards" data-zone="today"></div>
     </section>
@@ -1115,7 +1233,7 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
           <div class="panel-title">🌙 Not Today</div>
           <div style="color:var(--muted);font-size:12px;margin-top:3px">Still saved. Just not today's work.</div>
         </div>
-        <div class="panel-head-actions"><button class="dump-btn" id="dumpLater" title="Move all Not Today task titles into the paste box">↑</button><div class="count" id="laterCount">0</div></div>
+        <div class="panel-head-actions"><button class="dump-btn" id="dumpLater" title="Move all Not Today task titles into the paste box">⇧</button><div class="count" id="laterCount">0</div></div>
       </div>
       <div class="cards" id="laterCards" data-zone="later"></div>
     </section>
@@ -1370,6 +1488,8 @@ function updateSelectionCount(){
   const arrangeCount=document.getElementById("arrangeSelectionCount");
   if(arrangeCount)arrangeCount.textContent=selectedTaskIds.size+" selected · from either column";
   const clearButton=document.getElementById("clearSelection");
+  const deleteButton=document.getElementById("deleteSelected");
+  if(deleteButton)deleteButton.hidden=selectedTaskIds.size===0;
   const arrangePanel=document.getElementById("arrangeTools");
   const toolbar=document.querySelector(".bulk-tools");
   const selectionCount=document.getElementById("selectionCount");
@@ -1444,16 +1564,16 @@ function taskCard(t,number){
   return `
   <article class="card ${t.done?"done":""} ${t.open?"open":""} ${selectedTaskIds.has(t.id)?"selected":""}" draggable="true" data-id="${t.id}" ${color?`data-task-color style="--task-color:${color}"`:""}>
     <div class="card-main">
-      <span class="task-number">${number}.</span>
+      <span class="task-number" aria-hidden="true">${number}</span>
       <button class="check" data-action="complete" title="Complete"></button>
       <div class="task-body">
         ${parseToggleList(t.text) ? `<div class="toggle-list-heading"><button class="toggle-list-collapse" data-action="toggle-list-collapse" aria-expanded="${!t.listCollapsed}" title="${t.listCollapsed?"Expand":"Collapse"} list">${t.listCollapsed?"▸":"▾"}</button><input class="toggle-list-title-edit" data-action="toggle-list-title" type="text" value="${escapeHtml(parseToggleList(t.text).title)}" aria-label="Toggle list title" title="Edit checklist title"><span class="toggle-list-count">${parseToggleList(t.text).length} items</span></div>${t.listCollapsed?"":toggleListMarkup(t)}` : `<textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(parseColorSyntax(t.text).body)}</textarea>`}
       </div>
       <div class="card-tools">
         <button class="insert-below" data-action="insert-below" aria-label="Add an empty task below" title="Add empty task below"></button>
-        <button class="icon-btn" data-action="up" title="Move up">↑</button>
-        <button class="icon-btn" data-action="down" title="Move down">↓</button>
-        <button class="icon-btn" data-action="move-later" title="${t.zone==="later"?"Move to Today":"Move to Not Today"}">${t.zone==="later"?"←":"→"}</button>
+        <button class="icon-btn reorder-arrow" data-action="up" title="Move task up" aria-label="Move task up">↑</button>
+        <button class="icon-btn reorder-arrow" data-action="down" title="Move task down" aria-label="Move task down">↓</button>
+        <button class="icon-btn zone-arrow" data-action="move-later" title="${t.zone==="later"?"Move to Today":"Move to Not Today"}" aria-label="${t.zone==="later"?"Move to Today":"Move to Not Today"}">${t.zone==="later"?"⇦":"⇨"}</button>
         <input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task for bulk actions" title="Select task for bulk actions">
         <button class="expand" data-action="expand" title="Expand">${t.open?"⌃":"⌄"}</button>
       </div>
@@ -1468,18 +1588,22 @@ function taskCard(t,number){
   </article>`;
 }
 function renderCards(){
-  const today=state.tasks.filter(t=>t.zone!=="later");
-  const later=state.tasks.filter(t=>t.zone==="later");
+  const todayAll=state.tasks.filter(t=>t.zone!=="later");
+  const laterAll=state.tasks.filter(t=>t.zone==="later");
+  const q=(document.getElementById("taskSearch")?.value||"").trim().toLocaleLowerCase();
+  const matches=t=>!q || [parseColorSyntax(t.text).body,t.notes||""].join("\n").toLocaleLowerCase().includes(q);
+  const today=todayAll.filter(matches),later=laterAll.filter(matches);
   const tc=document.getElementById("todayCards");
   const lc=document.getElementById("laterCards");
 
-  document.getElementById("todayCount").textContent=today.length;
-  document.getElementById("laterCount").textContent=later.length;
-
-  tc.innerHTML=today.length ? today.map((t,i)=>taskCard(t,i+1)).join("") :
-    `<div class="empty">No tasks for today.<br>Paste a bunch above and start sorting.</div>`;
-  lc.innerHTML=later.length ? later.map((t,i)=>taskCard(t,i+1)).join("") :
-    `<div class="empty">Nothing parked here.<br>Drag a task here when it isn't today's problem.</div>`;
+  document.getElementById("todayCount").textContent=todayAll.length;
+  document.getElementById("laterCount").textContent=laterAll.length;
+  tc.innerHTML=today.length ? today.map(t=>taskCard(t,todayAll.indexOf(t)+1)).join("") :
+    (q?`<div class="empty search-empty">No Today tasks match “${escapeHtml(q)}”.</div>`:`<div class="empty">No tasks for today.<br>Paste a bunch above and start sorting.</div>`);
+  lc.innerHTML=later.length ? later.map(t=>taskCard(t,laterAll.indexOf(t)+1)).join("") :
+    (q?`<div class="empty search-empty">No Not Today tasks match “${escapeHtml(q)}”.</div>`:`<div class="empty">Nothing parked here.<br>Drag a task here when it isn't today's problem.</div>`);
+  const count=document.getElementById("searchResultCount");
+  if(count)count.textContent=q?`${today.length+later.length} of ${todayAll.length+laterAll.length} tasks`:"All tasks";
 }
 
 function render(){
@@ -1501,11 +1625,21 @@ function keepMoveControlInPlace(tid,direction,swappedIds=[],displacedId=null,poi
       const canScrollCards=fixed&&cards&&cards.scrollHeight>cards.clientHeight+1;
       const rect=movingButton.getBoundingClientRect();
       const dx=rect.left+rect.width/2-pointerPoint.x,dy=rect.top+rect.height/2-pointerPoint.y;
-      if(canScrollCards)cards.scrollTop+=dy;else window.scrollBy({left:dx,top:dy,behavior:"instant"});
+      if(canScrollCards){
+        const before=cards.scrollTop;
+        cards.scrollTop=Math.max(0,Math.min(cards.scrollHeight-cards.clientHeight,before+dy));
+        const remainder=dy-(cards.scrollTop-before);
+        if(Math.abs(remainder)>1)window.scrollBy({left:dx,top:remainder,behavior:"instant"});
+      }else window.scrollBy({left:dx,top:dy,behavior:"instant"});
       requestAnimationFrame(()=>{
         const after=movingButton.getBoundingClientRect();
         const rx=after.left+after.width/2-pointerPoint.x,ry=after.top+after.height/2-pointerPoint.y;
-        if(canScrollCards)cards.scrollTop+=ry;else window.scrollBy({left:rx,top:ry,behavior:"instant"});
+        if(canScrollCards){
+          const before=cards.scrollTop;
+          cards.scrollTop=Math.max(0,Math.min(cards.scrollHeight-cards.clientHeight,before+ry));
+          const remainder=ry-(cards.scrollTop-before);
+          if(Math.abs(remainder)>1)window.scrollBy({left:rx,top:remainder,behavior:"instant"});
+        }else window.scrollBy({left:rx,top:ry,behavior:"instant"});
       });
     }
     const displacedCard=displacedId&&document.querySelector(`.card[data-id="${displacedId}"]`);
@@ -1616,18 +1750,38 @@ function bindActions(){
     });
     const titleEditor=card.querySelector('[data-action="title"]');
     const fitTitle=()=>{if(!titleEditor)return;titleEditor.style.height="24px";titleEditor.style.height=Math.max(24,titleEditor.scrollHeight)+"px";};
+    const fitTitleKeepingViewport=()=>{
+      if(!titleEditor)return;
+      const beforeTop=titleEditor.getBoundingClientRect().top;
+      const cardsScroller=card.closest(".cards");
+      fitTitle();
+      requestAnimationFrame(()=>{
+        const drift=titleEditor.getBoundingClientRect().top-beforeTop;
+        if(Math.abs(drift)<1)return;
+        if(cardsScroller && cardsScroller.scrollHeight>cardsScroller.clientHeight){
+          const before=cardsScroller.scrollTop;
+          cardsScroller.scrollTop=Math.max(0,Math.min(cardsScroller.scrollHeight-cardsScroller.clientHeight,before+drift));
+          const remainder=drift-(cardsScroller.scrollTop-before);
+          if(Math.abs(remainder)>1)window.scrollBy({top:remainder,left:0,behavior:"instant"});
+        }else window.scrollBy({top:drift,left:0,behavior:"instant"});
+      });
+    };
     fitTitle();
     if(titleEditor)titleEditor.addEventListener("input",e=>{
       const typedColor=parseColorSyntax(e.currentTarget.value);
       const currentColor=parseColorSyntax(t.text).name;
-      t.text=typedColor.name?e.currentTarget.value:withColorSyntax(e.currentTarget.value,currentColor);fitTitle();save();
+      t.text=typedColor.name?e.currentTarget.value:withColorSyntax(e.currentTarget.value,currentColor);fitTitleKeepingViewport();save();
       const preview=card.querySelector('.toggle-list');
       const markup=toggleListMarkup(t);
       if(preview){if(markup)preview.outerHTML=markup;else preview.remove();}
       else if(markup)titleEditor.insertAdjacentHTML('afterend',markup);
     });
     if(titleEditor)titleEditor.addEventListener("keydown",e=>{
-      if(e.key==="Enter" && e.altKey){e.preventDefault();const el=e.currentTarget;const start=el.selectionStart,end=el.selectionEnd;el.setRangeText("\n",start,end,"end");el.dispatchEvent(new Event("input",{bubbles:true}));return;}
+      const mobileEnter=e.key==="Enter" && (window.matchMedia("(max-width: 640px)").matches || navigator.maxTouchPoints>0);
+      if(e.key==="Enter" && (e.altKey || mobileEnter)){
+        e.preventDefault();const el=e.currentTarget;const start=el.selectionStart,end=el.selectionEnd;
+        el.setRangeText("\n",start,end,"end");el.dispatchEvent(new Event("input",{bubbles:true}));return;
+      }
       if(e.key==="Enter"){e.preventDefault();e.currentTarget.blur();}
     });
     // Native dragging on the parent article can steal mouse clicks from the textarea,
@@ -1855,30 +2009,38 @@ function importData(file){
 const THEMES={
   "Paper":{"bg":"#f7f5f0","panel":"#fffdf9","line":"#e4ded4","text":"#171513","muted":"#746e65","accent":"#4d8f70","accentSoft":"#e3f1e9"},
   "Midnight":{"bg":"#101114","panel":"#17191d","line":"#2a2d33","text":"#f2f3f5","muted":"#a4a8b0","accent":"#78c7a0","accentSoft":"#193327"},
-  "AMOLED":{"bg":"#000","panel":"#080808","line":"#222","text":"#fff","muted":"#888","accent":"#00e676","accentSoft":"#062b18"},
-  "Slate":{"bg":"#e9edf2","panel":"#f8fafc","line":"#cbd5e1","text":"#172033","muted":"#64748b","accent":"#4f6fae","accentSoft":"#e5ecf8"},
-  "Ocean":{"bg":"#eaf6f8","panel":"#fbffff","line":"#c9e5e8","text":"#12343b","muted":"#5c7f85","accent":"#248fa0","accentSoft":"#dff3f5"},
+  "AMOLED":{"bg":"#000000","panel":"#080808","line":"#222222","text":"#ffffff","muted":"#929292","accent":"#00e676","accentSoft":"#062b18"},
   "Forest":{"bg":"#eef4ec","panel":"#fbfdf9","line":"#cfdccc","text":"#1d2c1e","muted":"#687568","accent":"#4f8a54","accentSoft":"#e2f0e2"},
   "Lavender":{"bg":"#f4f0fa","panel":"#fdfbff","line":"#ddd2ea","text":"#282039","muted":"#766b85","accent":"#8064a8","accentSoft":"#eee7f7"},
   "Rose":{"bg":"#fbf0f2","panel":"#fffafb","line":"#ead1d6","text":"#321d23","muted":"#80666d","accent":"#b45d72","accentSoft":"#f6e2e7"},
   "Solarized":{"bg":"#fdf6e3","panel":"#fffaf0","line":"#eee8d5","text":"#073642","muted":"#657b83","accent":"#268bd2","accentSoft":"#e1f0fb"},
-  "Monochrome":{"bg":"#eeeeee","panel":"#fff","line":"#c9c9c9","text":"#111","muted":"#666","accent":"#333","accentSoft":"#e2e2e2"},
   "Dracula":{"bg":"#282a36","panel":"#343746","line":"#494c5e","text":"#f8f8f2","muted":"#b8b8c6","accent":"#bd93f9","accentSoft":"#403450"},
-  "Nord":{"bg":"#e5e9f0","panel":"#f8fafc","line":"#c7d0dc","text":"#2e3440","muted":"#667085","accent":"#5e81ac","accentSoft":"#e1e9f2"},
   "Gruvbox":{"bg":"#282828","panel":"#32302f","line":"#504945","text":"#ebdbb2","muted":"#a89984","accent":"#b8bb26","accentSoft":"#3b421d"},
   "Cyber":{"bg":"#080b10","panel":"#101722","line":"#263344","text":"#d9f7ff","muted":"#7da0ad","accent":"#00d9ff","accentSoft":"#082d36"},
   "Terminal":{"bg":"#071107","panel":"#0d190d","line":"#1d351d","text":"#b7ffb7","muted":"#6aa56a","accent":"#39ff74","accentSoft":"#10351b"},
   "Coffee":{"bg":"#f1e8dc","panel":"#fffaf3","line":"#ddcbb7","text":"#34261d","muted":"#7b6757","accent":"#946b45","accentSoft":"#efe2d2"},
-  "Paper Blue":{"bg":"#eef3f8","panel":"#ffffff","line":"#d2dce7","text":"#17212b","muted":"#637181","accent":"#3977a8","accentSoft":"#e4eef7"},
-  "Paper Green":{"bg":"#eff5ee","panel":"#ffffff","line":"#d3e0d1","text":"#1d2a1e","muted":"#647064","accent":"#43834a","accentSoft":"#e3f0e4"},
   "Sunset":{"bg":"#fff0e8","panel":"#fffaf7","line":"#ead2c5","text":"#35201a","muted":"#80645b","accent":"#d16b42","accentSoft":"#f8e1d6"},
-  "Plum":{"bg":"#241b28","panel":"#302333","line":"#4c384f","text":"#f5e8f2","muted":"#bba7b7","accent":"#d78bc1","accentSoft":"#4b2f45"}
+  "Plum":{"bg":"#241b28","panel":"#302333","line":"#4c384f","text":"#f5e8f2","muted":"#bba7b7","accent":"#d78bc1","accentSoft":"#4b2f45"},
+  "Water Ocean":{"bg":"#eaf8fb","panel":"#f8feff","line":"#b9e0e9","text":"#103743","muted":"#547d88","accent":"#159bb3","accentSoft":"#d7f2f6"},
+  "Blue Blue Sky":{"bg":"#edf6ff","panel":"#fbfdff","line":"#c9def2","text":"#172f4a","muted":"#647f9b","accent":"#438bd8","accentSoft":"#deedff"},
+  "Holi":{"bg":"#fff3fb","panel":"#fffaff","line":"#f0d2e9","text":"#3c2140","muted":"#846781","accent":"#d54fa2","accentSoft":"#fbe0f2"},
+  "Dasain":{"bg":"#fff5ed","panel":"#fffdf9","line":"#ecd6c2","text":"#3d2721","muted":"#86695e","accent":"#b94d42","accentSoft":"#f7e4d7"},
+  "Soft Bloom":{"bg":"#f5f2ff","panel":"#fffefe","line":"#e0d8f3","text":"#30264a","muted":"#766a91","accent":"#9273d6","accentSoft":"#eee8ff"},
+  "Diwali":{"bg":"#17101f","panel":"#281b31","line":"#574064","text":"#fff2d6","muted":"#c5a987","accent":"#ffb72e","accentSoft":"#50331b"},
+  "Christmas":{"bg":"#10201b","panel":"#1a3028","line":"#365a4b","text":"#effbf1","muted":"#a8c6b4","accent":"#e45e69","accentSoft":"#3b292c"},
+  "Aurora":{"bg":"#081b25","panel":"#102a35","line":"#28515b","text":"#e1fff7","muted":"#8ebbb9","accent":"#55e0c1","accentSoft":"#15443f"},
+  "Neon Nights":{"bg":"#100b20","panel":"#1d1633","line":"#40315e","text":"#f5efff","muted":"#b2a2d3","accent":"#e66cff","accentSoft":"#3e2354"},
+  "Deep Sea":{"bg":"#071722","panel":"#0d2635","line":"#21495a","text":"#e3f7ff","muted":"#8cabb9","accent":"#35bde0","accentSoft":"#123e51"},
+  "Rainbow":{"bg":"#20152c","panel":"#2b2038","line":"#594361","text":"#fff7ff","muted":"#c6b0d0","accent":"#ff77ad","accentSoft":"#4b2c54"},
+  "Gradients":{"bg":"#17152b","panel":"#24213d","line":"#48436a","text":"#f7f4ff","muted":"#b4afd0","accent":"#9c8cff","accentSoft":"#39345f"}
 };
+const THEME_MOTION={"Water Ocean":"ocean","Diwali":"diwali","Christmas":"holiday","Aurora":"aurora","Rainbow":"rainbow","Gradients":"gradient"};
+const THEME_ALIASES={"Ocean":"Water Ocean","Slate":"Blue Blue Sky","Nord":"Blue Blue Sky","Paper Blue":"Blue Blue Sky","Paper Green":"Forest","Monochrome":"Paper"};
 const encoder=new TextEncoder();
 function bytesToB64(bytes){let s="";bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");}
 function b64ToBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";const bin=atob(s);return Uint8Array.from(bin,c=>c.charCodeAt(0));}
 function randomToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return bytesToB64(a);}
-function applyTheme(name, sync=true){const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;const hex=t.bg.replace("#","");const rgb=hex.length===3?hex.split("").map(x=>parseInt(x+x,16)):hex.match(/.{2}/g).map(x=>parseInt(x,16));const luminance=(0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2])/255;r.style.colorScheme=luminance<0.48?"dark":"light";r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);r.style.setProperty("--input",t.input||t.panel);r.style.setProperty("--button",t.button||t.panel);r.style.setProperty("--card",t.card||t.panel);r.style.setProperty("--details",t.details||t.panel);r.style.setProperty("--soft",t.soft||t.accentSoft);r.style.setProperty("--later-bg",t.laterBg||t.panel);r.style.setProperty("--later-head",t.laterHead||t.panel);r.style.setProperty("--red",t.red||"#b56b67");localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));if(sync) queueCloudSave();}
+function applyTheme(name, sync=true){name=THEME_ALIASES[name]||name;const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;const hex=t.bg.replace("#","");const rgb=hex.length===3?hex.split("").map(x=>parseInt(x+x,16)):hex.match(/.{2}/g).map(x=>parseInt(x,16));const luminance=(0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2])/255;r.style.colorScheme=luminance<0.48?"dark":"light";r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);r.style.setProperty("--input",t.input||t.panel);r.style.setProperty("--button",t.button||t.panel);r.style.setProperty("--card",t.card||t.panel);r.style.setProperty("--details",t.details||t.panel);r.style.setProperty("--soft",t.soft||t.accentSoft);r.style.setProperty("--later-bg",t.laterBg||t.panel);r.style.setProperty("--later-head",t.laterHead||t.panel);r.style.setProperty("--red",t.red||"#b56b67");document.body.dataset.activeTheme=name;document.body.dataset.themeMotion=THEME_MOTION[name]||"";localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));if(sync) queueCloudSave();}
 function renderThemes(){const grid=document.getElementById("themeGrid");grid.innerHTML=Object.keys(THEMES).map(n=>`<button class="theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");grid.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme));applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);}
 const derivedKeyCache=new Map();
 async function deriveV2Key(token,salt){
@@ -2077,6 +2239,14 @@ document.getElementById("bulkInput").addEventListener("keydown",e=>{
   }
 });
 document.getElementById("clearCompleted").onclick=clearCompleted;
+document.getElementById("taskSearch").addEventListener("input",()=>render());
+document.getElementById("deleteSelected").onclick=()=>{
+  if(!selectedTaskIds.size)return;
+  const count=selectedTaskIds.size;
+  if(!window.confirm(`Delete ${count} selected task${count===1?"":"s"}? This cannot be undone from the task list.`))return;
+  state.tasks=state.tasks.filter(t=>!selectedTaskIds.has(t.id));
+  selectedTaskIds.clear();save();render();toast(`🗑️ Deleted ${count} selected task${count===1?"":"s"}`);
+};
 document.getElementById("exportData").onclick=exportData;
 document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
 document.getElementById("importFile").onchange=e=>{if(e.target.files[0])importData(e.target.files[0]);e.target.value=""};
@@ -2308,8 +2478,30 @@ setInterval(syncOnlineClock,15*60*1000);
 
 </script>
 <script>
+/* v28 cache freshness: check after tab return, focus, and page restore. */
 if("serviceWorker" in navigator && location.protocol==="https:"){
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
+  const DS_SW_BUILD="2026-11-26-v28";
+  let dsRegistration=null,dsLastFreshCheck=0;
+  let dsHadController=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(!dsHadController){dsHadController=true;return;}
+    const key="daily-sort-reloaded-"+DS_SW_BUILD;
+    if(!sessionStorage.getItem(key)){sessionStorage.setItem(key,"1");location.reload();}
+  });
+  async function checkDailySortCache(force=false){
+    if(document.visibilityState==="hidden")return;
+    if(!force&&Date.now()-dsLastFreshCheck<30000)return;
+    dsLastFreshCheck=Date.now();
+    try{
+      if(!dsRegistration)dsRegistration=await navigator.serviceWorker.register("./sw.js?build="+DS_SW_BUILD,{scope:"./",updateViaCache:"none"});
+      await dsRegistration.update();
+      if(dsRegistration.waiting)dsRegistration.waiting.postMessage({type:"SKIP_WAITING"});
+    }catch(error){console.debug("Daily Sort cache check skipped",error);}
+  }
+  window.addEventListener("load",()=>checkDailySortCache(true));
+  window.addEventListener("pageshow",()=>checkDailySortCache());
+  window.addEventListener("focus",()=>checkDailySortCache());
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkDailySortCache(true);});
 }
 </script>
 </body>
