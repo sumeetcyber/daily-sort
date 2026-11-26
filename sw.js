@@ -1,6 +1,46 @@
-const CACHE_NAME='daily-sort-shell-v33';
-const APP_SCOPE=self.registration.scope;
-self.addEventListener('install',event=>{event.waitUntil(self.skipWaiting());});
-self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('daily-sort-shell-')&&k!==CACHE_NAME).map(k=>caches.delete(k)));await self.clients.claim();const clients=await self.clients.matchAll({includeUncontrolled:true,type:'window'});for(const client of clients)client.postMessage({type:'DAILY_SORT_UPDATED',version:33});})());});
-self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')self.skipWaiting();if(event.data?.type==='CHECK_UPDATE')self.registration.update();});
-self.addEventListener('fetch',event=>{const req=event.request;if(req.method!=='GET'||new URL(req.url).origin!==self.location.origin)return;const url=new URL(req.url);if(url.pathname.endsWith('/sw.js'))return;event.respondWith((async()=>{const cache=await caches.open(CACHE_NAME);try{const fresh=new Request(req,{cache:'no-store'});const res=await fetch(fresh);if(res?.ok&&res.type!=='opaque')await cache.put(req,res.clone());return res;}catch(err){const cached=await cache.match(req);if(cached)return cached;if(req.mode==='navigate'){const root=await cache.match(new URL('./',APP_SCOPE).href);if(root)return root;}throw err;}})());});
+const CACHE_NAME = 'daily-sort-shell-v34';
+const APP_SCOPE = self.registration.scope;
+
+self.addEventListener('install', event => {
+  event.waitUntil(self.skipWaiting());
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => key.startsWith('daily-sort-shell-') && key !== CACHE_NAME).map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
+});
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  const url = new URL(request.url);
+  if (url.pathname.endsWith('/sw.js')) return;
+
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    try {
+      // Always check the network first so returning users don't get a stale app shell.
+      const freshRequest = new Request(request, { cache: 'no-store' });
+      const response = await fetch(freshRequest);
+      if (response && response.ok && response.type !== 'opaque') {
+        await cache.put(request, response.clone());
+      }
+      return response;
+    } catch (error) {
+      const cached = await cache.match(request);
+      if (cached) return cached;
+      if (request.mode === 'navigate') {
+        const fallback = await cache.match(new URL('./', APP_SCOPE).href);
+        if (fallback) return fallback;
+      }
+      throw error;
+    }
+  })());
+});
