@@ -1480,7 +1480,7 @@ body[data-theme-motion="rain"]::before{opacity:.3!important;background-image:rep
 
 
 
-/* v34: deliberate 3×3 theme grids and continuous gradient emulsion (no flashing, no particles). */
+/* v37: deliberate 3×3 theme grids and continuous gradient emulsion (no flashing, no particles). */
 .theme-family .theme-mode .theme-grid{
   display:grid!important;
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
@@ -1646,6 +1646,158 @@ body[data-theme-motion="gradient-dark"]::before{
   100%{background-position:4% 64%,88% 100%,18% 48%,8% 0%,96% 32%}
 }
 @media(prefers-reduced-motion:reduce){body[data-theme-motion="gradient-light"]::before,body[data-theme-motion="gradient-dark"]::before{animation:none!important}}
+
+
+
+/* v36: robust half-screen Arrange layout + genuinely content-sized task cards */
+.wrap{container-type:inline-size;container-name:daily-sort-layout}
+/* Arrange is a 2x2 flow at split-screen widths; all four steps stay equal and centered. */
+.arrange-tools{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-rows:minmax(126px,auto)!important;
+  align-items:stretch!important;
+  gap:10px!important;
+}
+.arrange-tools .arrange-step{
+  min-width:0!important;min-height:126px!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  text-align:center!important;padding:14px!important;gap:9px!important;
+}
+.arrange-tools .arrange-step-number{margin:0 auto!important;flex:none!important}
+.arrange-tools .arrange-step-content{width:100%!important;min-width:0!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+.arrange-tools .arrange-step-title,.arrange-tools .arrange-step-help,.arrange-tools .arrange-selection{text-align:center!important;width:100%!important;white-space:normal!important}
+.arrange-tools .arrange-number-title{justify-content:center!important;align-items:center!important}
+.arrange-tools .arrange-destination-controls{width:100%!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important}
+.arrange-tools .arrange-position-control{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important}
+.arrange-tools .step-action{grid-column:auto!important;min-width:0!important;min-height:126px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+.arrange-tools .step-action .btn{width:100%!important}
+@container daily-sort-layout (min-width: 1050px){
+  .arrange-tools{grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-auto-rows:minmax(150px,auto)!important}
+}
+@container daily-sort-layout (max-width: 560px){
+  .arrange-tools{grid-template-columns:minmax(0,1fr)!important;grid-auto-rows:auto!important}
+  .arrange-tools .arrange-step,.arrange-tools .step-action{min-height:0!important;padding:14px 12px!important}
+}
+/* Make the task text column use all remaining width and keep the action rail narrow. */
+.card{height:auto!important;min-height:0!important;align-self:start!important}
+.card-main{
+  display:grid!important;
+  grid-template-columns:20px minmax(0,1fr) 36px!important;
+  align-items:center!important;
+  gap:9px!important;
+  min-width:0!important;
+  padding:10px 11px!important;
+}
+.card-main>.check{grid-column:1!important;grid-row:1!important;align-self:start!important;margin-top:3px!important}
+.card-main>.task-body{grid-column:2!important;grid-row:1!important;min-width:0!important;width:100%!important;align-self:start!important}
+.card-main>.card-tools{
+  grid-column:3!important;grid-row:1!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:flex-start!important;
+  justify-self:center!important;align-self:start!important;
+  width:36px!important;min-width:36px!important;gap:4px!important;
+}
+.card-tools .icon-btn,.card-tools .expand,.card-tools .insert-below{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  align-self:center!important;text-align:center!important;line-height:1!important;
+  box-sizing:border-box!important;padding:0!important;margin:0!important;
+}
+.card-tools .icon-btn,.card-tools .expand{width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important}
+.card-tools .insert-below{width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important}
+.card-tools .select-task{align-self:center!important;margin:0!important}
+.card-tools .reorder-arrow,.card-tools .zone-arrow{justify-content:center!important;align-items:center!important}
+.task-title-edit{
+  display:block!important;width:100%!important;max-width:100%!important;
+  min-height:1.5em!important;max-height:none!important;
+  box-sizing:border-box!important;white-space:pre-wrap!important;
+  overflow-wrap:break-word!important;word-break:normal!important;
+}
+.task-body,.task-title-edit{min-width:0!important}
+/* Numbered cards get one additional compact column without squeezing the editor. */
+body.show-task-numbers .card-main{grid-template-columns:24px 20px minmax(0,1fr) 36px!important}
+body.show-task-numbers .card-main>.task-number{grid-column:1!important;grid-row:1!important;align-self:start!important;justify-self:center!important}
+body.show-task-numbers .card-main>.check{grid-column:2!important;grid-row:1!important}
+body.show-task-numbers .card-main>.task-body{grid-column:3!important;grid-row:1!important}
+body.show-task-numbers .card-main>.card-tools{grid-column:4!important;grid-row:1!important}
+/* Cards follow their content; the panel may scroll, but cards never stretch to fill it. */
+.cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important}
+.cards>.card{flex:0 0 auto!important;width:100%!important;margin:0!important}
+body.dynamic-panels .cards{min-height:0!important;height:auto!important;max-height:none!important;overflow:visible!important}
+/* Half-screen and narrow landscape: preserve a usable two-column board and compact task cards. */
+@media(max-width:900px) and (orientation:landscape){
+  .board{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  .panel{min-width:0!important;min-height:0!important;height:auto!important}
+  .cards{min-width:0!important;padding:7px!important}
+  .card-main{grid-template-columns:18px minmax(0,1fr) 32px!important;gap:6px!important;padding:8px 6px!important}
+  .card-main>.card-tools{width:32px!important;min-width:32px!important;gap:3px!important}
+  .card-tools .icon-btn,.card-tools .expand{width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important}
+  .card-tools .insert-below{width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important}
+  body.show-task-numbers .card-main{grid-template-columns:21px 17px minmax(0,1fr) 32px!important}
+  body.show-task-numbers .card-main>.task-number{width:21px!important;height:21px!important;min-width:21px!important}
+  body.show-task-numbers .card-main>.check{width:16px!important;height:16px!important}
+}
+@media(max-width:640px) and (orientation:portrait){
+  .board{grid-template-columns:minmax(0,1fr)!important}
+  .card-main{grid-template-columns:20px minmax(0,1fr) 34px!important}
+  body.show-task-numbers .card-main{grid-template-columns:22px 18px minmax(0,1fr) 34px!important}
+}
+
+
+/* v37: content-sized task cards + independently scrollable columns in both height modes. */
+.card{height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important;overflow:visible!important}
+.cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important}
+.cards>.card{width:100%!important;flex:0 0 auto!important;margin:0!important}
+.card-main{display:grid!important;grid-template-columns:20px minmax(0,1fr) 36px!important;align-items:start!important;gap:9px!important;min-height:68px!important;padding:9px 10px!important;box-sizing:border-box!important}
+.card-main>.check{grid-column:1!important;grid-row:1!important;align-self:start!important;margin-top:3px!important}
+.card-main>.task-body{grid-column:2!important;grid-row:1!important;align-self:start!important;width:100%!important;min-width:0!important;max-width:100%!important}
+.card-main>.card-tools{grid-column:3!important;grid-row:1!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;justify-self:end!important;align-self:start!important;width:34px!important;min-width:34px!important;gap:4px!important;margin:0!important;padding:0!important}
+.card-tools .icon-btn,.card-tools .expand,.card-tools .insert-below{display:inline-flex!important;align-items:center!important;justify-content:center!important;align-self:center!important;text-align:center!important;vertical-align:middle!important;line-height:1!important;box-sizing:border-box!important;padding:0!important;margin:0!important;flex:none!important}
+.card-tools .icon-btn,.card-tools .expand{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important}
+.card-tools .insert-below{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important}
+.card-tools .select-task{align-self:center!important;margin:0!important}
+.card-tools .reorder-arrow,.card-tools .zone-arrow{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;line-height:1!important}
+.task-body{flex:initial!important;min-height:0!important;min-width:0!important;overflow-wrap:break-word!important;word-break:normal!important}
+.task-title-edit{display:block!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:24px!important;max-height:none!important;box-sizing:border-box!important;white-space:pre-wrap!important;overflow-wrap:break-word!important;word-break:normal!important;line-height:1.42!important;padding:2px 3px!important}
+/* Keep the action rail genuinely slim: movement arrows remain vertical; selection + expand share the bottom row. */
+.card-main>.card-tools{display:grid!important;grid-template-columns:18px 18px!important;grid-template-rows:18px 18px 18px 15px!important;gap:2px!important;width:38px!important;min-width:38px!important;justify-content:center!important;align-content:start!important}
+.card-tools [data-action="up"],.card-tools [data-action="down"],.card-tools [data-action="move-later"]{grid-column:1 / span 2!important;width:38px!important;height:18px!important;min-width:38px!important;min-height:18px!important;font-size:13px!important}
+.card-tools [data-action="up"]{grid-row:1!important}.card-tools [data-action="down"]{grid-row:2!important}.card-tools [data-action="move-later"]{grid-row:3!important}
+.card-tools .select-task{grid-column:1!important;grid-row:4!important;width:13px!important;height:13px!important;justify-self:center!important;align-self:center!important}
+.card-tools .expand{grid-column:2!important;grid-row:4!important;width:18px!important;height:15px!important;min-width:18px!important;min-height:15px!important;font-size:13px!important}
+.card-tools .insert-below{position:absolute!important;top:-5px!important;right:-5px!important;width:19px!important;height:19px!important;min-width:19px!important;min-height:19px!important;opacity:0!important;pointer-events:none!important}
+.card:hover .card-tools .insert-below,.card:focus-within .card-tools .insert-below{opacity:1!important;pointer-events:auto!important}
+@media(hover:none){.card-tools .insert-below{opacity:1!important;pointer-events:auto!important}}
+/* A short task stays compact; textarea auto-sizing makes multiline tasks grow naturally. */
+.card-main:has(>.task-body .task-title-edit){min-height:68px!important}
+body.show-task-numbers .card-main{grid-template-columns:24px 20px minmax(0,1fr) 36px!important}
+body.show-task-numbers .card-main>.task-number{grid-column:1!important;grid-row:1!important;align-self:start!important;justify-self:center!important}
+body.show-task-numbers .card-main>.check{grid-column:2!important;grid-row:1!important}
+body.show-task-numbers .card-main>.task-body{grid-column:3!important;grid-row:1!important}
+body.show-task-numbers .card-main>.card-tools{grid-column:4!important;grid-row:1!important}
+/* Both panels have their own scroll container. The height toggle changes viewport height, not scroll ownership. */
+.panel{display:flex!important;flex-direction:column!important;min-height:0!important;overflow:hidden!important}
+.panel-head{flex:0 0 auto!important}
+.panel>.cards{flex:1 1 auto!important;height:0!important;min-height:0!important;max-height:none!important;overflow-y:auto!important}
+body.dynamic-panels .panel>.cards{flex:1 1 auto!important;height:0!important;min-height:0!important;max-height:none!important;overflow-y:auto!important}
+@media(max-width:700px) and (orientation:portrait){
+ .board{grid-template-columns:minmax(0,1fr)!important}
+ .panel{height:min(68dvh,620px)!important;max-height:min(68dvh,620px)!important;min-height:260px!important}
+ .panel>.cards{height:0!important;min-height:0!important;overflow-y:auto!important}
+ .card-main{grid-template-columns:20px minmax(0,1fr) 34px!important;gap:7px!important;padding:9px!important}
+ body.show-task-numbers .card-main{grid-template-columns:23px 19px minmax(0,1fr) 34px!important}
+ .card-tools .icon-btn,.card-tools .expand{width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important}
+}
+@media(max-width:900px) and (orientation:landscape){
+ .board{grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:stretch!important}
+ .panel{height:calc(100dvh - 190px)!important;max-height:calc(100dvh - 190px)!important;min-height:180px!important}
+ .panel>.cards{height:0!important;min-height:0!important;overflow-y:auto!important}
+ .card-main{grid-template-columns:18px minmax(0,1fr) 32px!important;gap:6px!important;padding:8px 6px!important}
+ body.show-task-numbers .card-main{grid-template-columns:21px 17px minmax(0,1fr) 32px!important}
+ .card-tools{width:32px!important;min-width:32px!important;gap:3px!important}
+ .card-tools .icon-btn,.card-tools .expand{width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important}
+}
 
 </style>
 
@@ -3124,16 +3276,40 @@ function setHeightMode(dynamic, persist=true){
   if(control){control.classList.toggle("is-dynamic",enabled);control.setAttribute("aria-pressed",enabled?"true":"false");control.dataset.mode=enabled?"dynamic":"fixed";}
   const label=document.getElementById("heightModeLabel");
   if(label)label.textContent=enabled?"Dynamic":"Fixed";
+  const compact=window.matchMedia("(max-width: 700px) and (orientation: portrait)").matches;
+  const available=Math.max(300,window.innerHeight-(compact?250:245));
+  const panelHeight=enabled?Math.round(available*.82):available;
   document.querySelectorAll(".panel").forEach(panel=>{
     const cards=panel.querySelector(".cards");
-    if(enabled){panel.style.height="auto";panel.style.minHeight="0";panel.style.maxHeight="none";if(cards){cards.style.height="auto";cards.style.minHeight="0";cards.style.maxHeight="none";cards.style.flex="0 0 auto";cards.style.overflowY="visible";}}
-    else{const h=Math.max(420,window.innerHeight-260);panel.style.height=h+"px";panel.style.minHeight="420px";panel.style.maxHeight="none";if(cards){cards.style.height="0";cards.style.minHeight="0";cards.style.maxHeight="none";cards.style.flex="1 1 0";cards.style.overflowY="auto";}}
+    panel.style.height=panelHeight+"px";
+    panel.style.minHeight="0";
+    panel.style.maxHeight=panelHeight+"px";
+    panel.style.display="flex";
+    panel.style.flexDirection="column";
+    if(cards){
+      cards.style.height="0";
+      cards.style.minHeight="0";
+      cards.style.maxHeight="none";
+      cards.style.flex="1 1 auto";
+      cards.style.overflowY="auto";
+      cards.style.overscrollBehavior="contain";
+    }
   });
   if(persist)try{localStorage.setItem("daily-sort-panel-height",enabled?"dynamic":"fixed")}catch(e){}
   requestAnimationFrame(()=>window.dispatchEvent(new Event("resize")));
 }
 document.getElementById("togglePanelHeight").addEventListener("click",e=>{e.preventDefault();e.stopPropagation();setHeightMode(document.body.dataset.panelHeight!=="dynamic");});
-window.addEventListener("resize",()=>{if(document.body.dataset.panelHeight==="fixed"){document.querySelectorAll(".panel").forEach(panel=>panel.style.height=Math.max(420,window.innerHeight-260)+"px");}});
+window.addEventListener("resize",()=>{
+  const dynamic=document.body.dataset.panelHeight==="dynamic";
+  const compact=window.matchMedia("(max-width: 700px) and (orientation: portrait)").matches;
+  const available=Math.max(300,window.innerHeight-(compact?250:245));
+  const panelHeight=dynamic?Math.round(available*.82):available;
+  document.querySelectorAll(".panel").forEach(panel=>{
+    panel.style.height=panelHeight+"px";panel.style.maxHeight=panelHeight+"px";
+    const cards=panel.querySelector(".cards");
+    if(cards){cards.style.height="0";cards.style.flex="1 1 auto";cards.style.overflowY="auto";}
+  });
+});
 setHeightMode(localStorage.getItem("daily-sort-panel-height")==="dynamic",false);
 document.getElementById("clearSelection").onclick=()=>{
   selectedTaskIds.clear();
