@@ -1480,7 +1480,7 @@ body[data-theme-motion="rain"]::before{opacity:.3!important;background-image:rep
 
 
 
-/* v37: deliberate 3×3 theme grids and continuous gradient emulsion (no flashing, no particles). */
+/* v38: deliberate 3×3 theme grids and continuous gradient emulsion (no flashing, no particles). */
 .theme-family .theme-mode .theme-grid{
   display:grid!important;
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
@@ -1745,7 +1745,7 @@ body.dynamic-panels .cards{min-height:0!important;height:auto!important;max-heig
 }
 
 
-/* v37: content-sized task cards + independently scrollable columns in both height modes. */
+/* v38: content-sized task cards + independently scrollable columns in both height modes. */
 .card{height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important;overflow:visible!important}
 .cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important}
 .cards>.card{width:100%!important;flex:0 0 auto!important;margin:0!important}
@@ -1799,6 +1799,55 @@ body.dynamic-panels .panel>.cards{flex:1 1 auto!important;height:0!important;min
  .card-tools .icon-btn,.card-tools .expand{width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important}
 }
 
+
+
+/* v38: definitive task-card grid. Keep text in the flexible middle column. */
+.card-main{
+  display:grid!important;
+  grid-template-columns:20px minmax(0,1fr) 40px!important;
+  grid-template-areas:"check body tools"!important;
+  align-items:start!important;
+  justify-content:stretch!important;
+  gap:8px!important;
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  padding:10px 11px!important;
+}
+.card-main>.task-number{display:none!important}
+.card-main>.check{grid-area:check!important;grid-column:auto!important;grid-row:auto!important;align-self:start!important;justify-self:center!important;margin:3px 0 0!important}
+.card-main>.task-body{grid-area:body!important;grid-column:auto!important;grid-row:auto!important;display:block!important;position:static!important;width:100%!important;max-width:100%!important;min-width:0!important;min-height:0!important;flex:none!important;align-self:start!important;justify-self:stretch!important;overflow:hidden!important}
+.card-main>.task-body .task-title-edit{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;height:auto;min-height:24px!important;max-height:none!important;box-sizing:border-box!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important}
+.card-main>.card-tools{grid-area:tools!important;grid-column:auto!important;grid-row:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;justify-self:end!important;align-self:start!important;width:40px!important;min-width:40px!important;max-width:40px!important;gap:4px!important;margin:0!important;padding:0!important;position:relative!important}
+.card-main>.card-tools .icon-btn,
+.card-main>.card-tools .expand,
+.card-main>.card-tools .insert-below{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;vertical-align:middle!important;line-height:1!important;box-sizing:border-box!important;flex:none!important;padding:0!important;margin:0!important}
+.card-main>.card-tools .icon-btn{width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important}
+.card-main>.card-tools .expand{width:34px!important;height:24px!important;min-width:34px!important;min-height:24px!important}
+.card-main>.card-tools .insert-below{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important}
+.card{height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important}
+.card-main:has(>.task-body .task-title-edit){min-height:68px!important}
+.cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important}
+.cards>.card{width:100%!important;flex:0 0 auto!important;margin:0!important}
+body.show-task-numbers .card-main{
+  grid-template-columns:24px 20px minmax(0,1fr) 40px!important;
+  grid-template-areas:"number check body tools"!important;
+}
+body.show-task-numbers .card-main>.task-number{display:grid!important;grid-area:number!important;grid-column:auto!important;grid-row:auto!important;place-items:center!important;align-self:start!important;justify-self:center!important;width:24px!important;height:24px!important;min-width:24px!important;box-sizing:border-box!important}
+body.show-task-numbers .card-main>.check{grid-area:check!important;grid-column:auto!important;grid-row:auto!important}
+body.show-task-numbers .card-main>.task-body{grid-area:body!important;grid-column:auto!important;grid-row:auto!important}
+body.show-task-numbers .card-main>.card-tools{grid-area:tools!important;grid-column:auto!important;grid-row:auto!important}
+@media(max-width:900px) and (orientation:landscape){
+  .card-main{grid-template-columns:18px minmax(0,1fr) 36px!important;gap:6px!important;padding:8px 7px!important}
+  .card-main>.card-tools{width:36px!important;min-width:36px!important;max-width:36px!important}
+  .card-main>.card-tools .icon-btn{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important}
+  body.show-task-numbers .card-main{grid-template-columns:22px 18px minmax(0,1fr) 36px!important}
+  body.show-task-numbers .card-main>.task-number{width:22px!important;height:22px!important;min-width:22px!important}
+}
+@media(max-width:640px) and (orientation:portrait){
+  .card-main{grid-template-columns:20px minmax(0,1fr) 36px!important}
+  body.show-task-numbers .card-main{grid-template-columns:22px 18px minmax(0,1fr) 36px!important}
+}
 </style>
 
 </head>
@@ -3496,6 +3545,19 @@ window.addEventListener("resize",scheduleLandscapeFit,{passive:true});window.add
 if(window.visualViewport)window.visualViewport.addEventListener("resize",scheduleLandscapeFit,{passive:true});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")scheduleLandscapeFit();});
 setTimeout(scheduleLandscapeFit,80);
+</script>
+
+<script>
+/* v38: Escape closes the Settings / session dialog. */
+document.addEventListener("keydown", function(event) {
+  if (event.key !== "Escape") return;
+  const settingsDialog = document.getElementById("sessionModal");
+  if (settingsDialog && settingsDialog.classList.contains("show")) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof closeSession === "function") closeSession();
+  }
+}, true);
 </script>
 </body>
 </html>
