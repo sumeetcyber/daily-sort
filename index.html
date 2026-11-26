@@ -3,14 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#171923">
-<meta name="daily-sort-build" content="2026-11-26-v28">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" type="image/svg+xml" href="./icons/daily-sort.svg">
-<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<meta name="theme-color" id="themeColorMeta" content="#101f32">
+<meta name="daily-sort-build" content="2026-11-26-v29">
+<link rel="manifest" id="appManifest" href="./manifest.webmanifest">
+<link rel="icon" id="dynamicFavicon" type="image/svg+xml" href="./icons/daily-sort.svg">
+<link rel="apple-touch-icon" href="./icons/daily-sort-192.png">
 <title>Daily Sort</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='5' y='5' width='54' height='54' rx='16' fill='%234d8f70'/%3E%3Cpath d='M19 21h26M19 32h18M19 43h11' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='44' cy='43' r='5' fill='white'/%3E%3C/svg%3E">
 <style>
   :root{
     --bg:#f7f5f0;
@@ -1115,6 +1113,43 @@ body[data-theme-motion="holiday"]::before{opacity:.13;background-image:radial-gr
  .card-tools .icon-btn,.card-tools .expand{width:23px!important;min-width:23px!important;height:23px!important}
 }
 
+
+/* v29 — themed identity, contrasting transfer action, and playful fake deletion flow. */
+.brand-mark{width:46px!important;height:46px!important;flex:none;filter:drop-shadow(0 4px 10px color-mix(in srgb,var(--logo-secondary) 28%,transparent));}
+.card-tools .zone-arrow{background:var(--zone-arrow-bg)!important;color:var(--zone-arrow-fg)!important;border:1px solid var(--zone-arrow-border)!important;font-weight:950!important;box-shadow:0 2px 7px color-mix(in srgb,var(--zone-arrow-bg) 28%,transparent)!important;}
+.card-tools .zone-arrow:hover{background:var(--zone-arrow-hover)!important;color:var(--zone-arrow-hover-fg)!important;border-color:var(--zone-arrow-hover)!important;}
+.account-danger-row{margin-top:14px!important;padding-top:12px;border-top:1px solid var(--line);}
+.account-delete-trigger{border-color:color-mix(in srgb,var(--red) 52%,var(--line))!important;color:var(--red)!important;background:color-mix(in srgb,var(--red) 9%,var(--panel))!important;font-weight:800!important;}
+.account-delete-trigger:hover{background:color-mix(in srgb,var(--red) 18%,var(--panel))!important;}
+.delete-prank-overlay{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;padding:20px;background:color-mix(in srgb,#060813 82%,transparent);backdrop-filter:blur(8px);}
+.delete-prank-overlay[hidden],.delete-prank-dialog[hidden],.kiss-screen[hidden]{display:none!important;}
+.delete-prank-rain{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.prank-rain-piece{position:absolute;top:-12vh;left:var(--x);font-size:clamp(24px,4vw,48px);line-height:1;filter:drop-shadow(0 5px 8px #0008);animation:prank-fall var(--duration) cubic-bezier(.18,.65,.4,1) var(--delay) both;}
+@keyframes prank-fall{0%{transform:translate3d(0,-12vh,0) rotate(0) scale(.5);opacity:0}10%{opacity:1}80%{opacity:1}100%{transform:translate3d(var(--drift),115vh,0) rotate(var(--spin)) scale(1.15);opacity:0}}
+.delete-prank-dialog{position:relative;z-index:2;width:min(520px,94vw);padding:34px 30px 28px;border:1px solid color-mix(in srgb,var(--red) 40%,#fff);border-radius:24px;text-align:center;color:var(--text);background:var(--panel);box-shadow:0 24px 90px #0008;animation:prank-dialog-pop .42s cubic-bezier(.2,.9,.25,1.25) both;}
+@keyframes prank-dialog-pop{from{opacity:0;transform:translateY(28px) scale(.82)}to{opacity:1;transform:translateY(0) scale(1)}}
+.prank-siren{font-size:34px;letter-spacing:5px;margin-bottom:13px;animation:prank-siren-wiggle .34s ease-in-out 4;}
+@keyframes prank-siren-wiggle{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.delete-prank-copy{font-size:clamp(20px,4vw,27px);font-weight:850;line-height:1.38;letter-spacing:-.04em;}
+.delete-prank-copy p{margin:5px 0;}
+.delete-prank-copy p:first-child{color:var(--accent);}
+.delete-prank-copy p:last-child{font-size:.9em;color:var(--muted);}
+.delete-prank-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px;}
+.delete-prank-actions .btn{min-height:46px;font-size:14px;font-weight:850;padding:11px 16px;}
+.prank-danger{background:var(--red)!important;color:white!important;border-color:var(--red)!important;}
+.prank-close{position:absolute;top:12px;right:13px;width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:var(--button,var(--panel));color:var(--text);font-size:18px;cursor:pointer;}
+.kiss-screen{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:min(720px,96vw);min-height:min(75vh,660px);text-align:center;color:#fff;}
+.kiss-lips{width:min(78vw,390px);height:auto;overflow:visible;filter:drop-shadow(0 18px 34px #ff2b6d65);animation:kiss-pop .8s cubic-bezier(.2,1.25,.35,1) both,kiss-pulse 1.4s ease-in-out .8s infinite alternate;}
+@keyframes kiss-pop{from{transform:scale(.04) rotate(-25deg);opacity:0}70%{transform:scale(1.13) rotate(5deg);opacity:1}to{transform:scale(1) rotate(0)}}
+@keyframes kiss-pulse{from{filter:drop-shadow(0 12px 22px #ff2b6d50)}to{filter:drop-shadow(0 24px 48px #ff2b6dba)}}
+.kiss-caption{font-size:clamp(28px,6vw,48px);font-weight:950;letter-spacing:.12em;text-shadow:0 5px 22px #ff2b6d80;animation:kiss-caption-in .6s ease .3s both;}
+@keyframes kiss-caption-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.kiss-close{margin-top:10px;min-height:46px;font-size:14px;font-weight:850;}
+.kiss-confetti span{position:absolute;font-size:clamp(25px,4vw,44px);animation:kiss-float 2.8s ease-in-out infinite alternate;}
+.kiss-confetti span:nth-child(1){left:8%;top:20%;animation-delay:-.3s}.kiss-confetti span:nth-child(2){right:9%;top:24%;animation-delay:-1.2s}.kiss-confetti span:nth-child(3){left:17%;bottom:18%;animation-delay:-.8s}.kiss-confetti span:nth-child(4){right:15%;bottom:16%;animation-delay:-1.6s}.kiss-confetti span:nth-child(5){left:48%;top:7%;animation-delay:-.5s}
+@keyframes kiss-float{from{transform:translateY(12px) rotate(-12deg) scale(.8);opacity:.55}to{transform:translateY(-16px) rotate(12deg) scale(1.15);opacity:1}}
+@media(prefers-reduced-motion:reduce){.prank-rain-piece,.delete-prank-dialog,.prank-siren,.kiss-lips,.kiss-caption,.kiss-confetti span{animation:none!important}}
+
 </style>
 
 </head>
@@ -1122,12 +1157,15 @@ body[data-theme-motion="holiday"]::before{opacity:.13;background-image:radial-gr
 <div class="wrap">
   <header>
     <div class="brand">
-      <svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-label="Daily Sort logo">
-        <defs><linearGradient id="dsLogoGrad" x1="5" y1="5" x2="43" y2="43" gradientUnits="userSpaceOnUse"><stop stop-color="var(--accent)"/><stop offset="1" stop-color="var(--logo-pop,var(--blue))"/></linearGradient></defs>
-        <rect x="2.5" y="2.5" width="43" height="43" rx="14" fill="url(#dsLogoGrad)" opacity=".16"/>
-        <path d="M11 15h24M11 23.5h17M11 32h10" fill="none" stroke="url(#dsLogoGrad)" stroke-width="3.6" stroke-linecap="round"/>
-        <path d="m28 31 4 4 7-9" fill="none" stroke="url(#dsLogoGrad)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="37" cy="12" r="3" fill="var(--logo-pop,var(--blue))"/>
+      <svg class="brand-mark" id="dailySortLogo" viewBox="0 0 96 96" role="img" aria-label="Daily Sort logo">
+        <defs><linearGradient id="dsLogoGrad" x1="14" y1="20" x2="82" y2="78" gradientUnits="userSpaceOnUse"><stop stop-color="var(--logo-primary,var(--accent))"/><stop offset="1" stop-color="var(--logo-secondary,#25d8de)"/></linearGradient></defs>
+        <rect x="3" y="3" width="90" height="90" rx="25" fill="var(--logo-shell,#101f32)"/>
+        <path d="M4 65c18-11 31-5 47 5s30 12 45 2v13c-1 5-6 8-12 8H15C8 93 3 87 3 80Z" fill="var(--logo-wave,#18344a)" opacity=".78"/>
+        <rect x="18" y="22" width="48" height="10" rx="5" fill="url(#dsLogoGrad)"/>
+        <circle cx="70" cy="27" r="9" fill="var(--logo-secondary,#25d8de)"/>
+        <rect x="17" y="43" width="39" height="10" rx="5" fill="var(--logo-secondary,#25d8de)" opacity=".95"/>
+        <rect x="17" y="65" width="29" height="10" rx="5" fill="var(--logo-primary,var(--accent))"/>
+        <path d="m55 68 9 10 18-20" fill="none" stroke="var(--logo-secondary,#25d8de)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <h1>Daily Sort</h1>
     </div>
@@ -1257,6 +1295,7 @@ body[data-theme-motion="holiday"]::before{opacity:.13;background-image:radial-gr
     <div style="font-size:12px;color:var(--muted);margin-top:12px">Your current session token</div>
     <div class="session-key"><input id="sessionToken" type="password" readonly aria-label="Session token"><button class="btn" id="revealToken">Show</button></div>
     <div class="session-actions"><button class="btn primary" id="copyToken">Copy token</button><button class="btn" id="newToken">New session</button></div>
+    <div class="session-actions account-danger-row"><button class="btn account-delete-trigger" id="deleteAccountPrank" type="button">🗑️ Delete my account</button></div>
     <div style="font-size:12px;color:var(--muted);margin-top:16px">🔁 Use an existing token on another computer</div>
     <div class="session-key"><input id="sessionImportToken" type="password" placeholder="Paste session token"><button class="btn" id="connectToken">Connect</button></div>
     </section>
@@ -1301,6 +1340,34 @@ My highlighted task
     <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:12px">Cloud: connecting…</div>
     <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
   </div>
+</div>
+<div class="delete-prank-overlay" id="deletePrankOverlay" hidden aria-live="assertive">
+  <div class="delete-prank-rain" id="deletePrankRain" aria-hidden="true"></div>
+  <section class="delete-prank-dialog" id="deletePrankDialog" role="dialog" aria-modal="true" aria-labelledby="deletePrankTitle" hidden>
+    <div class="prank-siren">🚨 🔔 💥</div>
+    <div class="delete-prank-copy" id="deletePrankCopy">
+      <p id="deletePrankTitle">arey arey bro, ek second</p>
+      <p>wtf</p>
+      <p>are u fucking serious? :(</p>
+    </div>
+    <div class="delete-prank-actions" id="deletePrankActions">
+      <button class="btn prank-danger" id="prankConfirmDelete" type="button">delete my account</button>
+      <button class="btn primary" id="prankOops" type="button">oops, nevermind</button>
+    </div>
+    <button class="prank-close" id="closeDeletePrank" type="button" aria-label="Close">✕</button>
+  </section>
+  <section class="kiss-screen" id="kissScreen" hidden aria-label="A kiss for Daily Sort">
+    <div class="kiss-confetti" aria-hidden="true"><span>💋</span><span>💋</span><span>💋</span><span>💋</span><span>💋</span></div>
+    <svg class="kiss-lips" viewBox="0 0 320 190" role="img" aria-label="A pair of lipstick-red lips blowing a kiss">
+      <defs><linearGradient id="lipGradient" x1="40" y1="20" x2="270" y2="170" gradientUnits="userSpaceOnUse"><stop stop-color="#ff739d"/><stop offset=".52" stop-color="#e51d62"/><stop offset="1" stop-color="#9f124c"/></linearGradient></defs>
+      <path d="M18 92c39-7 57-44 103-49 19-2 28 8 39 18 11-10 20-20 39-18 46 5 64 42 103 49-25 13-41 63-82 76-27 9-41-2-60-21-19 19-33 30-60 21-41-13-57-63-82-76Z" fill="url(#lipGradient)" stroke="#8e1747" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M22 91c45-1 73-23 114-22 10 0 17 4 24 12 7-8 14-12 24-12 41-1 69 21 114 22-34 12-62 28-114 26-10 0-17-3-24-8-7 5-14 8-24 8-52 2-80-14-114-26Z" fill="#68102f" opacity=".92"/>
+      <path d="M46 91c32-8 55-28 87-28 11 0 19 6 27 13 8-7 16-13 27-13 32 0 55 20 87 28-43-3-64 5-114 5s-71-8-114-5Z" fill="#ffb4c8" opacity=".65"/>
+      <path d="M78 137c30 23 58 31 82 5 24 26 52 18 82-5-28 36-56 42-82 17-26 25-54 19-82-17Z" fill="#ff8caf" opacity=".66"/>
+    </svg>
+    <div class="kiss-caption">MWAH. 💋</div>
+    <button class="btn primary kiss-close" id="closeKiss" type="button">back to Daily Sort</button>
+  </section>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -2040,7 +2107,41 @@ const encoder=new TextEncoder();
 function bytesToB64(bytes){let s="";bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");}
 function b64ToBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";const bin=atob(s);return Uint8Array.from(bin,c=>c.charCodeAt(0));}
 function randomToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return bytesToB64(a);}
-function applyTheme(name, sync=true){name=THEME_ALIASES[name]||name;const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;const hex=t.bg.replace("#","");const rgb=hex.length===3?hex.split("").map(x=>parseInt(x+x,16)):hex.match(/.{2}/g).map(x=>parseInt(x,16));const luminance=(0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2])/255;r.style.colorScheme=luminance<0.48?"dark":"light";r.style.setProperty("--bg",t.bg);r.style.setProperty("--panel",t.panel);r.style.setProperty("--line",t.line);r.style.setProperty("--text",t.text);r.style.setProperty("--muted",t.muted);r.style.setProperty("--accent",t.accent);r.style.setProperty("--accent-soft",t.accentSoft);r.style.setProperty("--input",t.input||t.panel);r.style.setProperty("--button",t.button||t.panel);r.style.setProperty("--card",t.card||t.panel);r.style.setProperty("--details",t.details||t.panel);r.style.setProperty("--soft",t.soft||t.accentSoft);r.style.setProperty("--later-bg",t.laterBg||t.panel);r.style.setProperty("--later-head",t.laterHead||t.panel);r.style.setProperty("--red",t.red||"#b56b67");document.body.dataset.activeTheme=name;document.body.dataset.themeMotion=THEME_MOTION[name]||"";localStorage.setItem(THEME_KEY,name);document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("active",b.dataset.theme===name));if(sync) queueCloudSave();}
+function hexToHsl(hex){
+  const raw=hex.replace('#','');const full=raw.length===3?raw.split('').map(c=>c+c).join(''):raw;
+  const [r0,g0,b0]=full.match(/.{2}/g).map(v=>parseInt(v,16)/255);const max=Math.max(r0,g0,b0),min=Math.min(r0,g0,b0);let h=0,s=0,l=(max+min)/2;
+  if(max!==min){const d=max-min;s=l>.5?d/(2-max-min):d/(max+min);switch(max){case r0:h=(g0-b0)/d+(g0<b0?6:0);break;case g0:h=(b0-r0)/d+2;break;default:h=(r0-g0)/d+4;}h*=60;}
+  return [h,s,l];
+}
+function hslToHex(h,s,l){
+  h=((h%360)+360)%360;s=Math.max(0,Math.min(1,s));l=Math.max(0,Math.min(1,l));const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2;let rgb=[0,0,0];
+  if(h<60)rgb=[c,x,0];else if(h<120)rgb=[x,c,0];else if(h<180)rgb=[0,c,x];else if(h<240)rgb=[0,x,c];else if(h<300)rgb=[x,0,c];else rgb=[c,0,x];
+  return '#'+rgb.map(v=>Math.round((v+m)*255).toString(16).padStart(2,'0')).join('');
+}
+function buildDynamicLogoSvg(primary,secondary,shell){
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><linearGradient id="g" x1="14" y1="20" x2="82" y2="78" gradientUnits="userSpaceOnUse"><stop stop-color="${primary}"/><stop offset="1" stop-color="${secondary}"/></linearGradient></defs><rect x="3" y="3" width="90" height="90" rx="25" fill="${shell}"/><path d="M4 65c18-11 31-5 47 5s30 12 45 2v13c-1 5-6 8-12 8H15C8 93 3 87 3 80Z" fill="${primary}" opacity=".18"/><rect x="18" y="22" width="48" height="10" rx="5" fill="url(#g)"/><circle cx="70" cy="27" r="9" fill="${secondary}"/><rect x="17" y="43" width="39" height="10" rx="5" fill="${secondary}"/><rect x="17" y="65" width="29" height="10" rx="5" fill="${primary}"/><path d="m55 68 9 10 18-20" fill="none" stroke="${secondary}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function updateDynamicBrandAssets(primary,secondary,shell,bg){
+  const svg=buildDynamicLogoSvg(primary,secondary,shell);const favicon=document.getElementById('dynamicFavicon');
+  if(favicon)favicon.href='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+  const meta=document.getElementById('themeColorMeta');if(meta)meta.content=bg;
+  const appName=document.querySelector('meta[name="application-name"]');if(appName)appName.content='Daily Sort';
+}
+function applyTheme(name, sync=true){
+  name=THEME_ALIASES[name]||name;const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;
+  const hex=t.bg.replace('#','');const rgb=hex.length===3?hex.split('').map(x=>parseInt(x+x,16)):hex.match(/.{2}/g).map(x=>parseInt(x,16));
+  const luminance=(0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2])/255;const isDark=luminance<0.48;
+  const [h,s]=hexToHsl(t.accent);const secondary=hslToHex(h+154,Math.max(.68,s),isDark ? 0.62 : 0.48);
+  const shell=isDark?t.panel:'#101f32';const wave=isDark?t.bg:'#1b3b54';
+  r.style.colorScheme=isDark?'dark':'light';
+  r.style.setProperty('--bg',t.bg);r.style.setProperty('--panel',t.panel);r.style.setProperty('--line',t.line);r.style.setProperty('--text',t.text);r.style.setProperty('--muted',t.muted);r.style.setProperty('--accent',t.accent);r.style.setProperty('--accent-soft',t.accentSoft);
+  r.style.setProperty('--input',t.input||t.panel);r.style.setProperty('--button',t.button||t.panel);r.style.setProperty('--card',t.card||t.panel);r.style.setProperty('--details',t.details||t.panel);r.style.setProperty('--soft',t.soft||t.accentSoft);r.style.setProperty('--later-bg',t.laterBg||t.panel);r.style.setProperty('--later-head',t.laterHead||t.panel);r.style.setProperty('--red',t.red||'#b56b67');
+  r.style.setProperty('--logo-primary',t.accent);r.style.setProperty('--logo-secondary',secondary);r.style.setProperty('--logo-shell',shell);r.style.setProperty('--logo-wave',wave);
+  r.style.setProperty('--zone-arrow-bg',isDark?'#e4f5ff':'#17364f');r.style.setProperty('--zone-arrow-fg',isDark?'#102a3e':'#f2faff');r.style.setProperty('--zone-arrow-border',isDark?'#9bcbe5':'#315b78');r.style.setProperty('--zone-arrow-hover',isDark?'#b9e9ff':'#285c80');r.style.setProperty('--zone-arrow-hover-fg',isDark?'#0b2637':'#ffffff');
+  document.body.dataset.activeTheme=name;document.body.dataset.themeMotion=THEME_MOTION[name]||'';localStorage.setItem(THEME_KEY,name);
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===name));
+  updateDynamicBrandAssets(t.accent,secondary,shell,t.bg);if(sync)queueCloudSave();
+}
 function renderThemes(){const grid=document.getElementById("themeGrid");grid.innerHTML=Object.keys(THEMES).map(n=>`<button class="theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");grid.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme));applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);}
 const derivedKeyCache=new Map();
 async function deriveV2Key(token,salt){
@@ -2256,6 +2357,39 @@ document.getElementById("closeSession").onclick=closeSession;
 document.getElementById("sessionModal").onclick=e=>{if(e.target.id==="sessionModal")closeSession()};
 document.getElementById("revealToken").onclick=()=>{const x=document.getElementById("sessionToken");x.type=x.type==="password"?"text":"password";document.getElementById("revealToken").textContent=x.type==="password"?"Show":"Hide"};
 document.getElementById("copyToken").onclick=async()=>{try{await navigator.clipboard.writeText(getSessionToken());toast("Token copied ✅")}catch(e){toast("Could not copy token — check clipboard permission")}};
+
+// The delete-account sequence is intentionally a harmless UI gag: it never calls Supabase or changes local data.
+const deletePrankOverlay=document.getElementById("deletePrankOverlay");
+const deletePrankRain=document.getElementById("deletePrankRain");
+const deletePrankDialog=document.getElementById("deletePrankDialog");
+const kissScreen=document.getElementById("kissScreen");
+let deletePrankTimer=null;
+function closeDeletePrank(){if(deletePrankTimer)clearTimeout(deletePrankTimer);deletePrankOverlay.hidden=true;deletePrankDialog.hidden=true;kissScreen.hidden=true;deletePrankRain.innerHTML="";}
+function makePrankRain(symbols,count=46){
+  deletePrankRain.innerHTML="";
+  for(let i=0;i<count;i++){
+    const piece=document.createElement("span");piece.className="prank-rain-piece";piece.textContent=symbols[i%symbols.length];
+    piece.style.setProperty("--x",(Math.random()*100)+"vw");piece.style.setProperty("--delay",(Math.random()*1.15)+"s");piece.style.setProperty("--duration",(1.45+Math.random()*1.5)+"s");piece.style.setProperty("--drift",((Math.random()-.5)*180)+"px");piece.style.setProperty("--spin",((Math.random()-.5)*900)+"deg");deletePrankRain.appendChild(piece);
+  }
+}
+function beginDeletePrank(){
+  deletePrankOverlay.hidden=false;deletePrankDialog.hidden=true;kissScreen.hidden=true;deletePrankRain.hidden=false;
+  makePrankRain(["🚨","🔔","💥","🧨","💣","🚨"],52);
+  deletePrankTimer=setTimeout(()=>{deletePrankDialog.hidden=false;deletePrankDialog.querySelector(".prank-siren").textContent="🚨 🔔 💥";},1700);
+}
+document.getElementById("deleteAccountPrank").onclick=beginDeletePrank;
+document.getElementById("prankConfirmDelete").onclick=()=>{
+  deletePrankRain.hidden=false;makePrankRain(["💥","🚨","🔔","🧨"],34);
+  document.getElementById("deletePrankCopy").innerHTML="<p>nice try 😈</p><p>account deletion is not connected here.</p><p>your session and every task are untouched. 🫶</p>";
+  document.getElementById("deletePrankActions").innerHTML='<button class="btn primary" id="prankDone" type="button">okay, okay</button>';
+  document.getElementById("prankDone").onclick=closeDeletePrank;
+};
+document.getElementById("prankOops").onclick=()=>{deletePrankDialog.hidden=true;deletePrankRain.hidden=true;kissScreen.hidden=false;};
+document.getElementById("closeDeletePrank").onclick=closeDeletePrank;
+document.getElementById("closeKiss").onclick=closeDeletePrank;
+deletePrankOverlay.addEventListener("click",e=>{if(e.target===deletePrankOverlay)closeDeletePrank();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!deletePrankOverlay.hidden)closeDeletePrank();});
+
 const warning=document.getElementById("newSessionWarning");
 document.getElementById("newToken").onclick=()=>{warning.hidden=false};
 document.getElementById("cancelNewSession").onclick=()=>{warning.hidden=true};
@@ -2480,7 +2614,7 @@ setInterval(syncOnlineClock,15*60*1000);
 <script>
 /* v28 cache freshness: check after tab return, focus, and page restore. */
 if("serviceWorker" in navigator && location.protocol==="https:"){
-  const DS_SW_BUILD="2026-11-26-v28";
+  const DS_SW_BUILD="2026-11-26-v29";
   let dsRegistration=null,dsLastFreshCheck=0;
   let dsHadController=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{
