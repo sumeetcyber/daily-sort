@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" id="themeColorMeta" content="#101f32">
-<meta name="daily-sort-build" content="2026-11-26-v31">
-<link rel="manifest" id="appManifest" href="./manifest.webmanifest?v=31">
-<link rel="icon" id="dynamicFavicon" type="image/svg+xml" href="./icons/daily-sort.svg?v=31">
-<link rel="shortcut icon" href="./favicon.ico?v=31">
-<link rel="icon" type="image/png" sizes="32x32" href="./icons/daily-sort-192.png?v=31">
-<link rel="apple-touch-icon" href="./icons/daily-sort-192.png?v=31">
+<meta name="daily-sort-build" content="2026-11-26-v32">
+<link rel="manifest" id="appManifest" href="./manifest.webmanifest?v=32">
+<link rel="icon" id="dynamicFavicon" type="image/svg+xml" href="./icons/daily-sort.svg?v=32">
+<link rel="shortcut icon" href="./favicon.ico?v=32">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/daily-sort-192.png?v=32">
+<link rel="apple-touch-icon" href="./icons/daily-sort-192.png?v=32">
 <title>Daily Sort</title>
 <style>
   :root{
@@ -1379,6 +1379,54 @@ body[data-theme-motion="diwali"] .theme-particle{animation-name:themeFirework;to
   .draft-tools{display:none!important}
 }
 
+
+
+/* v32 — compact theme chips and unmistakable, distinct live atmospheres. */
+.theme-library{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:start!important}
+.theme-family{min-width:0!important;padding:12px!important;align-self:start!important}
+.theme-family .theme-pair{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:start!important}
+.theme-family .theme-mode{min-width:0!important;display:flex!important;flex-direction:column!important}
+.theme-family .theme-mode .theme-grid{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;align-items:flex-start!important;justify-content:flex-start!important;gap:6px!important;width:100%!important;margin:0!important}
+.theme-family .theme-mode .theme-btn{display:inline-flex!important;flex:0 0 auto!important;align-items:center!important;justify-content:center!important;width:auto!important;min-width:max-content!important;max-width:100%!important;min-height:32px!important;padding:7px 10px!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;text-align:center!important;line-height:1.15!important;font-size:12px!important;border-radius:9px!important}
+.theme-family .theme-mode .theme-btn.active{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)!important}
+@media(max-width:700px){.theme-library{grid-template-columns:minmax(0,1fr)!important}.theme-family .theme-pair{grid-template-columns:repeat(2,minmax(0,1fr))!important}.theme-family .theme-mode .theme-btn{font-size:12px!important;padding:7px 9px!important}}
+@media(max-width:370px){.theme-family .theme-pair{gap:8px!important}.theme-family{padding:10px!important}.theme-family .theme-mode .theme-btn{font-size:11px!important;padding:6px 8px!important}}
+
+/* Effect elements sit behind the workspace and never block controls. */
+.theme-particles{position:fixed!important;inset:0!important;z-index:0!important;pointer-events:none!important;overflow:hidden!important;contain:strict!important}
+.fx-cloud{position:absolute;left:-35vw;top:var(--top);width:var(--w);height:var(--h);border-radius:999px;background:rgba(255,255,255,.86);opacity:var(--alpha);filter:blur(1.2px);box-shadow:0 12px 28px #74bde822;animation:fxCloudTravel var(--duration) linear var(--delay) infinite;will-change:transform}
+.fx-cloud:before,.fx-cloud:after{content:"";position:absolute;bottom:18%;border-radius:50%;background:inherit}
+.fx-cloud:before{width:47%;height:125%;left:16%}.fx-cloud:after{width:55%;height:150%;left:43%;bottom:12%}
+@keyframes fxCloudTravel{from{transform:translate3d(-15vw,0,0)}to{transform:translate3d(var(--drift),0,0)}}
+body[data-theme-motion="cloud"] .fx-cloud{background:rgba(255,255,255,.72);filter:blur(2px);box-shadow:0 15px 40px #6b98bc30}
+.fx-holi{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:calc(var(--size)*.76);border-radius:46% 54% 61% 39%/45% 36% 64% 55%;filter:blur(12px) saturate(1.22);opacity:.56;animation:fxHoliCloud var(--duration) ease-in-out var(--delay) infinite alternate;will-change:transform,opacity}
+@keyframes fxHoliCloud{0%{transform:translate3d(0,0,0) rotate(-8deg) scale(.45);opacity:.08}42%{opacity:.34}100%{transform:translate3d(var(--dx),var(--dy),0) rotate(12deg) scale(1.08);opacity:.2}}
+.fx-wave{position:absolute;left:-18vw;bottom:calc(var(--level) - 5vh);width:136vw;height:17vh;border-top:3px solid rgba(58,174,204,.54);border-radius:50% 48% 0 0/24% 28% 0 0;background:linear-gradient(180deg,rgba(90,201,224,.15),rgba(39,153,189,.025) 70%,transparent);opacity:var(--alpha);filter:blur(2px);animation:fxWaveCrash var(--duration) ease-in-out var(--delay) infinite alternate;will-change:transform}
+@keyframes fxWaveCrash{0%{transform:translate3d(-3vw,2vh,0) scaleY(.72) skewX(-2deg)}52%{transform:translate3d(4vw,-2vh,0) scaleY(1.14) skewX(3deg)}100%{transform:translate3d(var(--drift),1vh,0) scaleY(.84) skewX(-3deg)}}
+.fx-ember{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);border-radius:50%;background:radial-gradient(circle,#ffd28a99 0,#ff833c66 22%,#e34a2833 48%,transparent 72%);filter:blur(12px);opacity:var(--alpha);animation:fxEmberRise var(--duration) ease-in-out var(--delay) infinite alternate;will-change:transform,opacity}
+@keyframes fxEmberRise{0%{transform:translateY(0) scale(.62);opacity:.08}55%{opacity:.35}100%{transform:translateY(calc(0px - var(--rise))) scale(1.12);opacity:.2}}
+.fx-moon{position:absolute;top:9vh;right:12vw;width:clamp(68px,10vw,142px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 34% 32%,#fff 0 4%,#f7fbff 18%,#dce8f6 57%,#b8cbe2 100%);box-shadow:0 0 30px 12px #dbeaff38,0 0 110px 42px #b7d6ff21;opacity:.9;animation:fxMoonGlow 7s ease-in-out infinite alternate}
+@keyframes fxMoonGlow{from{filter:brightness(.92);box-shadow:0 0 24px 8px #dbeaff30,0 0 80px 26px #b7d6ff18}to{filter:brightness(1.15);box-shadow:0 0 42px 17px #dbeaff66,0 0 150px 60px #b7d6ff35}}
+.fx-moonbeam{position:absolute;right:7vw;bottom:-4vh;width:38vw;height:64vh;transform:perspective(220px) rotateX(18deg);transform-origin:bottom;background:linear-gradient(180deg,#e9f4ff00,#d8ebff1f 18%,#e8f4ff32 47%,#d8ebff0c);filter:blur(13px);clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);animation:fxMoonReflection 6s ease-in-out infinite alternate}
+@keyframes fxMoonReflection{from{opacity:.28;transform:perspective(220px) rotateX(18deg) translateX(0) scaleX(.8)}to{opacity:.65;transform:perspective(220px) rotateX(18deg) translateX(-5vw) scaleX(1.1)}}
+.fx-star{position:absolute;left:var(--x);top:var(--y);width:2px;height:2px;border-radius:50%;background:#f3f8ff;opacity:var(--alpha);box-shadow:0 0 6px 2px #e7f2ff8a;animation:fxTwinkle var(--duration) ease-in-out var(--delay) infinite alternate}
+@keyframes fxTwinkle{from{opacity:.14;transform:scale(.7)}to{opacity:1;transform:scale(1.8)}}
+body[data-theme-motion="sky"]::before{opacity:.08!important;background:linear-gradient(180deg,#8fd7ff22,#e4f5ff08)!important}
+body[data-theme-motion="ocean"]::before{opacity:.27!important;background:linear-gradient(180deg,#a4e9f322 0%,#35bad422 48%,#087eaa22 100%)!important;animation:dsOcean 13s ease-in-out infinite alternate!important}
+body[data-theme-motion="holi"]::before{opacity:.08!important;background:radial-gradient(ellipse at 50% 50%,#ff9acb22,transparent 70%)!important}
+body[data-theme-motion="dasain"]::before{opacity:.11!important;background:radial-gradient(ellipse at 50% 0%,#f4c47b33,transparent 65%)!important}
+body[data-theme-motion="northernlights"]::before{opacity:.72!important;filter:blur(16px) saturate(1.8)!important;background-image:linear-gradient(104deg,transparent 0 5%,#2bffb533 12%,#38f5c777 19%,#52d9ef55 27%,transparent 36%,#64c7ff55 46%,#8b7dff55 58%,transparent 69%),linear-gradient(82deg,transparent 0 18%,#00e6ae44 28%,#8cf7d455 38%,transparent 50%,#7aa8ff44 64%,transparent 78%),radial-gradient(ellipse at 50% 18%,#3eeac955,transparent 58%)!important;background-size:220% 170%,210% 190%,150% 150%!important;animation:dsNorthernReal 18s ease-in-out infinite alternate!important}
+@keyframes dsNorthernReal{0%{background-position:0% 0%,100% 0%,50% 0%;transform:skewX(-8deg) scale(1.04);filter:blur(14px) hue-rotate(-8deg) saturate(1.7)}50%{background-position:45% 38%,48% 55%,52% 22%;transform:skewX(5deg) scale(1.12);filter:blur(19px) hue-rotate(12deg) saturate(2)}100%{background-position:100% 4%,0% 28%,48% 6%;transform:skewX(-4deg) scale(1.07);filter:blur(14px) hue-rotate(-18deg) saturate(1.8)}}
+body[data-theme-motion="strobe"]::before{opacity:.3!important;filter:blur(24px) saturate(1.5)!important;background-image:radial-gradient(ellipse at 12% 35%,#ad88ff88 0 6%,transparent 36%),radial-gradient(ellipse at 82% 24%,#ff6b9d88 0 7%,transparent 38%),radial-gradient(ellipse at 55% 85%,#52dff088 0 7%,transparent 40%),linear-gradient(120deg,#271e4488,#182b4688)!important;background-size:190% 190%!important;animation:dsStrobeBeat 2.4s steps(1,end) infinite!important}
+@keyframes dsStrobeBeat{0%,100%{background-position:0% 0%;transform:translate3d(-2vw,0,0) scale(1.03)}12%{background-position:35% 70%;transform:translate3d(2vw,-1vh,0) scale(1.07)}25%{background-position:85% 15%;transform:translate3d(0,1vh,0) scale(1.04)}37%{background-position:20% 95%;transform:translate3d(-3vw,0,0) scale(1.09)}50%{background-position:100% 55%;transform:translate3d(2vw,1vh,0) scale(1.04)}62%{background-position:55% 5%;transform:translate3d(0,-1vh,0) scale(1.08)}75%{background-position:5% 80%;transform:translate3d(3vw,0,0) scale(1.03)}87%{background-position:70% 30%;transform:translate3d(-1vw,1vh,0) scale(1.08)}}
+body[data-theme-motion="gradient-light"]::before,body[data-theme-motion="gradient-dark"]::before{opacity:.48!important;filter:blur(34px) saturate(1.45)!important;background-image:radial-gradient(ellipse at 12% 24%,var(--mesh-a),transparent 48%),radial-gradient(ellipse at 83% 20%,var(--mesh-b),transparent 50%),radial-gradient(ellipse at 52% 87%,var(--mesh-c),transparent 49%),radial-gradient(ellipse at 95% 78%,var(--mesh-d),transparent 42%)!important;background-size:170% 170%!important;animation:dsMeshDrift 13s ease-in-out infinite alternate!important}
+body[data-theme-motion="gradient-dark"]::before{opacity:.5!important;filter:blur(38px) saturate(1.7)!important}
+body[data-theme-motion="cloud"]::before{opacity:.06!important}
+body[data-theme-motion="ember"]::before{opacity:.34!important;background-image:radial-gradient(ellipse at 20% 78%,#ff8b3e77,transparent 32%),radial-gradient(ellipse at 78% 24%,#ff4e2e66,transparent 35%),radial-gradient(ellipse at 50% 55%,#ffcc6650,transparent 40%)!important;filter:blur(30px) saturate(1.6)!important;animation:fxEmberBackground 8s ease-in-out infinite alternate!important}
+@keyframes fxEmberBackground{from{background-position:0% 30%,100% 80%,40% 10%;filter:blur(34px) brightness(.9)}to{background-position:20% 0%,75% 100%,65% 85%;filter:blur(24px) brightness(1.3)}}
+body[data-theme-motion="moonlit"]::before{opacity:.24!important;background-image:radial-gradient(ellipse at 82% 16%,#dcecff44 0 3%,transparent 24%),linear-gradient(180deg,#101d33 0%,#15253c 56%,#20334b 100%)!important}
+@media(prefers-reduced-motion:reduce){.fx-cloud,.fx-holi,.fx-wave,.fx-ember,.fx-moon,.fx-moonbeam,.fx-star{animation:none!important}body[data-theme-motion]::before,.theme-particle{animation:none!important}}
+
 </style>
 
 </head>
@@ -2375,22 +2423,71 @@ function updateDynamicBrandAssets(primary,secondary,shell,bg){
 let themeParticleTimer=null,gradientMeshTimer=null;
 function refreshThemeParticles(name){
   const host=document.getElementById("themeParticles");if(!host)return;host.innerHTML="";
-  const motion=THEME_MOTION[name]||"";let symbols=[];
-  if(motion==="dasain")symbols=["🍂","❤️","🌾","🍂","🌺","🌾","🔴"];
-  if(motion==="diwali")symbols=["🎆","✨","🎇","🪔","🧨","✨","🚀"];
-  if(!symbols.length)return;
-  const count=motion==="diwali"?14:24;
-  for(let i=0;i<count;i++){
-    const el=document.createElement("span");el.className="theme-particle";el.textContent=symbols[i%symbols.length];
-    el.style.setProperty("--left",(Math.random()*100)+"vw");el.style.setProperty("--size",(motion==="diwali"?14+Math.random()*13:13+Math.random()*12)+"px");
-    el.style.setProperty("--alpha",motion==="diwali"?(.1+Math.random()*.22):(.1+Math.random()*.2));
-    el.style.setProperty("--duration",(motion==="diwali"?4+Math.random()*5:13+Math.random()*13)+"s");el.style.setProperty("--delay",(-Math.random()*18)+"s");
-    el.style.setProperty("--drift",((Math.random()-.5)*180)+"px");el.style.setProperty("--spin",((Math.random()-.5)*620)+"deg");el.style.setProperty("--top",(12+Math.random()*70)+"vh");host.appendChild(el);
+  const motion=THEME_MOTION[name]||"";
+  const make=(cls,opts={})=>{
+    const el=document.createElement("span");el.className=cls;
+    for(const [k,v] of Object.entries(opts))el.style.setProperty(k,v);
+    host.appendChild(el);return el;
+  };
+  const rand=(a,b)=>a+Math.random()*(b-a);
+  if(motion==="sky"||motion==="cloud"){
+    const count=motion==="sky"?6:7;
+    for(let i=0;i<count;i++){
+      make("fx-cloud",{
+        "--top":rand(7,78)+"vh","--w":rand(motion==="sky"?150:190,motion==="sky"?280:360)+"px",
+        "--h":rand(38,86)+"px","--alpha":rand(motion==="sky"?.34:.2,motion==="sky"?.62:.42),
+        "--duration":rand(motion==="sky"?48:65,motion==="sky"?88:110)+"s",
+        "--delay":(-rand(0,95))+"s","--drift":rand(115,185)+"vw"
+      });
+    }
+  }
+  if(motion==="holi"){
+    const colors=["#ff4fa3","#36b9ff","#ffd34e","#59d69a","#a47aff","#ff8154","#ee79df"];
+    for(let i=0;i<9;i++){
+      const el=make("fx-holi",{
+        "--x":rand(2,94)+"vw","--y":rand(5,88)+"vh","--size":rand(110,240)+"px",
+        "--duration":rand(22,39)+"s","--delay":(-rand(0,38))+"s","--dx":rand(-100,100)+"px","--dy":rand(-90,90)+"px"
+      });el.style.background=`radial-gradient(ellipse at 35% 40%,${colors[i%colors.length]}88 0,${colors[i%colors.length]}45 22%,transparent 70%)`;
+    }
+  }
+  if(motion==="dasain"){
+    const symbols=["🍂","🌾","🔴","❤️","🌺","🌾","🍁","🔴"];
+    for(let i=0;i<30;i++){
+      const el=make("theme-particle",{"--left":rand(0,98)+"vw","--size":rand(15,25)+"px","--alpha":rand(.25,.62),"--duration":rand(18,33)+"s","--delay":(-rand(0,34))+"s","--drift":rand(-150,150)+"px","--spin":rand(-520,520)+"deg"});
+      el.textContent=symbols[i%symbols.length];
+      if(symbols[i%symbols.length]==="🔴")el.style.filter="drop-shadow(0 0 7px #c31d27aa)";
+    }
+  }
+  if(motion==="diwali"){
+    const symbols=["🎆","✨","🎇","🪔","✨","🚀","💥"];
+    for(let i=0;i<16;i++){
+      const el=make("theme-particle",{"--left":rand(3,97)+"vw","--size":rand(14,25)+"px","--alpha":rand(.18,.42),"--duration":rand(5,10)+"s","--delay":(-rand(0,10))+"s","--drift":rand(-90,90)+"px","--spin":rand(-220,220)+"deg","--top":rand(12,75)+"vh"});
+      el.textContent=symbols[i%symbols.length];el.classList.add("fx-firework");
+    }
+  }
+  if(motion==="holiday"){
+    for(let i=0;i<34;i++){
+      const el=make("theme-particle",{"--left":rand(0,99)+"vw","--size":rand(5,10)+"px","--alpha":rand(.25,.6),"--duration":rand(16,28)+"s","--delay":(-rand(0,28))+"s","--drift":rand(-70,70)+"px","--spin":rand(-90,90)+"deg"});el.textContent="❄";
+    }
+  }
+  if(motion==="ocean"){
+    for(let i=0;i<5;i++)make("fx-wave",{"--level":(i*7+4)+"vh","--duration":rand(12,19)+"s","--delay":(-rand(0,18))+"s","--drift":(i%2?"-":"")+rand(45,115)+"px","--alpha":rand(.12,.25)});
+  }
+  if(motion==="ember"){
+    for(let i=0;i<11;i++)make("fx-ember",{"--x":rand(3,97)+"vw","--y":rand(28,110)+"vh","--size":rand(70,190)+"px","--duration":rand(9,18)+"s","--delay":(-rand(0,18))+"s","--rise":rand(16,35)+"vh","--alpha":rand(.12,.3)});
+  }
+  if(motion==="moonlit"){
+    make("fx-moon");make("fx-moonbeam");
+    for(let i=0;i<48;i++)make("fx-star",{"--x":rand(2,98)+"vw","--y":rand(3,75)+"vh","--delay":(-rand(0,5))+"s","--duration":rand(2.6,5.8)+"s","--alpha":rand(.25,.75)});
+  }
+  if(motion==="meadow"){
+    const symbols=["🍃","✿","🌿"];
+    for(let i=0;i<18;i++){const el=make("theme-particle",{"--left":rand(0,99)+"vw","--size":rand(13,22)+"px","--alpha":rand(.12,.3),"--duration":rand(20,35)+"s","--delay":(-rand(0,35))+"s","--drift":rand(-120,120)+"px","--spin":rand(-300,300)+"deg"});el.textContent=symbols[i%symbols.length];}
   }
 }
-function randomMeshColor(dark){const h=Math.floor(Math.random()*360);const s=dark?65+Math.random()*25:58+Math.random()*26;const l=dark?38+Math.random()*28:65+Math.random()*24;return `hsla(${h},${s}%,${l}%,.7)`;}
+function randomMeshColor(dark){const h=Math.floor(Math.random()*360);const s=dark?65+Math.random()*25:58+Math.random()*26;const l=dark?42+Math.random()*25:62+Math.random()*26;return `hsla(${h},${s}%,${l}%,.82)`;}
 function updateGradientMesh(){const dark=document.documentElement.dataset.themeDark==="true";const root=document.documentElement;["a","b","c","d"].forEach(k=>root.style.setProperty(`--mesh-${k}`,randomMeshColor(dark)));}
-function startGradientMesh(name){if(gradientMeshTimer){clearInterval(gradientMeshTimer);gradientMeshTimer=null;}if(name==="Gradient Light"||name==="Gradient Dark"){updateGradientMesh();gradientMeshTimer=setInterval(()=>{if(document.visibilityState!=="hidden")updateGradientMesh();},2400);}}
+function startGradientMesh(name){if(gradientMeshTimer){clearInterval(gradientMeshTimer);gradientMeshTimer=null;}if(name==="Gradient Light"||name==="Gradient Dark"){updateGradientMesh();gradientMeshTimer=setInterval(()=>{if(document.visibilityState!=="hidden")updateGradientMesh();},1800);}}
 function applyTheme(name, sync=true){
   name=THEME_ALIASES[name]||name;const t=THEMES[name]||THEMES.Paper;const r=document.documentElement;
   const hex=t.bg.replace('#','');const rgb=hex.length===3?hex.split('').map(x=>parseInt(x+x,16)):hex.match(/.{2}/g).map(x=>parseInt(x,16));
@@ -2958,7 +3055,7 @@ setInterval(syncOnlineClock,15*60*1000);
 <script>
 /* v28 cache freshness: check after tab return, focus, and page restore. */
 if("serviceWorker" in navigator && location.protocol==="https:"){
-  const DS_SW_BUILD="2026-11-26-v31";
+  const DS_SW_BUILD="2026-11-26-v32";
   let dsRegistration=null,dsLastFreshCheck=0;
   let dsHadController=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{
