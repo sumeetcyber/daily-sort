@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" id="themeColorMeta" content="#101f32">
-<meta name="daily-sort-build" content="2026-11-26-v32">
+<meta name="daily-sort-build" content="2026-11-26-v35">
 <link rel="manifest" id="appManifest" href="./manifest.webmanifest?v=32">
 <link rel="icon" id="dynamicFavicon" type="image/svg+xml" href="./icons/daily-sort.svg?v=32">
 <link rel="shortcut icon" href="./favicon.ico?v=32">
@@ -1505,6 +1505,125 @@ body[data-theme-motion="rain"]::before{opacity:.3!important;background-image:rep
   .theme-family .theme-mode .theme-btn{font-size:11px!important;padding:5px 3px!important}
 }
 @media(max-width:380px){.theme-family .theme-pair{gap:8px!important}.theme-family .theme-mode .theme-grid{gap:5px!important}.theme-family .theme-mode .theme-btn{font-size:10px!important}}
+
+/* v35 — Appearance theme picker: isolated layout, four real 3×3 grids.
+   These ds-* classes intentionally avoid every legacy .theme-grid/.theme-family rule. */
+#themeGrid.ds-theme-library{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:start!important;
+  gap:16px!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:14px 0 0!important;
+}
+#themeGrid .ds-theme-family{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  padding:16px!important;
+  border:1px solid var(--line)!important;
+  border-radius:16px!important;
+  background:var(--card,var(--panel))!important;
+  align-self:start!important;
+}
+#themeGrid .ds-theme-family>h4{
+  margin:0 0 14px!important;
+  color:var(--text)!important;
+  font-size:16px!important;
+  line-height:1.25!important;
+  font-weight:850!important;
+}
+#themeGrid .ds-theme-pair{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:start!important;
+  gap:18px!important;
+  width:100%!important;
+  min-width:0!important;
+}
+#themeGrid .ds-theme-mode{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  width:100%!important;
+  min-width:0!important;
+}
+#themeGrid .ds-theme-mode>h5{
+  margin:0 0 9px!important;
+  color:var(--muted)!important;
+  font-size:13px!important;
+  line-height:1.2!important;
+  font-weight:850!important;
+}
+#themeGrid .ds-theme-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:repeat(3,minmax(44px,auto))!important;
+  grid-auto-flow:row!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  gap:8px!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+}
+#themeGrid .ds-theme-btn,
+#themeGrid .ds-theme-btn.theme-btn{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  min-height:44px!important;
+  height:auto!important;
+  margin:0!important;
+  padding:7px 6px!important;
+  border:1px solid var(--line)!important;
+  border-radius:10px!important;
+  background:var(--button,var(--panel))!important;
+  color:var(--text)!important;
+  font:700 12px/1.2 system-ui,sans-serif!important;
+  text-align:center!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  hyphens:manual!important;
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+  cursor:pointer!important;
+  transition:border-color .14s ease,background-color .14s ease,box-shadow .14s ease,transform .14s ease!important;
+}
+#themeGrid .ds-theme-btn:hover{border-color:var(--accent)!important;transform:translateY(-1px)!important}
+#themeGrid .ds-theme-btn.active{
+  border:2px solid var(--accent)!important;
+  background:var(--accent-soft)!important;
+  color:var(--text)!important;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)!important;
+}
+/* At tablet widths give each theme family the full row; this prevents narrow
+   Light/Dark subcolumns and broken words while preserving both mode columns. */
+/* Widen Settings itself; the old 720px dialog cap was starving the grids. */
+#sessionModal > .session-box{width:min(1100px,calc(100vw - 48px))!important;max-width:1100px!important}
+#sessionModal .settings-section.appearance-section{width:100%!important;max-width:none!important;margin:18px 0 0!important}
+@media(max-width:1150px){
+  #themeGrid.ds-theme-library{grid-template-columns:minmax(0,1fr)!important;gap:14px!important}
+}
+/* On narrow phones, stack Light and Dark groups; each still keeps its 3×3 grid. */
+@media(max-width:560px){
+  #themeGrid .ds-theme-family{padding:14px!important}
+  #themeGrid .ds-theme-pair{grid-template-columns:minmax(0,1fr)!important;gap:16px!important}
+  #themeGrid .ds-theme-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:repeat(3,minmax(42px,auto))!important;gap:8px!important}
+  #themeGrid .ds-theme-btn{min-height:42px!important;font-size:12px!important;padding:7px 5px!important}
+}
+@media(max-width:600px){
+  #sessionModal > .session-box{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;padding:18px!important}
+}
+@media(prefers-reduced-motion:reduce){#themeGrid .ds-theme-btn{transition:none!important}}
+
 /* Slow, continuous colour-field mixing: fixed overlapping pigment fields drift and merge. */
 body[data-theme-motion="gradient-light"]::before,
 body[data-theme-motion="gradient-dark"]::before{
@@ -1713,7 +1832,7 @@ My highlighted task
       </div>
     </section>
     <section class="settings-section appearance-section"><div class="settings-section-head"><span>🎨</span><div><h3>Appearance</h3><p>Choose a theme for this device.</p></div></div>
-      <div class="theme-library" id="themeGrid"></div>
+      <div class="ds-theme-library" id="themeGrid"></div>
     </section>
     <div id="cloudStatus" style="font-size:12px;color:var(--muted);margin-top:12px">Cloud: connecting…</div>
     <div class="session-actions" style="margin-top:16px"><button class="btn" id="closeSession">Close</button></div>
@@ -2614,12 +2733,12 @@ const LIVE_THEME_GROUPS={
   "Light":["Water Ocean","Blue Blue Sky","Holi","Dasain","Gradient Light","Meadow Breeze","Rainy Window"],
   "Dark":["Diwali","Christmas","Northern Lights","Strobe Lights","Gradient Dark","Ember Glow","Moonlit"]
 };
-function themeButtons(names){return names.map(n=>`<button class="theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");}
+function themeButtons(names){return names.map(n=>`<button class="theme-btn ds-theme-btn" data-theme="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("");}
 function renderThemes(){
  const grid=document.getElementById("themeGrid");
- const family=(title,groups)=>`<section class="theme-family"><h4>${title}</h4><div class="theme-pair">${Object.entries(groups).map(([mode,names])=>`<div class="theme-mode"><h5>${mode}</h5><div class="theme-grid">${themeButtons(names)}</div></div>`).join("")}</div></section>`;
+ const family=(title,groups)=>`<section class="ds-theme-family"><h4>${title}</h4><div class="ds-theme-pair">${Object.entries(groups).map(([mode,names])=>`<div class="ds-theme-mode"><h5>${mode}</h5><div class="ds-theme-grid">${themeButtons(names)}</div></div>`).join("")}</div></section>`;
  grid.innerHTML=family("🧊 Static themes",STATIC_THEME_GROUPS)+family("✨ Live themes",LIVE_THEME_GROUPS);
- grid.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme));
+ grid.querySelectorAll(".ds-theme-btn").forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme));
  applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);
 }
 const derivedKeyCache=new Map();
@@ -3157,7 +3276,7 @@ setInterval(syncOnlineClock,15*60*1000);
 <script>
 /* v28 cache freshness: check after tab return, focus, and page restore. */
 if("serviceWorker" in navigator && location.protocol==="https:"){
-  const DS_SW_BUILD="2026-11-26-v32";
+  const DS_SW_BUILD="2026-11-26-v35";
   let dsRegistration=null,dsLastFreshCheck=0;
   let dsHadController=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{
