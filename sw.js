@@ -1,4 +1,3 @@
-/* Daily Sort v29: network-first app shell, icon assets, and eager updates. */
 const CACHE_NAME = 'daily-sort-shell-v29';
 const APP_SCOPE = self.registration.scope;
 self.addEventListener('install', event => { event.waitUntil(self.skipWaiting()); });
