@@ -2079,3 +2079,69 @@ body.show-task-numbers .card>.card-main>.task-number{display:grid!important}
  .card>.card-main>.task-body{padding:12px 10px 12px 42px!important}
  .card>.card-main>.check{left:10px!important;top:12px!important}
 }
+
+
+
+/* v43: Dynamic mode grows with the full task list; Fixed mode alone scrolls internally. */
+.board{align-items:start!important}
+body.dynamic-panels .board{align-items:start!important}
+body.dynamic-panels .panel{
+  height:auto!important;min-height:0!important;max-height:none!important;
+  overflow:visible!important;align-self:start!important;
+}
+body.dynamic-panels .panel>.cards{
+  height:auto!important;min-height:0!important;max-height:none!important;
+  flex:0 0 auto!important;overflow:visible!important;overscroll-behavior:auto!important;
+  scrollbar-gutter:auto!important;
+}
+body.dynamic-panels .cards>.card{flex:0 0 auto!important}
+body:not(.dynamic-panels) .panel{overflow:hidden!important}
+body:not(.dynamic-panels) .panel>.cards{
+  flex:1 1 auto!important;height:0!important;min-height:0!important;
+  overflow-y:auto!important;overscroll-behavior:contain!important;
+}
+
+/* Stable top-right control notch: one horizontal row, never clipped or vertically stacked. */
+.card{overflow:hidden!important;min-width:0!important}
+.card>.card-main{position:relative!important;display:block!important;min-width:0!important;min-height:150px!important;overflow:hidden!important}
+.card>.card-main::before{
+  width:224px!important;max-width:calc(100% - 24px)!important;height:72px!important;
+}
+.card>.card-main>.card-tools{
+  position:absolute!important;top:8px!important;right:8px!important;left:auto!important;bottom:auto!important;
+  display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+  align-items:center!important;justify-content:center!important;gap:5px!important;
+  width:208px!important;min-width:208px!important;max-width:calc(100% - 76px)!important;
+  height:48px!important;padding:3px 5px!important;margin:0!important;
+  overflow:visible!important;box-sizing:border-box!important;
+  background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:10px!important;
+}
+.card>.card-main>.card-tools .insert-below{display:none!important}
+.card>.card-main>.card-tools .reorder-arrow,
+.card>.card-main>.card-tools .zone-arrow,
+.card>.card-main>.card-tools .expand{
+  display:grid!important;place-items:center!important;flex:0 0 34px!important;
+  width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;
+  max-width:34px!important;max-height:34px!important;padding:0!important;margin:0!important;
+  line-height:1!important;text-align:center!important;box-sizing:border-box!important;
+}
+.card>.card-main>.card-tools .select-task{
+  flex:0 0 20px!important;width:20px!important;height:20px!important;
+  min-width:20px!important;min-height:20px!important;margin:0!important;padding:0!important;
+}
+.card>.card-main>.card-tools .expand{flex-basis:24px!important;width:24px!important;min-width:24px!important;max-width:24px!important}
+.card>.card-main>.task-body{padding:82px 14px 14px 48px!important;min-height:150px!important}
+.card>.card-main>.task-body>.task-title-edit{
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  height:auto!important;min-height:26px!important;white-space:pre-wrap!important;
+  overflow-wrap:anywhere!important;word-break:normal!important;
+}
+.card>.card-main>.check{top:88px!important;left:14px!important}
+@media(max-width:700px){
+ .card>.card-main::before{width:205px!important;height:66px!important}
+ .card>.card-main>.card-tools{width:192px!important;min-width:192px!important;height:44px!important;gap:3px!important;top:6px!important;right:6px!important}
+ .card>.card-main>.card-tools .reorder-arrow,.card>.card-main>.card-tools .zone-arrow{flex-basis:31px!important;width:31px!important;height:31px!important;min-width:31px!important;min-height:31px!important}
+ .card>.card-main>.card-tools .expand{flex-basis:22px!important;width:22px!important;min-width:22px!important;max-width:22px!important}
+ .card>.card-main>.task-body{padding:76px 10px 12px 42px!important}
+ .card>.card-main>.check{top:80px!important;left:10px!important}
+}
