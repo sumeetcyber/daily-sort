@@ -91,8 +91,8 @@
 #laterCards .card .card-tools .tool-cell input{
   display:grid!important;position:static!important;inset:auto!important;float:none!important;
   place-items:center!important;align-self:center!important;justify-self:center!important;
-  flex:0 0 34px!important;width:34px!important;min-width:34px!important;max-width:34px!important;
-  height:34px!important;min-height:34px!important;max-height:34px!important;
+  flex:0 0 40px!important;width:40px!important;min-width:40px!important;max-width:40px!important;
+  height:40px!important;min-height:40px!important;max-height:40px!important;
   margin:0!important;padding:0!important;transform:none!important;
   line-height:1!important;text-align:center!important;box-sizing:border-box!important;
 }
@@ -140,8 +140,8 @@ body.show-task-numbers #laterCards .card .card-tools .toolbar-task-number{displa
 #laterCards .card .card-tools>.tool-cell-expand{border-right:0!important}
 #todayCards .card .card-tools .tool-cell-expand .expand,
 #laterCards .card .card-tools .tool-cell-expand .expand{
-  flex:0 0 28px!important;width:28px!important;min-width:28px!important;height:32px!important;min-height:32px!important;
-  font-size:17px!important;
+  flex:0 0 40px!important;width:40px!important;min-width:40px!important;max-width:40px!important;height:40px!important;min-height:40px!important;max-height:40px!important;
+  font-size:19px!important;
 }
 .panel-head-actions .dump-btn{
   display:grid!important;place-items:center!important;flex:0 0 40px!important;
@@ -159,6 +159,19 @@ body.show-task-numbers #laterCards .card .card-tools .toolbar-task-number{displa
   }
   #todayCards .card .task-title-edit,#laterCards .card .task-title-edit{padding:12px 13px!important;font-size:14px!important}
   #todayCards .card .card-tools .tool-cell button,#laterCards .card .card-tools .tool-cell button{
-    flex-basis:32px!important;width:32px!important;min-width:32px!important;height:32px!important;min-height:32px!important;
+    flex-basis:40px!important;width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important;
   }
+}
+
+/* v59: normalize the visible action-button hit areas. Move and Expand now match the header transfer button. */
+#todayCards .card .card-tools .tool-cell-move .zone-arrow,
+#laterCards .card .card-tools .tool-cell-move .zone-arrow,
+#todayCards .card .card-tools .tool-cell-expand .expand,
+#laterCards .card .card-tools .tool-cell-expand .expand,
+#todayPanel .panel-head-actions .dump-btn,
+#laterPanel .panel-head-actions .dump-btn{
+  width:40px!important;min-width:40px!important;max-width:40px!important;
+  height:40px!important;min-height:40px!important;max-height:40px!important;
+  flex:0 0 40px!important;display:grid!important;place-items:center!important;
+  padding:0!important;line-height:1!important;box-sizing:border-box!important;
 }
