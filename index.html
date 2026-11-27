@@ -4,16 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" id="themeColorMeta" content="#101f32">
-<meta name="daily-sort-build" content="2026-11-27-v49">
+<meta name="daily-sort-build" content="2026-11-27-v50">
 <link rel="manifest" id="appManifest" href="./manifest.webmanifest?v=32">
 <link rel="icon" id="dynamicFavicon" type="image/svg+xml" href="./icons/daily-sort.svg?v=32">
 <link rel="shortcut icon" href="./favicon.ico?v=32">
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/daily-sort-192.png?v=32">
 <link rel="apple-touch-icon" href="./icons/daily-sort-192.png?v=32">
 <title>Daily Sort</title>
-<link rel="stylesheet" href="./css/app.css?v=48">
-
-<link rel="stylesheet" href="./css/task-editor.css?v=2">
+<link rel="stylesheet" href="./css/app.css?v=50">
+<link rel="stylesheet" href="./css/task-editor.css?v=50">
 </head>
 <body>
 <div class="wrap">
@@ -34,7 +33,6 @@
     <div class="subtitle">Dump everything in. Decide what actually belongs in today.</div>
     <div class="clock" id="localClock" aria-label="Local time">--:--:--</div>
   </header>
-
   <section class="capture">
     <textarea id="bulkInput" placeholder="Paste tasks here — one task per line&#10;&#10;study for exam&#10;buy shoe powder&#10;call RTO&#10;finish assignment"></textarea>
     <div class="capture-actions">
@@ -43,9 +41,6 @@
     </div>
   </section>
   <div class="draft-tools"><span id="draftStatus" aria-live="polite">Draft autosave is on</span></div>
-
-  <div class="hint">Drag tasks to <b>Not Today</b> to take them out of today's work. Click a task to expand its details.</div>
-
   <div class="toolbar">
     <button class="btn" id="clearCompleted">Clear completed</button>
     <button class="btn" id="exportData">Export</button>
@@ -55,7 +50,6 @@
     <button class="btn" id="redoAction" title="Redo the last undone change" disabled>↷ Redo</button>
     <input type="file" id="importFile" accept=".json" hidden>
   </div>
-
   <div class="bulk-tools" aria-label="Task selection and arrangement">
     <button class="btn" id="toggleArrange" aria-expanded="false">↕ Arrange</button>
     <button class="height-mode-control" id="togglePanelHeight" type="button" aria-label="Panel height mode"><span class="height-mode-icon">↕</span><span class="height-mode-copy"><small>LAYOUT HEIGHT</small><strong id="heightModeLabel">Fixed</strong></span><span class="height-mode-switch"><i></i></span></button>
@@ -108,37 +102,31 @@
       <button class="btn primary" id="moveSelected">Move selected →</button>
     </div>
   </section>
-
   <div class="task-search" role="search">
     <span class="task-search-icon" aria-hidden="true">⌕</span>
     <input id="taskSearch" type="search" placeholder="Search tasks and notes…" autocomplete="off" aria-label="Search tasks and notes">
     <span id="searchResultCount" class="search-result-count" aria-live="polite">All tasks</span>
   </div>
-
   <main class="board">
     <section class="panel">
       <div class="panel-head">
         <div>
           <div class="panel-title">☀️ Today</div>
-          <div style="color:var(--muted);font-size:12px;margin-top:3px">Everything you are considering for today</div>
         </div>
         <div class="panel-head-actions"><button class="dump-btn" id="dumpToday" title="Move all Today task titles into the paste box">⇧</button><div class="count" id="todayCount">0</div></div>
       </div>
       <div class="cards" id="todayCards" data-zone="today"></div>
     </section>
-
     <section class="panel right">
       <div class="panel-head">
         <div>
           <div class="panel-title">🌙 Not Today</div>
-          <div style="color:var(--muted);font-size:12px;margin-top:3px">Still saved. Just not today's work.</div>
         </div>
         <div class="panel-head-actions"><button class="dump-btn" id="dumpLater" title="Move all Not Today task titles into the paste box">⇧</button><div class="count" id="laterCount">0</div></div>
       </div>
       <div class="cards" id="laterCards" data-zone="later"></div>
     </section>
   </main>
-
   <div class="footer">Saved locally + synced to your private Daily Sort session. · <button id="sessionFooter">Session</button></div>
 </div>
 <div class="session-modal" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="sessionTitle">
@@ -245,17 +233,9 @@ My highlighted task
   </section>
 </div>
 <div class="toast" id="toast"></div>
-
-
-
-
-
-
-
-
-<script src="./js/core.js?v=48"></script>
-<script src="./js/cache.js?v=44"></script>
-<script src="./js/ui/settings-escape.js?v=44"></script>
-<script src="./js/tasks/card-layout.js?v=48"></script>
+<script src="./js/core.js?v=50"></script>
+<script src="./js/cache.js?v=50"></script>
+<script src="./js/ui/settings-escape.js?v=50"></script>
+<script src="./js/tasks/card-layout.js?v=50"></script>
 </body>
 </html>
