@@ -189,7 +189,6 @@
   .cards{max-height:calc(100vh - 300px);overflow-y:auto}
   @media(max-width:700px){.capture-actions{width:100%;flex-direction:row}.capture-actions .btn{flex:1}.panel-head{gap:8px}.panel-title{font-size:20px}}
   .cards{max-height:calc(100vh - 340px);overflow-y:auto}
-  /* Compact visual help hub: glanceable, not a long instruction page. */
   .session-modal .session-box{width:min(960px,calc(100vw - 32px))!important;max-width:960px!important;padding:24px!important}
   .help-hub{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--soft,var(--accent-soft))}
   .help-heading{display:flex;align-items:center;gap:11px;margin:0 0 13px}
@@ -212,7 +211,6 @@
   .syntax-foot{font-size:13px;color:var(--muted);margin-top:8px}
   @media(max-width:760px){.shortcut-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.help-hub{padding:13px}.shortcut-tile{min-height:112px}}
   @media(max-width:520px){.syntax-grid{grid-template-columns:1fr}.help-heading h3{font-size:19px}.shortcut-tile{padding:11px}.tile-action{font-size:15px}}
-  /* Session modal: keep the entire settings UI inside one contained box. */
   .session-modal{
     position:fixed !important;
     inset:0 !important;
@@ -250,7 +248,6 @@
   .session-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}.session-actions .btn{border:1px solid var(--line);font-weight:700;min-height:38px;padding:9px 14px}.session-actions .btn.primary{box-shadow:0 3px 10px #0002}
   .theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:12px 0 18px}
   .theme-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:9px;padding:10px 7px;cursor:pointer;font-size:11px;font-weight:600;transition:.15s;box-shadow:0 1px 2px #0001}.theme-btn:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 3px 8px #0002}.theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
-  
   .capture{background:var(--panel);border-color:var(--line)}
   .capture textarea,.details textarea,.session-key input{background:var(--input,var(--panel));color:var(--text);border-color:var(--line)}
   .capture textarea::placeholder,.details textarea::placeholder{color:var(--muted);opacity:1}
@@ -331,8 +328,6 @@
     .icon-btn{padding:3px 4px}
     .right{grid-column:auto}
   }
-
-  /* FINAL SETTINGS MODAL CONTAINMENT OVERRIDE */
   html,body{min-height:100%;}
   #sessionModal{
     position:fixed !important;
@@ -408,7 +403,6 @@
   .draft-history-meta{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}
   .draft-history-preview{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;max-height:3.6em;overflow:hidden}
   .draft-history-empty{padding:8px;color:var(--muted)}
-
   .task-number{display:none;flex:none;min-width:24px;color:var(--muted);font:11px ui-monospace,monospace;text-align:right;padding-top:4px}
   body.show-task-numbers .task-number{display:block}
   .select-task{width:17px;height:17px;flex:none;margin:0 2px;accent-color:var(--accent);cursor:pointer;vertical-align:middle}
@@ -437,11 +431,7 @@
   .card[data-task-color] .toggle-list-row input[type=text]{color:var(--task-color)}
   .card[data-task-color] .toggle-list-row input[type=checkbox]{accent-color:var(--task-color)}
   .card[data-task-color] .toggle-list-collapse{color:var(--task-color);border-color:color-mix(in srgb,var(--task-color) 55%,var(--line))}
-
-
-  /* Theme-complete controls: every surface follows the active theme tokens. */
   html,body{background:var(--bg);color:var(--text)}
-  .capture{background:var(--panel);border-color:var(--line)}
   .capture textarea,.details textarea,.session-key input,
   .bulk-tools input[type=number],.toggle-list-row input[type=text]{
     background:var(--input,var(--panel));color:var(--text);border-color:var(--line)
@@ -451,17 +441,9 @@
     background:var(--button,var(--panel));color:var(--text);border-color:var(--line)
   }
   .btn:hover,.dump-btn:hover,.icon-btn:hover{background:var(--soft,var(--accent-soft));border-color:var(--accent)}
-  .btn.primary,.settings-main-btn{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
   .count,.pill{background:var(--soft,var(--accent-soft));color:var(--muted)}
   .panel,.bulk-tools{background:var(--panel);border-color:var(--line);color:var(--text)}
   .panel-head{background:var(--panel);border-color:var(--line)}
-  .card{background:var(--card,var(--panel));color:var(--text);border-color:var(--line)}
-  .details{background:var(--details,var(--panel));border-color:var(--line)}
-  .right .cards{background:var(--later-bg,var(--panel))}
-  .right .panel-head{background:var(--later-head,var(--panel))}
-  .empty{border-color:var(--line);color:var(--muted)}
-  .cards.dragover{background:var(--soft,var(--accent-soft))}
-  .check{background:var(--input,var(--panel));border-color:var(--muted)}
   .icon-btn,.expand{color:var(--muted)}
   .toggle-list{background:var(--soft,var(--accent-soft));border-color:var(--line)}
   .toggle-list-row input[type=text]{color:var(--text)}
@@ -472,12 +454,10 @@
   .footer,.hint,.draft-tools{color:var(--muted)}
   .clock{color:var(--muted)}
   .toast{background:var(--accent);color:#fff}
-  .theme-btn{background:var(--button,var(--panel));color:var(--text);border-color:var(--line)}
   .theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .session-box,.session-modal .session-box{background:var(--panel);color:var(--text);border-color:var(--line)}
   .session-key input{background:var(--input,var(--panel));color:var(--text)}
   #selectedColor{background:var(--input,var(--panel));border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--text);min-width:105px}
-  /* Use the full available screen and give both task columns equal room. */
   .wrap{width:100%;max-width:none;margin:0;padding:clamp(14px,1.8vw,28px) clamp(14px,2.6vw,48px) 24px}
   .capture,.hint,.draft-tools{max-width:none;width:100%}
   .board{width:100%;max-width:none;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:clamp(12px,1.3vw,22px);align-items:stretch}
@@ -495,8 +475,6 @@
     .panel{height:auto;max-height:none;min-height:380px}
     .cards{max-height:65vh;min-height:260px;overflow-y:auto}
   }
-
-
   .bulk-tools{position:sticky;top:8px;z-index:8;box-shadow:0 8px 24px rgba(0,0,0,.08);backdrop-filter:blur(12px)}
   .bulk-tools .btn{white-space:nowrap}
   .selection-count{font-weight:600}
@@ -511,29 +489,20 @@
   .task-title-edit{min-height:30px}
   .task-body{display:flex;flex-direction:column;gap:4px}
   .details .btn{background:var(--button,var(--panel));color:var(--text)}
-
-
   .toggle-list-heading{display:flex;align-items:center;gap:9px;min-width:0}
   .toggle-list-collapse{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;flex:none;border:1px solid var(--line);border-radius:7px;background:var(--button,var(--panel));color:var(--text);cursor:pointer;font-size:15px;line-height:1}
   .toggle-list-collapse:hover{border-color:var(--accent);background:var(--soft,var(--accent-soft))}
   .toggle-list-title{font-weight:650;color:var(--text);overflow-wrap:anywhere}
   .toggle-list-count{margin-left:auto;font-size:11px;color:var(--muted);background:var(--soft,var(--accent-soft));border-radius:20px;padding:3px 8px;white-space:nowrap}
   .toggle-list{margin-top:8px}
-
-
   .toggle-list-title-edit{flex:1;min-width:90px;width:100%;border:1px solid transparent;border-radius:7px;padding:5px 7px;background:transparent;color:var(--text);font:inherit;font-size:14px;font-weight:700;letter-spacing:.01em}
   .toggle-list-title-edit:hover{border-color:var(--line);background:var(--soft,var(--accent-soft))}
   .toggle-list-title-edit:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);background:var(--input,var(--panel))}
-
-
   .brand-mark{width:42px;height:42px;overflow:visible;filter:drop-shadow(0 3px 7px color-mix(in srgb,var(--accent) 22%,transparent));animation:brand-arrive .55s cubic-bezier(.2,.8,.2,1) both}
   .brand-mark circle:last-child{animation:brand-spark 2.8s ease-in-out infinite;transform-origin:37px 12px}
   @keyframes brand-arrive{from{opacity:0;transform:translateY(4px) rotate(-7deg) scale(.88)}to{opacity:1;transform:translateY(0) rotate(0) scale(1)}}
   @keyframes brand-spark{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.28);opacity:1}}
   @media(prefers-reduced-motion:reduce){.brand-mark,.brand-mark circle:last-child{animation:none}}
-
-
-  /* Reordering: brief solid 30% body fill and directional displaced-arrow ring. */
   .card.task-swap-flash .card-main{
     animation:task-body-swap-flash .6s ease-out both;
     border-radius:inherit;
@@ -563,9 +532,6 @@
     .card.task-swap-flash .card-main,.card.task-swap-flash,.card-tools .icon-btn.movement-arrow-pulse{animation:none;transition:none}
     body.movement-numbers .task-number{animation:none}
   }
-
-
-  /* Daily Sort visual refresh — all colors remain driven by the active theme. */
   :root{--radius-xl:22px;--radius-lg:16px;--surface-glass:color-mix(in srgb,var(--panel) 88%,transparent)}
   body{letter-spacing:-.012em;background:radial-gradient(ellipse at 8% 0%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 36%),var(--bg)}
   .wrap{padding:clamp(18px,2.3vw,34px) clamp(14px,2.8vw,46px) 38px}
@@ -624,9 +590,6 @@
   .toast{border-radius:12px;box-shadow:0 8px 28px #0002}
   @media(max-width:850px){.board{grid-template-columns:minmax(0,1fr)}.panel{height:auto;max-height:none;min-height:0}.cards{max-height:65vh;min-height:180px;overflow:auto}body.dynamic-panels .cards{max-height:none;overflow:visible}}
   @media(max-width:620px){header{margin-bottom:18px}.subtitle,.clock{margin-left:0}.capture{flex-direction:column}.capture-actions{flex-direction:row;min-width:0}.capture-actions .btn{min-height:42px}.bulk-tools{position:static}.panel-head{padding:14px}.card-main{padding:10px}.card-tools .icon-btn{width:26px}.board{gap:12px}}
-
-
-/* Centered, calmer layout and consolidated settings presentation */
 .wrap{width:100%;max-width:none;margin-inline:auto;padding:clamp(14px,1.8vw,28px) clamp(14px,2.6vw,48px) 30px}
 header{text-align:center;margin-inline:auto;max-width:760px}
 .subtitle,.clock{margin-left:0!important;text-align:center}
@@ -655,10 +618,6 @@ header{text-align:center;margin-inline:auto;max-width:760px}
 .theme-grid{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
 @media(max-width:850px){.wrap{width:min(100% - 28px,680px)}.board{grid-template-columns:minmax(0,1fr)}.session-modal .session-box{padding:20px!important}}
 @media(max-width:600px){.session-box [aria-label="Keyboard shortcuts"],.session-box [aria-label="Multiline task instructions"]{grid-template-columns:1fr!important}.session-box>div[style*="margin-top:18px"]>div[style*="display:grid"]{grid-template-columns:1fr!important}.wrap{width:calc(100% - 22px);padding-top:20px}}
-
-
-
-  /* Centered, full-width workspace refinements */
   @media(min-width:1500px){
     .board{gap:22px}
     .panel-head{padding-left:22px;padding-right:22px}
@@ -670,8 +629,6 @@ header{text-align:center;margin-inline:auto;max-width:760px}
     .bulk-tools{justify-content:flex-start}
     .board{grid-template-columns:1fr}
   }
-
-/* Compact, step-by-step arrangement flow */
 .arrange-tools{width:100%;max-width:1120px;margin:8px auto 16px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--panel);display:grid;grid-template-columns:1fr 1fr auto;align-items:stretch;gap:10px;box-shadow:0 4px 16px color-mix(in srgb,var(--text) 5%,transparent)}
 .arrange-tools[hidden]{display:none}
 .arrange-step{min-width:0;display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--accent-soft) 22%,var(--panel))}
@@ -694,17 +651,10 @@ header{text-align:center;margin-inline:auto;max-width:760px}
 .settings-section .session-key{max-width:100%;margin:10px 0!important}.settings-section .session-actions{justify-content:flex-start!important}.settings-section .help-hub{margin-top:15px}.appearance-section .theme-grid{justify-content:flex-start;margin-top:14px}
 .session-box{max-height:calc(100vh - 40px);overflow:auto}
 @media(max-width:650px){.arrange-tools{justify-content:flex-start}.arrange-heading{width:100%;align-items:flex-start;flex-wrap:wrap}.settings-section{padding:14px}.session-modal .session-box{max-height:calc(100vh - 24px)}}
-
-
-
-
-/* Destination selector and undo affordance */
 #moveTargetZone{min-width:145px;max-width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--input,var(--panel));color:var(--text)}
 #undoAction{margin-left:0}
 #undoAction:disabled{opacity:.42;cursor:not-allowed}
 @media(max-width:640px){#moveTargetZone{width:100%;min-height:42px}.arrange-step-controls{width:100%}.arrange-step-controls input{flex:1;min-width:70px}}
-
-/* Responsive workspace: expansive desktop, touch-friendly mobile */
 html{width:100%;min-height:100%;-webkit-text-size-adjust:100%;}
 body{width:100%;min-width:320px;min-height:100vh;min-height:100dvh;overflow-x:hidden;}
 .wrap{width:100%!important;max-width:none!important;margin:0 auto!important;padding:clamp(16px,2vw,32px) clamp(14px,2.2vw,40px) 34px!important;}
@@ -722,7 +672,6 @@ header{max-width:none!important;width:100%!important;margin:0 auto clamp(18px,2v
 .arrange-tools{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(150px,.55fr);}
 .session-modal .session-box{max-width:min(900px,calc(100vw - 32px))!important;}
 button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
-
 @media(min-width:1600px){
   .wrap{padding-left:clamp(36px,3vw,64px)!important;padding-right:clamp(36px,3vw,64px)!important;}
   .board{grid-template-columns:minmax(0,1.8fr) minmax(360px,.85fr)!important;}
@@ -792,10 +741,7 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
   .card-tools .icon-btn{width:30px!important;min-width:30px;}
   .arrange-step{align-items:flex-start;}
 }
-@media(hover:none){.card:hover .insert-below{opacity:1;pointer-events:auto}}
-
-
-  /* Clock and time-zone settings */
+@media(hover:none){}
   .time-zone-controls{display:grid;grid-template-columns:minmax(130px,.65fr) minmax(220px,1.2fr);gap:9px 12px;align-items:center;margin-top:14px}
   .time-zone-controls label{font-size:12px;font-weight:700;color:var(--muted)}
   .time-zone-controls select{width:100%;min-width:0;min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--input,var(--panel));color:var(--text)}
@@ -804,14 +750,10 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
   header .clock{display:block;width:max-content;max-width:100%;margin:9px auto 0;text-align:center;font-variant-numeric:tabular-nums}
   .height-mode-control{user-select:none;-webkit-tap-highlight-color:transparent}
   .height-mode-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
-  /* Fixed-height columns must be the scroll containers used by arrow alignment. */
   body:not(.dynamic-panels) .panel{display:flex!important;flex-direction:column!important;height:calc(100vh - 300px)!important;min-height:320px!important;max-height:calc(100vh - 180px)!important}
   body:not(.dynamic-panels) .panel .cards{flex:1 1 0!important;min-height:0!important;height:0!important;overflow-y:auto!important;scroll-behavior:auto}
   body.dynamic-panels .panel{display:flex!important;flex-direction:column!important;height:auto!important;max-height:none!important;min-height:0!important}
   body.dynamic-panels .panel .cards{flex:0 0 auto!important;height:auto!important;max-height:none!important;overflow:visible!important}
-
-
-/* Arrange: optional medium task numbers in the top-left corner */
 .arrange-number-option{grid-column:1/-1;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card,var(--panel))}
 .arrange-number-option label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:650;color:var(--text);cursor:pointer}
 .arrange-number-option input{width:16px;height:16px;accent-color:var(--accent)}
@@ -819,19 +761,12 @@ button,.btn,.icon-btn,.dump-btn{touch-action:manipulation;}
 body.show-task-numbers .card{position:relative;padding-top:0}
 body.show-task-numbers .card .task-number{display:grid!important;place-items:center;align-self:flex-start;position:static;min-width:24px;width:24px;height:24px;padding:0;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:750 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center}
 body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-color)}
-
-
-/* Four-step Arrange sequence */
 .arrange-tools{grid-template-columns:repeat(4,minmax(0,1fr))}
 .arrange-number-step{min-width:0}
 .arrange-number-control{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--muted);line-height:1.4;cursor:pointer}
 .arrange-number-control input{flex:none;margin:2px 0 0;accent-color:var(--accent)}
 @media(max-width:760px){.arrange-tools{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.arrange-tools{grid-template-columns:1fr}}
-
-
-
-/* Arrange — clean, connected workflow */
 .arrange-tools{
   width:100%;max-width:none;margin:10px 0 18px;padding:10px;
   display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr) minmax(0,1.35fr) minmax(170px,.9fr);
@@ -839,7 +774,6 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
   border-radius:18px;background:color-mix(in srgb,var(--panel) 94%,var(--accent-soft));
   box-shadow:0 10px 28px color-mix(in srgb,var(--text) 7%,transparent);
 }
-.arrange-tools[hidden]{display:none}
 .arrange-step{
   min-width:0;min-height:112px;display:grid;grid-template-columns:30px minmax(0,1fr);
   align-content:center;align-items:start;gap:10px;padding:16px 15px;
@@ -853,7 +787,6 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
 .arrange-step-title{font-size:13px;line-height:1.25;font-weight:750;letter-spacing:.01em;white-space:normal}
 .arrange-step-help,.arrange-selection{font-size:11px;line-height:1.45;color:var(--muted)}
 .arrange-step-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center}
-.arrange-step-controls label{font-size:11px;color:var(--muted)}
 .arrange-tools #moveTargetZone{width:100%;min-width:0;min-height:38px;border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:var(--input,var(--panel));color:var(--text)}
 .arrange-tools #moveAboveNumber{width:74px;min-height:38px;padding:7px 9px;border-radius:9px}
 .arrange-number-control{display:flex;align-items:flex-start;gap:9px;font-size:11px;line-height:1.45;color:var(--muted);cursor:pointer}
@@ -863,9 +796,6 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
 .arrange-tools .step-action .btn{width:100%;min-height:42px;border-radius:11px;font-weight:700;box-shadow:0 5px 16px color-mix(in srgb,var(--accent) 22%,transparent)}
 @media(max-width:1050px){.arrange-tools{grid-template-columns:1fr 1fr}.arrange-step{min-height:100px}.arrange-tools .step-action{min-height:100px}}
 @media(max-width:560px){.arrange-tools{grid-template-columns:1fr;padding:8px;gap:7px}.arrange-step{min-height:0;padding:13px}.arrange-tools .step-action{min-height:0}.arrange-step-controls{grid-template-columns:minmax(0,1fr) auto}}
-
-
-/* Arrange v21 — compact, aligned, readable four-step workflow */
 .arrange-tools{
   grid-template-columns:repeat(4,minmax(0,1fr))!important;
   gap:10px!important;padding:10px!important;margin:10px 0 16px!important;
@@ -898,9 +828,6 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
  .arrange-step-content{gap:7px!important;}
  .arrange-tools .step-action{gap:10px!important;}
 }
-
-
-/* Arrange: centered, full-card composition */
 .arrange-tools{
   display:grid!important;
   grid-template-columns:repeat(4,minmax(0,1fr))!important;
@@ -946,16 +873,12 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
 .arrange-tools .step-action{width:100%!important;align-items:center!important;justify-content:center!important;}
 .arrange-tools .step-action .arrange-step-title{padding:0!important;}
 .arrange-tools .step-action .btn{width:100%!important;min-height:52px!important;font-size:17px!important;font-weight:800!important;border-radius:13px!important;}
-@media(max-width:1050px){.arrange-tools{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}
+@media(max-width:1050px){}
 @media(max-width:560px){
  .arrange-tools{grid-template-columns:minmax(0,1fr)!important;padding:8px!important;gap:8px!important;}
  .arrange-tools .arrange-step{min-height:160px!important;padding:18px 14px!important;}
  .arrange-tools .arrange-step-title{font-size:18px!important;}
 }
-
-
-
-/* Arrange v23 — same content, tighter cards and deliberate line breaks */
 .arrange-tools{
   gap:8px!important;padding:9px!important;margin:8px 0 13px!important;
 }
@@ -975,7 +898,6 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
 .arrange-tools .arrange-position-control label{font-size:13px!important;}
 .arrange-tools .step-action .btn{min-height:44px!important;font-size:15px!important;}
 @media(max-width:560px){.arrange-tools .arrange-step{min-height:130px!important;padding:13px 12px!important;}}
-/* The real checkbox replaces the decorative square in step 2. */
 .arrange-tools .arrange-number-title{
   display:flex!important;align-items:center!important;justify-content:center!important;
   gap:10px!important;cursor:pointer!important;
@@ -985,15 +907,10 @@ body.show-task-numbers .card[data-task-color] .task-number{color:var(--task-colo
   width:21px!important;height:21px!important;flex:0 0 21px!important;
   margin:0!important;accent-color:var(--accent)!important;cursor:pointer!important;
 }
-
-/* v25: keep the Arrange panel genuinely collapsed; later layout rules use !important. */
 .arrange-tools[hidden]{display:none!important;}
 .clear-selection-btn{white-space:nowrap!important;min-height:30px!important;padding:5px 10px!important;font-size:12px!important;}
 .bulk-tools #clearSelection{align-self:center;}
 .arrange-step-content #clearSelection{align-self:center;margin-top:2px;}
-
-
-/* v28 — compact numbering, mobile two-column board, usable action rail */
 .task-number{display:none!important}
 body.show-task-numbers .card .task-number{display:grid!important;place-items:center;align-self:flex-start;position:static!important;flex:none;width:24px;height:24px;min-width:24px;padding:0!important;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:750 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center}
 body.show-task-numbers .card{padding-top:0!important}
@@ -1008,12 +925,8 @@ body.show-task-numbers .card-main>.card-tools{grid-column:4}
 .card-tools .zone-arrow:hover{background:#277fba;color:white;border-color:#277fba}
 .dump-btn{background:#e3f1fb!important;color:#236f9f!important;border:1px solid #b8d9ef!important;font-size:18px!important}
 .dump-btn:hover{background:#cce8fa!important;color:#15577f!important}
-
-/* Keep the primary action strip visible while scrolling. */
 .toolbar{position:sticky!important;top:0!important;z-index:30!important;padding:8px 10px!important;margin:0 0 10px!important;border:1px solid var(--line);border-radius:14px;background:var(--surface-glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 7px 22px color-mix(in srgb,var(--text) 9%,transparent)}
 .bulk-tools{position:sticky!important;top:58px!important;z-index:29!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-
-/* Search */
 .task-search{width:100%;display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:9px 13px;border:1px solid var(--line);border-radius:14px;background:var(--surface-glass);box-shadow:0 4px 14px color-mix(in srgb,var(--text) 5%,transparent)}
 .task-search-icon{font-size:25px;line-height:1;color:var(--accent);font-weight:800}
 .task-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font-size:15px;padding:5px 0}
@@ -1022,8 +935,6 @@ body.show-task-numbers .card-main>.card-tools{grid-column:4}
 .search-empty{min-height:105px}
 .delete-selected-btn{border-color:color-mix(in srgb,var(--red) 42%,var(--line))!important;color:var(--red)!important;background:color-mix(in srgb,var(--red) 9%,var(--panel))!important}
 .delete-selected-btn:hover{background:color-mix(in srgb,var(--red) 17%,var(--panel))!important}
-
-/* Moving seasonal and gradient atmospheres: subtle behind the usable surfaces. */
 .wrap{position:relative;z-index:1}
 body::before{content:"";position:fixed;inset:-25%;z-index:0;pointer-events:none;opacity:0;background-size:260% 260%;transform:translateZ(0)}
 body[data-theme-motion="rainbow"]::before{opacity:.15;background-image:linear-gradient(120deg,#ff4d6d,#ffb84d,#f5ef62,#62df9a,#53b9ff,#a77bff,#ff4dce);animation:dsRainbow 22s linear infinite}
@@ -1039,8 +950,6 @@ body[data-theme-motion="holiday"]::before{opacity:.13;background-image:radial-gr
 @keyframes dsDiwali{0%{filter:brightness(.9);transform:scale(1)}100%{filter:brightness(1.3);transform:scale(1.05)}}
 @keyframes dsSnow{0%{background-position:0 -100px}100%{background-position:30px 100vh}}
 @media(prefers-reduced-motion:reduce){body[data-theme-motion]::before{animation:none!important}.card,.btn{transition:none!important}}
-
-/* Mobile: two usable columns, task text gets the width, tools become a slim vertical rail. */
 @media(max-width:640px){
   .wrap{padding:12px 9px 24px!important}
   .toolbar{top:0!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;padding:7px!important;margin:0 0 8px!important}
@@ -1100,9 +1009,6 @@ body[data-theme-motion="holiday"]::before{opacity:.13;background-image:radial-gr
  .card-main>.card-tools{width:23px!important;min-width:23px!important}
  .card-tools .icon-btn,.card-tools .expand{width:23px!important;min-width:23px!important;height:23px!important}
 }
-
-
-/* v29 — themed identity, contrasting transfer action, and playful fake deletion flow. */
 .brand-mark{width:46px!important;height:46px!important;flex:none;filter:drop-shadow(0 4px 10px color-mix(in srgb,var(--logo-secondary) 28%,transparent));}
 .card-tools .zone-arrow{background:var(--zone-arrow-bg)!important;color:var(--zone-arrow-fg)!important;border:1px solid var(--zone-arrow-border)!important;font-weight:950!important;box-shadow:0 2px 7px color-mix(in srgb,var(--zone-arrow-bg) 28%,transparent)!important;}
 .card-tools .zone-arrow:hover{background:var(--zone-arrow-hover)!important;color:var(--zone-arrow-hover-fg)!important;border-color:var(--zone-arrow-hover)!important;}
@@ -1137,10 +1043,6 @@ body[data-theme-motion="holiday"]::before{opacity:.13;background-image:radial-gr
 .kiss-confetti span:nth-child(1){left:8%;top:20%;animation-delay:-.3s}.kiss-confetti span:nth-child(2){right:9%;top:24%;animation-delay:-1.2s}.kiss-confetti span:nth-child(3){left:17%;bottom:18%;animation-delay:-.8s}.kiss-confetti span:nth-child(4){right:15%;bottom:16%;animation-delay:-1.6s}.kiss-confetti span:nth-child(5){left:48%;top:7%;animation-delay:-.5s}
 @keyframes kiss-float{from{transform:translateY(12px) rotate(-12deg) scale(.8);opacity:.55}to{transform:translateY(-16px) rotate(12deg) scale(1.15);opacity:1}}
 @media(prefers-reduced-motion:reduce){.prank-rain-piece,.delete-prank-dialog,.prank-siren,.kiss-lips,.kiss-caption,.kiss-confetti span{animation:none!important}}
-
-
-/* v30 responsive board: portrait restores the stacked, full-width columns;
-   landscape uses equal-width Today / Not Today panels. */
 @media (max-width: 700px) and (orientation: portrait){
   .board{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
   .panel{width:100%!important;min-width:0!important}
@@ -1172,7 +1074,6 @@ body[data-theme-motion="holiday"]::before{opacity:.13;background-image:radial-gr
   .board{grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:stretch!important}
   .board>.panel{width:100%!important;min-width:0!important}
 }
-/* Theme browser: balanced static/live sections, each split into light and dark. */
 .theme-library{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:12px}
 .theme-family{min-width:0;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card)}
 .theme-family h4{margin:0 0 10px;font-size:15px}
@@ -1189,8 +1090,6 @@ html[data-theme-dark="true"] .account-delete-trigger{background:#74101b!importan
 .delete-flood-label{position:absolute;z-index:4;left:0;right:0;top:27%;text-align:center;color:white;font-size:clamp(24px,5vw,54px);font-weight:900;opacity:0;transition:opacity .5s}
 .delete-flood-label.visible{opacity:1}
 @media(max-width:700px){.theme-library{grid-template-columns:1fr}.theme-pair{grid-template-columns:repeat(2,minmax(0,1fr))}}
-
-
 body[data-theme-motion="sunset"]::before{opacity:.24;background:linear-gradient(125deg,#ff4d6d,#ff9f43,#ffd166,#9b5de5);background-size:250% 250%;animation:dsVivid 12s ease-in-out infinite alternate}
 body[data-theme-motion="sky"]::before{opacity:.22;background:radial-gradient(circle at 20% 20%,#fff 0 2px,transparent 4px),linear-gradient(135deg,#35b8ff,#9cecff,#2878df);background-size:80px 80px,220% 220%;animation:dsVivid 16s linear infinite}
 body[data-theme-motion="holi"]::before{opacity:.22;background:radial-gradient(circle at 20% 30%,#ff4fb8,transparent 24%),radial-gradient(circle at 75% 25%,#36d9ff,transparent 25%),radial-gradient(circle at 55% 80%,#ffe34d,transparent 26%);animation:dsVivid 9s ease-in-out infinite alternate}
@@ -1198,10 +1097,6 @@ body[data-theme-motion="dasain"]::before{opacity:.2;background:radial-gradient(c
 body[data-theme-motion="neon"]::before{opacity:.23;background:linear-gradient(110deg,#ff00c8,#5b2cff,#00e5ff,#00ff85);background-size:300% 300%;animation:dsVivid 8s linear infinite}
 body[data-theme-motion="deepsea"]::before{opacity:.22;background:radial-gradient(ellipse at 20% 80%,#00c2a8,transparent 35%),radial-gradient(ellipse at 80% 20%,#087ca7,transparent 40%),linear-gradient(120deg,#031b35,#064663);animation:dsVivid 17s ease-in-out infinite alternate}
 @keyframes dsVivid{0%{background-position:0% 0%;filter:hue-rotate(0deg)}100%{background-position:100% 100%;filter:hue-rotate(24deg)}}
-
-
-
-/* v31 — coherent palettes, restrained theme motion, balanced workspace and deletion safeguards. */
 .theme-library{grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:start!important;gap:14px!important}
 .theme-family{min-width:0!important;padding:13px!important;background:var(--card)!important}
 .theme-family .theme-pair{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:start!important;gap:12px!important}
@@ -1211,8 +1106,6 @@ body[data-theme-motion="deepsea"]::before{opacity:.22;background:radial-gradient
 .theme-family .theme-mode .theme-btn.active{background:var(--accent-soft)!important;color:var(--text)!important;border:2px solid var(--accent)!important;box-shadow:inset 3px 0 0 var(--accent)!important}
 .theme-mode h5{font-size:12px!important;font-weight:800!important;color:var(--muted)!important;margin:0 0 7px!important}
 .theme-family h4{font-size:16px!important;color:var(--text)!important;margin-bottom:12px!important}
-
-/* Modal surfaces and calls to action use the active palette instead of default white text. */
 .delete-prank-dialog,.delete-final-confirm{background:var(--panel)!important;color:var(--text)!important;border:1px solid var(--line)!important;box-shadow:0 22px 80px #0007!important}
 .delete-prank-copy{color:var(--text)!important}
 .delete-prank-copy p:first-child{color:var(--accent)!important}
@@ -1239,20 +1132,15 @@ body[data-theme-motion="deepsea"]::before{opacity:.22;background:radial-gradient
 .delete-final-actions .delete-final-danger{background:var(--danger-bg)!important;color:var(--danger-text)!important;border-color:var(--danger-border)!important}
 .delete-final-actions button:disabled{opacity:.38;cursor:not-allowed}
 .delete-final-status{min-height:20px!important;margin:12px 0 0!important;font-size:12px!important}
-
-/* Align the three card movement controls to the vertical centre of task text. */
 .card-main{align-items:center!important}
 .card-main>.check,.card-main>.task-number{align-self:flex-start!important;margin-top:3px!important}
 .card-main>.task-body{align-self:center!important}
 .card-main>.card-tools{align-self:center!important;justify-self:end!important;align-items:center!important;justify-content:center!important}
 .card-tools .reorder-arrow,.card-tools .zone-arrow{display:grid!important;place-items:center!important;line-height:1!important;text-align:center!important;align-content:center!important;justify-content:center!important;padding:0!important}
-
-/* Desktop proportions: Today gets 70%, Not Today gets 30%. */
 @media(min-width:901px){
   .board{grid-template-columns:minmax(0,7fr) minmax(0,3fr)!important;align-items:stretch!important}
   .board>.panel{min-width:0!important;width:100%!important}
 }
-/* Portrait is intentionally stacked; phone landscape remains side-by-side at 50/50. */
 @media(max-width:700px) and (orientation:portrait){
   .board{grid-template-columns:minmax(0,1fr)!important;gap:13px!important}
   .panel{width:100%!important}
@@ -1295,16 +1183,10 @@ body[data-theme-motion="deepsea"]::before{opacity:.22;background:radial-gradient
   .task-search-icon{font-size:18px!important}.task-search input{font-size:11px!important;padding:2px 0!important}.search-result-count{font-size:9px!important}
   .footer{font-size:8px!important;margin-top:5px!important;opacity:.62!important}
 }
-
-/* Landscape panel height is calculated from the actual board position by JS; this
-   keeps the panel bottoms roughly 3 cm above the physical viewport edge. */
 @media(max-width:900px) and (orientation:landscape){
   body:not(.dynamic-panels) .panel{min-height:0!important;max-height:none!important}
   body:not(.dynamic-panels) .panel .cards{flex:1 1 0!important;height:0!important;min-height:0!important;max-height:none!important;overflow-y:auto!important}
 }
-
-/* Moving theme visuals: cloudy sky, breaking wave bands, powder-soft Holi, Dasain details,
-   subtle Diwali fireworks, actual aurora ribbons, restrained club lights and random mesh gradients. */
 body::before{z-index:0;pointer-events:none;filter:blur(0);}
 body[data-theme-motion="sky"]::before{
   opacity:.32!important;background-image:
@@ -1348,11 +1230,8 @@ body[data-theme-motion="cloud"]::before,body[data-theme-motion="meadow"]::before
 body[data-theme-motion="dasain"] .theme-particle{font-size:var(--size)}
 body[data-theme-motion="diwali"] .theme-particle{animation-name:themeFirework;top:var(--top);left:var(--left)}
 @keyframes themeFirework{0%,100%{transform:translateY(8px) scale(.65);opacity:.12}35%{transform:translateY(-30px) scale(1.06);opacity:.72}70%{transform:translateY(-12px) scale(.85);opacity:.3}}
-
 @media(max-width:700px){.theme-library{grid-template-columns:1fr!important}.theme-family .theme-pair{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(prefers-reduced-motion:reduce){body[data-theme-motion]::before,.theme-particle{animation:none!important}}
-
-
 @media(max-width:900px) and (orientation:landscape){
   header{margin:0 0 4px!important;gap:0!important}
   header .brand-mark{width:25px!important;height:25px!important}
@@ -1364,10 +1243,6 @@ body[data-theme-motion="diwali"] .theme-particle{animation-name:themeFirework;to
   .capture-actions .btn{min-height:17px!important;height:17px!important;padding:1px 4px!important;font-size:9px!important;line-height:1!important;white-space:nowrap!important}
   .draft-tools{display:none!important}
 }
-
-
-
-/* v32 — compact theme chips and unmistakable, distinct live atmospheres. */
 .theme-library{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:start!important}
 .theme-family{min-width:0!important;padding:12px!important;align-self:start!important}
 .theme-family .theme-pair{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:start!important}
@@ -1377,8 +1252,6 @@ body[data-theme-motion="diwali"] .theme-particle{animation-name:themeFirework;to
 .theme-family .theme-mode .theme-btn.active{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)!important}
 @media(max-width:700px){.theme-library{grid-template-columns:minmax(0,1fr)!important}.theme-family .theme-pair{grid-template-columns:repeat(2,minmax(0,1fr))!important}.theme-family .theme-mode .theme-btn{font-size:12px!important;padding:7px 9px!important}}
 @media(max-width:370px){.theme-family .theme-pair{gap:8px!important}.theme-family{padding:10px!important}.theme-family .theme-mode .theme-btn{font-size:11px!important;padding:6px 8px!important}}
-
-/* Effect elements sit behind the workspace and never block controls. */
 .theme-particles{position:fixed!important;inset:0!important;z-index:0!important;pointer-events:none!important;overflow:hidden!important;contain:strict!important}
 .fx-cloud{position:absolute;left:-35vw;top:var(--top);width:var(--w);height:var(--h);border-radius:999px;background:rgba(255,255,255,.86);opacity:var(--alpha);filter:blur(1.2px);box-shadow:0 12px 28px #74bde822;animation:fxCloudTravel var(--duration) linear var(--delay) infinite;will-change:transform}
 .fx-cloud:before,.fx-cloud:after{content:"";position:absolute;bottom:18%;border-radius:50%;background:inherit}
@@ -1412,20 +1285,15 @@ body[data-theme-motion="ember"]::before{opacity:.34!important;background-image:r
 @keyframes fxEmberBackground{from{background-position:0% 30%,100% 80%,40% 10%;filter:blur(34px) brightness(.9)}to{background-position:20% 0%,75% 100%,65% 85%;filter:blur(24px) brightness(1.3)}}
 body[data-theme-motion="moonlit"]::before{opacity:.24!important;background-image:radial-gradient(ellipse at 82% 16%,#dcecff44 0 3%,transparent 24%),linear-gradient(180deg,#101d33 0%,#15253c 56%,#20334b 100%)!important}
 @media(prefers-reduced-motion:reduce){.fx-cloud,.fx-holi,.fx-wave,.fx-ember,.fx-moon,.fx-moonbeam,.fx-star{animation:none!important}body[data-theme-motion]::before,.theme-particle{animation:none!important}}
-
-
-/* v33: repair theme chips, task alignment, and compact split-column cards */
 .theme-family .theme-pair{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:18px!important;align-items:start!important}
 .theme-family .theme-mode{min-width:0!important}
 .theme-family .theme-mode .theme-grid{display:flex!important;flex-flow:row wrap!important;align-items:flex-start!important;justify-content:flex-start!important;gap:7px!important;width:100%!important}
 .theme-family .theme-mode .theme-btn{display:inline-flex!important;flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:100%!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;writing-mode:horizontal-tb!important;min-height:34px!important;padding:7px 10px!important;font-size:12px!important;line-height:1.15!important}
 @media(max-width:560px){.theme-family .theme-pair{gap:10px!important}.theme-family .theme-mode .theme-btn{font-size:11px!important;padding:6px 8px!important}}
-/* Icons have true geometric centering in their hit targets. */
 .card-tools .icon-btn,.card-tools .expand{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;line-height:1!important;padding:0!important;box-sizing:border-box!important}
 .card-tools .icon-btn{font-size:17px!important}
 .card-tools{align-items:center!important;justify-content:center!important}
 .card-tools .reorder-arrow,.card-tools .zone-arrow{align-self:center!important;vertical-align:middle!important}
-/* Cards size to their content; don't stretch a one-line task into a large empty panel. */
 .cards{align-content:flex-start!important;justify-content:flex-start!important;gap:10px!important}
 .card{height:auto!important;min-height:0!important;flex:0 0 auto!important}
 .card-main{align-items:flex-start!important}
@@ -1443,7 +1311,6 @@ body[data-theme-motion="moonlit"]::before{opacity:.24!important;background-image
  .panel .cards{height:auto!important;max-height:calc(100dvh - 245px)!important;overflow-y:auto!important}
  .card{flex:0 0 auto!important}
 }
-/* Ocean: incoming and receding surf across the entire lower background. */
 body[data-theme-motion="ocean"]::before{opacity:.42!important;background:
  radial-gradient(ellipse 70% 13% at 50% 88%,#ffffffa8 0 22%,transparent 70%),
  radial-gradient(ellipse 95% 18% at 48% 100%,#39b9d5a8 0 30%,transparent 72%),
@@ -1452,21 +1319,14 @@ body[data-theme-motion="ocean"]::before{opacity:.42!important;background:
  background-size:150% 100%,160% 100%,170% 100%,150% 100%!important;
  animation:dsSurfCrash 8s ease-in-out infinite alternate!important}
 @keyframes dsSurfCrash{0%{background-position:0 100%,100% 100%,0 100%,100% 100%;transform:translateY(2vh) scale(1)}45%{background-position:55% 75%,30% 80%,80% 68%,15% 75%;transform:translateY(-1vh) scale(1.04)}100%{background-position:100% 40%,0 48%,15% 35%,95% 42%;transform:translateY(-3vh) scale(1.08)}}
-/* Holi: many independent soft colour clouds distributed across the viewport. */
 body[data-theme-motion="holi"]::before{opacity:.34!important;filter:blur(30px) saturate(1.35)!important;
  background-image:radial-gradient(ellipse at 8% 18%,#ff69b4aa 0 7%,transparent 24%),radial-gradient(ellipse at 27% 76%,#43d9eaaa 0 8%,transparent 25%),radial-gradient(ellipse at 48% 28%,#ffcf4faa 0 8%,transparent 25%),radial-gradient(ellipse at 72% 68%,#9b79faaa 0 8%,transparent 25%),radial-gradient(ellipse at 92% 22%,#70df83aa 0 8%,transparent 24%),radial-gradient(ellipse at 86% 90%,#ff8c58aa 0 7%,transparent 23%),radial-gradient(ellipse at 12% 90%,#8ab8ffaa 0 7%,transparent 22%)!important;
  animation:dsHoliSpread 13s ease-in-out infinite alternate!important}
 @keyframes dsHoliSpread{0%{background-position:0 0,100% 100%,0 100%,100% 0,30% 40%,80% 10%,20% 90%;transform:scale(1)}50%{background-position:25% 70%,70% 15%,35% 65%,65% 30%,90% 80%,15% 25%,75% 50%;transform:scale(1.08)}100%{background-position:90% 30%,5% 65%,80% 15%,10% 85%,40% 10%,65% 90%,5% 20%;transform:scale(1.12)}}
-/* Gradients slowly remix their colour fields; no strobing or hard flashes. */
 body[data-theme-motion="gradient-light"]::before,body[data-theme-motion="gradient-dark"]::before{animation:dsMeshMix 42s ease-in-out infinite alternate!important;filter:blur(54px) saturate(1.55)!important;background-size:190% 190%!important}
 @keyframes dsMeshMix{0%{background-position:0% 20%;transform:scale(1) rotate(0deg)}25%{background-position:85% 10%;transform:scale(1.12) rotate(4deg)}50%{background-position:45% 95%;transform:scale(1.05) rotate(-3deg)}75%{background-position:100% 65%;transform:scale(1.16) rotate(2deg)}100%{background-position:10% 80%;transform:scale(1.02) rotate(-4deg)}}
-/* Gentle rain streaks for the replacement light live theme. */
 body[data-theme-motion="rain"]::before{opacity:.3!important;background-image:repeating-linear-gradient(105deg,transparent 0 34px,#8db9df55 35px 37px,transparent 38px 76px),radial-gradient(ellipse at 50% 0%,#ffffff88,transparent 65%)!important;background-size:100% 180%,100% 100%!important;animation:dsRainFall 2.8s linear infinite!important}
 @keyframes dsRainFall{from{background-position:0 -100%,0 0}to{background-position:0 100%,0 0}}
-
-
-
-/* v41: deliberate 3×3 theme grids and continuous gradient emulsion (no flashing, no particles). */
 .theme-family .theme-mode .theme-grid{
   display:grid!important;
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
@@ -1491,9 +1351,6 @@ body[data-theme-motion="rain"]::before{opacity:.3!important;background-image:rep
   .theme-family .theme-mode .theme-btn{font-size:11px!important;padding:5px 3px!important}
 }
 @media(max-width:380px){.theme-family .theme-pair{gap:8px!important}.theme-family .theme-mode .theme-grid{gap:5px!important}.theme-family .theme-mode .theme-btn{font-size:10px!important}}
-
-/* v35 — Appearance theme picker: isolated layout, four real 3×3 grids.
-   These ds-* classes intentionally avoid every legacy .theme-grid/.theme-family rule. */
 #themeGrid.ds-theme-library{
   display:grid!important;
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
@@ -1590,15 +1447,11 @@ body[data-theme-motion="rain"]::before{opacity:.3!important;background-image:rep
   color:var(--text)!important;
   box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)!important;
 }
-/* At tablet widths give each theme family the full row; this prevents narrow
-   Light/Dark subcolumns and broken words while preserving both mode columns. */
-/* Widen Settings itself; the old 720px dialog cap was starving the grids. */
 #sessionModal > .session-box{width:min(1100px,calc(100vw - 48px))!important;max-width:1100px!important}
 #sessionModal .settings-section.appearance-section{width:100%!important;max-width:none!important;margin:18px 0 0!important}
 @media(max-width:1150px){
   #themeGrid.ds-theme-library{grid-template-columns:minmax(0,1fr)!important;gap:14px!important}
 }
-/* On narrow phones, stack Light and Dark groups; each still keeps its 3×3 grid. */
 @media(max-width:560px){
   #themeGrid .ds-theme-family{padding:14px!important}
   #themeGrid .ds-theme-pair{grid-template-columns:minmax(0,1fr)!important;gap:16px!important}
@@ -1609,8 +1462,6 @@ body[data-theme-motion="rain"]::before{opacity:.3!important;background-image:rep
   #sessionModal > .session-box{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;padding:18px!important}
 }
 @media(prefers-reduced-motion:reduce){#themeGrid .ds-theme-btn{transition:none!important}}
-
-/* Slow, continuous colour-field mixing: fixed overlapping pigment fields drift and merge. */
 body[data-theme-motion="gradient-light"]::before,
 body[data-theme-motion="gradient-dark"]::before{
   opacity:.42!important;filter:blur(58px) saturate(1.45)!important;
@@ -1632,12 +1483,7 @@ body[data-theme-motion="gradient-dark"]::before{
   100%{background-position:4% 64%,88% 100%,18% 48%,8% 0%,96% 32%}
 }
 @media(prefers-reduced-motion:reduce){body[data-theme-motion="gradient-light"]::before,body[data-theme-motion="gradient-dark"]::before{animation:none!important}}
-
-
-
-/* v36: robust half-screen Arrange layout + genuinely content-sized task cards */
 .wrap{container-type:inline-size;container-name:daily-sort-layout}
-/* Arrange is a 2x2 flow at split-screen widths; all four steps stay equal and centered. */
 .arrange-tools{
   display:grid!important;
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
@@ -1666,7 +1512,6 @@ body[data-theme-motion="gradient-dark"]::before{
   .arrange-tools{grid-template-columns:minmax(0,1fr)!important;grid-auto-rows:auto!important}
   .arrange-tools .arrange-step,.arrange-tools .step-action{min-height:0!important;padding:14px 12px!important}
 }
-/* Make the task text column use all remaining width and keep the action rail narrow. */
 .card{height:auto!important;min-height:0!important;align-self:start!important}
 .card-main{
   display:grid!important;
@@ -1701,17 +1546,14 @@ body[data-theme-motion="gradient-dark"]::before{
   overflow-wrap:break-word!important;word-break:normal!important;
 }
 .task-body,.task-title-edit{min-width:0!important}
-/* Numbered cards get one additional compact column without squeezing the editor. */
 body.show-task-numbers .card-main{grid-template-columns:24px 20px minmax(0,1fr) 36px!important}
 body.show-task-numbers .card-main>.task-number{grid-column:1!important;grid-row:1!important;align-self:start!important;justify-self:center!important}
 body.show-task-numbers .card-main>.check{grid-column:2!important;grid-row:1!important}
 body.show-task-numbers .card-main>.task-body{grid-column:3!important;grid-row:1!important}
 body.show-task-numbers .card-main>.card-tools{grid-column:4!important;grid-row:1!important}
-/* Cards follow their content; the panel may scroll, but cards never stretch to fill it. */
 .cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important}
 .cards>.card{flex:0 0 auto!important;width:100%!important;margin:0!important}
 body.dynamic-panels .cards{min-height:0!important;height:auto!important;max-height:none!important;overflow:visible!important}
-/* Half-screen and narrow landscape: preserve a usable two-column board and compact task cards. */
 @media(max-width:900px) and (orientation:landscape){
   .board{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
   .panel{min-width:0!important;min-height:0!important;height:auto!important}
@@ -1729,24 +1571,18 @@ body.dynamic-panels .cards{min-height:0!important;height:auto!important;max-heig
   .card-main{grid-template-columns:20px minmax(0,1fr) 34px!important}
   body.show-task-numbers .card-main{grid-template-columns:22px 18px minmax(0,1fr) 34px!important}
 }
-
-
-/* v41: content-sized task cards + independently scrollable columns in both height modes. */
 .card{height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important;overflow:visible!important}
 .cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important}
 .cards>.card{width:100%!important;flex:0 0 auto!important;margin:0!important}
 .card-main{display:grid!important;grid-template-columns:20px minmax(0,1fr) 36px!important;align-items:start!important;gap:9px!important;min-height:68px!important;padding:9px 10px!important;box-sizing:border-box!important}
-.card-main>.check{grid-column:1!important;grid-row:1!important;align-self:start!important;margin-top:3px!important}
 .card-main>.task-body{grid-column:2!important;grid-row:1!important;align-self:start!important;width:100%!important;min-width:0!important;max-width:100%!important}
 .card-main>.card-tools{grid-column:3!important;grid-row:1!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;justify-self:end!important;align-self:start!important;width:34px!important;min-width:34px!important;gap:4px!important;margin:0!important;padding:0!important}
 .card-tools .icon-btn,.card-tools .expand,.card-tools .insert-below{display:inline-flex!important;align-items:center!important;justify-content:center!important;align-self:center!important;text-align:center!important;vertical-align:middle!important;line-height:1!important;box-sizing:border-box!important;padding:0!important;margin:0!important;flex:none!important}
 .card-tools .icon-btn,.card-tools .expand{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important}
 .card-tools .insert-below{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important}
-.card-tools .select-task{align-self:center!important;margin:0!important}
 .card-tools .reorder-arrow,.card-tools .zone-arrow{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;line-height:1!important}
 .task-body{flex:initial!important;min-height:0!important;min-width:0!important;overflow-wrap:break-word!important;word-break:normal!important}
 .task-title-edit{display:block!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:24px!important;max-height:none!important;box-sizing:border-box!important;white-space:pre-wrap!important;overflow-wrap:break-word!important;word-break:normal!important;line-height:1.42!important;padding:2px 3px!important}
-/* Keep the action rail genuinely slim: movement arrows remain vertical; selection + expand share the bottom row. */
 .card-main>.card-tools{display:grid!important;grid-template-columns:18px 18px!important;grid-template-rows:18px 18px 18px 15px!important;gap:2px!important;width:38px!important;min-width:38px!important;justify-content:center!important;align-content:start!important}
 .card-tools [data-action="up"],.card-tools [data-action="down"],.card-tools [data-action="move-later"]{grid-column:1 / span 2!important;width:38px!important;height:18px!important;min-width:38px!important;min-height:18px!important;font-size:13px!important}
 .card-tools [data-action="up"]{grid-row:1!important}.card-tools [data-action="down"]{grid-row:2!important}.card-tools [data-action="move-later"]{grid-row:3!important}
@@ -1755,14 +1591,7 @@ body.dynamic-panels .cards{min-height:0!important;height:auto!important;max-heig
 .card-tools .insert-below{position:absolute!important;top:-5px!important;right:-5px!important;width:19px!important;height:19px!important;min-width:19px!important;min-height:19px!important;opacity:0!important;pointer-events:none!important}
 .card:hover .card-tools .insert-below,.card:focus-within .card-tools .insert-below{opacity:1!important;pointer-events:auto!important}
 @media(hover:none){.card-tools .insert-below{opacity:1!important;pointer-events:auto!important}}
-/* A short task stays compact; textarea auto-sizing makes multiline tasks grow naturally. */
 .card-main:has(>.task-body .task-title-edit){min-height:68px!important}
-body.show-task-numbers .card-main{grid-template-columns:24px 20px minmax(0,1fr) 36px!important}
-body.show-task-numbers .card-main>.task-number{grid-column:1!important;grid-row:1!important;align-self:start!important;justify-self:center!important}
-body.show-task-numbers .card-main>.check{grid-column:2!important;grid-row:1!important}
-body.show-task-numbers .card-main>.task-body{grid-column:3!important;grid-row:1!important}
-body.show-task-numbers .card-main>.card-tools{grid-column:4!important;grid-row:1!important}
-/* Both panels have their own scroll container. The height toggle changes viewport height, not scroll ownership. */
 .panel{display:flex!important;flex-direction:column!important;min-height:0!important;overflow:hidden!important}
 .panel-head{flex:0 0 auto!important}
 .panel>.cards{flex:1 1 auto!important;height:0!important;min-height:0!important;max-height:none!important;overflow-y:auto!important}
@@ -1784,10 +1613,6 @@ body.dynamic-panels .panel>.cards{flex:1 1 auto!important;height:0!important;min
  .card-tools{width:32px!important;min-width:32px!important;gap:3px!important}
  .card-tools .icon-btn,.card-tools .expand{width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important}
 }
-
-
-
-/* v41: definitive task-card grid. Keep text in the flexible middle column. */
 .card-main{
   display:grid!important;
   grid-template-columns:20px minmax(0,1fr) 40px!important;
@@ -1812,9 +1637,7 @@ body.dynamic-panels .panel>.cards{flex:1 1 auto!important;height:0!important;min
 .card-main>.card-tools .expand{width:34px!important;height:24px!important;min-width:34px!important;min-height:24px!important}
 .card-main>.card-tools .insert-below{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important}
 .card{height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important}
-.card-main:has(>.task-body .task-title-edit){min-height:68px!important}
 .cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important}
-.cards>.card{width:100%!important;flex:0 0 auto!important;margin:0!important}
 body.show-task-numbers .card-main{
   grid-template-columns:24px 20px minmax(0,1fr) 40px!important;
   grid-template-areas:"number check body tools"!important;
@@ -1834,9 +1657,6 @@ body.show-task-numbers .card-main>.card-tools{grid-area:tools!important;grid-col
   .card-main{grid-template-columns:20px minmax(0,1fr) 36px!important}
   body.show-task-numbers .card-main{grid-template-columns:22px 18px minmax(0,1fr) 36px!important}
 }
-
-
-/* v41: task cards are classified by rendered title lines; one source of truth. */
 .card{position:relative!important;height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important;overflow:visible!important}
 .card>.card-main{
   position:relative!important;display:grid!important;box-sizing:border-box!important;
@@ -1909,11 +1729,7 @@ body.show-task-numbers .card>.card-main>.task-number{
   display:grid!important;grid-area:number!important;place-items:center!important;
   width:24px!important;height:24px!important;min-width:24px!important;
 }
-.cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important}
 .cards>.card{width:100%!important;margin:0!important;flex:0 0 auto!important}
-
-
-/* v41: task card silhouette matches the top-right control-notch reference. */
 .card{overflow:hidden!important;border-radius:16px!important}
 .card>.card-main{
   display:block!important;position:relative!important;isolation:isolate!important;
@@ -1993,9 +1809,6 @@ body.show-task-numbers .card>.card-main>.task-number{display:grid!important}
   .card>.card-main>.card-tools .icon-btn{flex-basis:29px!important;width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important}
   .card>.card-main>.task-body{padding-left:40px!important}
 }
-
-
-/* v41: match the supplied silhouette; keep the content field open and controls in a fixed top-right notch. */
 .card{overflow:hidden!important}
 .card>.card-main{
   display:block!important;position:relative!important;isolation:isolate!important;
@@ -2079,10 +1892,6 @@ body.show-task-numbers .card>.card-main>.task-number{display:grid!important}
  .card>.card-main>.task-body{padding:12px 10px 12px 42px!important}
  .card>.card-main>.check{left:10px!important;top:12px!important}
 }
-
-
-
-/* v43: Dynamic mode grows with the full task list; Fixed mode alone scrolls internally. */
 .board{align-items:start!important}
 body.dynamic-panels .board{align-items:start!important}
 body.dynamic-panels .panel{
@@ -2100,8 +1909,6 @@ body:not(.dynamic-panels) .panel>.cards{
   flex:1 1 auto!important;height:0!important;min-height:0!important;
   overflow-y:auto!important;overscroll-behavior:contain!important;
 }
-
-/* Stable top-right control notch: one horizontal row, never clipped or vertically stacked. */
 .card{overflow:hidden!important;min-width:0!important}
 .card>.card-main{position:relative!important;display:block!important;min-width:0!important;min-height:150px!important;overflow:hidden!important}
 .card>.card-main::before{
@@ -2116,7 +1923,6 @@ body:not(.dynamic-panels) .panel>.cards{
   overflow:visible!important;box-sizing:border-box!important;
   background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:10px!important;
 }
-.card>.card-main>.card-tools .insert-below{display:none!important}
 .card>.card-main>.card-tools .reorder-arrow,
 .card>.card-main>.card-tools .zone-arrow,
 .card>.card-main>.card-tools .expand{
@@ -2145,9 +1951,6 @@ body:not(.dynamic-panels) .panel>.cards{
  .card>.card-main>.task-body{padding:76px 10px 12px 42px!important}
  .card>.card-main>.check{top:80px!important;left:10px!important}
 }
-
-
-/* v44: align task text and completion control; keep the toolbar in the top-right notch. */
 .card{min-width:0!important;overflow:hidden!important}
 .card>.card-main{
   display:block!important;position:relative!important;isolation:isolate!important;
@@ -2194,7 +1997,6 @@ body:not(.dynamic-panels) .panel>.cards{
   box-sizing:border-box!important;overflow:visible!important;
   background:transparent!important;border:0!important;border-radius:0!important;
 }
-.card>.card-main>.card-tools>.insert-below{display:none!important}
 .card>.card-main>.card-tools>.reorder-arrow,
 .card>.card-main>.card-tools>.zone-arrow,
 .card>.card-main>.card-tools>.expand{
@@ -2238,4 +2040,37 @@ body:not(.dynamic-panels) .panel>.cards{
  .card>.card-main::before{width:228px!important;max-width:72%!important}
  .card>.card-main>.task-body{clip-path:polygon(0 0,calc(100% - 228px) 0,calc(100% - 228px) 64px,100% 64px,100% 100%,0 100%)!important}
  .card>.card-main>.card-tools{width:180px!important;min-width:180px!important;max-width:calc(72% - 8px)!important}
+}
+.panel-title{font-size:24px!important;font-weight:850!important;line-height:1.15!important}
+.panel-head{padding:17px 20px!important}
+.arrange-tools{grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-auto-rows:auto!important;gap:7px!important;padding:7px!important;margin:7px 0 9px!important}
+.arrange-tools .arrange-step,.arrange-tools .step-action{min-height:0!important;padding:8px 9px!important;gap:5px!important;justify-content:center!important}
+.arrange-tools .arrange-step-number{width:24px!important;height:24px!important;font-size:12px!important;border-radius:8px!important}
+.arrange-tools .arrange-step-content{gap:3px!important}
+.arrange-tools .arrange-step-title{font-size:14px!important;line-height:1.15!important}
+.arrange-tools .arrange-step-help,.arrange-tools .arrange-selection{font-size:11px!important;line-height:1.2!important}
+.arrange-tools .arrange-select-help{flex-direction:row!important;flex-wrap:wrap!important;justify-content:center!important;gap:3px 8px!important}
+.arrange-tools .arrange-number-title{font-size:14px!important;gap:7px!important}
+.arrange-tools .arrange-number-title input{width:17px!important;height:17px!important;flex-basis:17px!important}
+.arrange-tools .arrange-destination-controls{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(72px,.55fr)!important;align-items:center!important;gap:6px!important}
+.arrange-tools .arrange-position-control{display:flex!important;flex-direction:row!important;align-items:center!important;gap:5px!important;width:auto!important}
+.arrange-tools .arrange-position-control label{font-size:11px!important}
+.arrange-tools #moveTargetZone,.arrange-tools #moveAboveNumber{min-height:32px!important;height:32px!important;font-size:13px!important;padding:4px 8px!important}
+.arrange-tools .step-action .arrange-step-title{font-size:14px!important}
+.arrange-tools .step-action .btn{width:100%!important;min-height:34px!important;height:34px!important;font-size:13px!important;border-radius:9px!important}
+@media(max-width:900px){
+ .arrange-tools{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .arrange-tools .arrange-step,.arrange-tools .step-action{padding:7px!important}
+}
+@media(max-width:560px){
+ .arrange-tools{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+ .arrange-tools .arrange-step-title{font-size:13px!important}
+ .arrange-tools .arrange-step-help,.arrange-tools .arrange-selection{font-size:10px!important}
+ .arrange-tools .arrange-destination-controls{grid-template-columns:minmax(0,1fr)!important}
+ .arrange-tools .arrange-position-control{justify-content:center!important}
+ .panel-title{font-size:21px!important}
+ .panel-head{padding:13px 14px!important}
+}
+@media(max-width:360px){
+ .arrange-tools{grid-template-columns:minmax(0,1fr)!important}
 }
