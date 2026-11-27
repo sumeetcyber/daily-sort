@@ -252,30 +252,30 @@ function toggleListMarkup(t){
       <span class="toggle-row-tools"><button type="button" data-action="item-up" aria-label="Move item up" title="Move up" ${i===0?"disabled":""}>↑</button><button type="button" data-action="item-down" aria-label="Move item down" title="Move down" ${i===parsed.length-1?"disabled":""}>↓</button></span>
     </div>`).join("")}</div>`;
 }
+function taskToolbar(t){
+  const direction=t.zone==="later"?"⇦":"⇨";
+  const destination=t.zone==="later"?"Move to Today":"Move to Not Today";
+  return `<div class="card-tools" contenteditable="false">
+    <div class="tool-cell"><button class="check" data-action="complete" title="Complete" aria-label="Complete task"></button></div>
+    <div class="tool-cell"><button class="icon-btn reorder-arrow" data-action="up" title="Move task up" aria-label="Move task up">↑</button></div>
+    <div class="tool-cell"><button class="icon-btn reorder-arrow" data-action="down" title="Move task down" aria-label="Move task down">↓</button></div>
+    <div class="tool-cell"><input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task for bulk actions" title="Select task for bulk actions"></div>
+    <div class="tool-cell tool-cell-pair">
+      <button class="icon-btn zone-arrow" data-action="move-later" title="${destination}" aria-label="${destination}">${direction}</button>
+      <button class="expand" data-action="expand" title="${t.open?"Collapse":"Expand"} details" aria-label="${t.open?"Collapse":"Expand"} details">${t.open?"🔼":"🔽"}</button>
+    </div>
+  </div>`;
+}
 function taskCard(t,number){
-  const color=t.colorHex || parseColorSyntax(t.text).color;
-  return `
-  <article class="card ${t.done?"done":""} ${t.open?"open":""} ${selectedTaskIds.has(t.id)?"selected":""}" draggable="true" data-id="${t.id}" ${color?`data-task-color style="--task-color:${color}"`:""}>
-    <div class="card-main">
-      <span class="task-number" aria-hidden="true">${number}</span>
-      <button class="check" data-action="complete" title="Complete"></button>
-      <div class="task-body">
-        ${parseToggleList(t.text) ? `<div class="toggle-list-heading"><button class="toggle-list-collapse" data-action="toggle-list-collapse" aria-expanded="${!t.listCollapsed}" title="${t.listCollapsed?"Expand":"Collapse"} list">${t.listCollapsed?"▸":"▾"}</button><input class="toggle-list-title-edit" data-action="toggle-list-title" type="text" value="${escapeHtml(parseToggleList(t.text).title)}" aria-label="Edit checklist title" title="Edit checklist title"><span class="toggle-list-count">${parseToggleList(t.text).length} items</span></div>${t.listCollapsed?"":toggleListMarkup(t)}` : `<div class="task-title-edit" data-action="title" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Task title" spellcheck="false"><div class="card-tools" contenteditable="false">
-          <button class="icon-btn reorder-arrow" data-action="up" title="Move task up" aria-label="Move task up">↑</button>
-          <button class="icon-btn reorder-arrow" data-action="down" title="Move task down" aria-label="Move task down">↓</button>
-          <button class="icon-btn zone-arrow" data-action="move-later" title="${t.zone==="later"?"Move to Today":"Move to Not Today"}" aria-label="${t.zone==="later"?"Move to Today":"Move to Not Today"}">${t.zone==="later"?"⇦":"⇨"}</button>
-          <input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task for bulk actions" title="Select task for bulk actions">
-          <button class="expand" data-action="expand" title="Expand">${t.open?"🔼":"🔽"}</button>
-        </div><span class="task-text-content" data-task-text>${escapeHtml(parseColorSyntax(t.text).body).replace(/\n/g,"<br>")}</span></div>`}
-      </div>
-    </div>
-    <div class="details">
-      <textarea data-action="notes" placeholder="Notes…">${escapeHtml(t.notes)}</textarea>
-      <div class="details-row">
-        <button class="btn" data-action="move-later">${t.zone==="later"?"Move to Today":"Not Today"}</button>
-        <button class="btn" data-action="delete">Delete</button>
-      </div>
-    </div>
+  const color=t.colorHex||parseColorSyntax(t.text).color;
+  const checklist=parseToggleList(t.text);
+  const title=escapeHtml(parseColorSyntax(t.text).body).replace(/\n/g,"<br>");
+  const content=checklist
+    ? `<div class="toggle-list-heading"><button class="toggle-list-collapse" data-action="toggle-list-collapse" aria-expanded="${!t.listCollapsed}" title="${t.listCollapsed?"Expand":"Collapse"} list">${t.listCollapsed?"▸":"▾"}</button><input class="toggle-list-title-edit" data-action="toggle-list-title" type="text" value="${escapeHtml(checklist.title)}" aria-label="Edit checklist title" title="Edit checklist title"><span class="toggle-list-count">${checklist.length} items</span></div>${t.listCollapsed?"":toggleListMarkup(t)}`
+    : `<div class="task-title-edit" data-action="title" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Task title" spellcheck="false"><span class="task-text-content" data-task-text>${title}</span></div>`;
+  return `<article class="card ${t.done?"done":""} ${t.open?"open":""} ${selectedTaskIds.has(t.id)?"selected":""}" draggable="true" data-id="${t.id}" ${color?`data-task-color style="--task-color:${color}"`:""}>
+    <div class="card-main"><span class="task-number" aria-hidden="true">${number}</span><div class="task-body">${content}<button class="insert-below" data-action="insert-below" type="button" title="Add task below" aria-label="Add task below">＋</button>${taskToolbar(t)}</div></div>
+    <div class="details"><textarea data-action="notes" placeholder="Notes…">${escapeHtml(t.notes)}</textarea><div class="details-row"><button class="btn" data-action="move-later">${t.zone==="later"?"Move to Today":"Not Today"}</button><button class="btn" data-action="delete">Delete</button></div></div>
   </article>`;
 }
 function renderCards(){
@@ -301,7 +301,6 @@ function render(){
   for(const sid of [...selectedTaskIds])if(!state.tasks.some(t=>t.id===sid))selectedTaskIds.delete(sid);
   renderCards(); bindDnD(); bindActions(); updateSelectionCount();
 }
-
 
 let movementNumberTimer=null;
 function keepMoveControlInPlace(tid,direction,swappedIds=[],displacedId=null,pointerPoint=null){
@@ -353,7 +352,6 @@ function moveTask(tid, direction, pointerPoint=null){
   const displacedId=state.tasks[targetIndex].id;
   const swappedIds=[state.tasks[index].id,displacedId];
   [state.tasks[index],state.tasks[targetIndex]]=[state.tasks[targetIndex],state.tasks[index]];
-  // Briefly reveal numbering so the new position is obvious.
   document.body.classList.add("movement-numbers");
   if(movementNumberTimer)clearTimeout(movementNumberTimer);
   movementNumberTimer=setTimeout(()=>document.body.classList.remove("movement-numbers"),1800);
@@ -370,8 +368,6 @@ function moveTaskBefore(dragId, targetId){
 
   const dragged=state.tasks[from];
   const target=state.tasks[to];
-
-  // Reordering is only within the same column.
   if((dragged.zone==="later") !== (target.zone==="later"))return;
 
   state.tasks.splice(from,1);
@@ -424,6 +420,7 @@ function bindActions(){
     const tid=card.dataset.id;
     const t=state.tasks.find(x=>x.id===tid);
     const selectionBox=card.querySelector('[data-action="select-task"]');
+    card.querySelectorAll(".card-tools button,.card-tools input").forEach(control=>control.addEventListener("pointerdown",e=>e.stopPropagation()));
     selectionBox.addEventListener("click",e=>e.stopPropagation());
     selectionBox.onchange=e=>{
       if(e.target.checked)selectedTaskIds.add(tid);else selectedTaskIds.delete(tid);
@@ -444,7 +441,6 @@ function bindActions(){
     if(listCollapse)listCollapse.onclick=e=>{
       e.stopPropagation();t.listCollapsed=!t.listCollapsed;save();render();
     };
-    // Keep native drag from hijacking caret placement and text selection in every editor.
     card.querySelectorAll('input[type="text"], textarea, [contenteditable="true"]').forEach(editor=>{
       editor.draggable=false;
       editor.addEventListener("pointerdown",e=>{
@@ -554,7 +550,6 @@ function bindActions(){
     };
   });
 
-
 }
 
 function bindDnD(){
@@ -601,8 +596,6 @@ function bindDnD(){
       }
     });
   });
-
-
 
   document.querySelectorAll(".cards").forEach(zone=>{
     zone.addEventListener("dragover",e=>{e.preventDefault();zone.classList.add("dragover")});
@@ -898,7 +891,6 @@ function getSessionToken(){
   try{
     t=localStorage.getItem(SESSION_KEY)||"";
     if(!t.trim()){
-      // Recover a token saved by an earlier Daily Sort build before generating anything new.
       const legacyKeys=["daily-sort-session","dailySortSessionToken","daily-sort-token","daily-sort-session-token"];
       for(const key of legacyKeys){
         const candidate=localStorage.getItem(key);
@@ -1003,26 +995,22 @@ async function pushCloud(tokenOverride=null){
   let token=tokenOverride||getSessionToken();
   try{await ensureSupabase()}catch(err){updateCloudStatus("Cloud: unavailable · "+err.message);return false;}
   if(syncingCloud){
-    // A newer edit arrived while a save was running; the finally block will flush it.
     return false;
   }
   syncingCloud=true;
   const changeSnapshot=localChangeAt;
   try{
-    // Freeze one consistent version so edits during encryption are not lost.
     const payload={
       state:JSON.parse(JSON.stringify(state)),
       draft:document.getElementById("bulkInput")?.value||"",
       theme:localStorage.getItem(THEME_KEY)||"Paper"
     };
     const encrypted=await encryptState(token,payload);
-    // Broadcast first: other devices don't have to wait for the database round-trip.
     if(realtimeChannel && !applyingRemote){
       try{
         await realtimeChannel.send({type:"broadcast",event:"state",payload:{encrypted,at:Date.now()}});
       }catch(broadcastError){console.warn("Live broadcast failed",broadcastError)}
     }
-    // Persist the same encrypted snapshot in the background after broadcasting.
     const {error}=await sb.rpc("daily_sort_save_session",{p_token:token,p_data:JSON.parse(encrypted)});
     if(error) throw error;
     return true;
@@ -1035,7 +1023,6 @@ async function pushCloud(tokenOverride=null){
 function queueCloudSave(){
   if(!cloudReady || applyingRemote)return;
   clearTimeout(cloudTimer);
-  // Coalesce rapid typing into a near-immediate save rather than one request per keystroke.
   cloudTimer=setTimeout(()=>pushCloud(),50);
 }
 function updateCloudStatus(msg){const el=document.getElementById("cloudStatus");if(el)el.textContent=msg;}
@@ -1088,8 +1075,6 @@ document.getElementById("closeSession").onclick=closeSession;
 document.getElementById("sessionModal").onclick=e=>{if(e.target.id==="sessionModal")closeSession()};
 document.getElementById("revealToken").onclick=()=>{const x=document.getElementById("sessionToken");x.type=x.type==="password"?"text":"password";document.getElementById("revealToken").textContent=x.type==="password"?"Show":"Hide"};
 document.getElementById("copyToken").onclick=async()=>{try{await navigator.clipboard.writeText(getSessionToken());toast("Token copied ✅")}catch(e){toast("Could not copy token — check clipboard permission")}};
-
-// Account deletion: the flood is the theatrical confirmation; actual deletion is explicit in the next step.
 const deletePrankOverlay=document.getElementById("deletePrankOverlay");
 const deletePrankRain=document.getElementById("deletePrankRain");
 const deletePrankDialog=document.getElementById("deletePrankDialog");
@@ -1148,7 +1133,6 @@ async function permanentlyDeleteCurrentSession(){
     await ensureSupabase();
     const {data,error}=await sb.rpc("daily_sort_delete_session",{p_token:oldToken});
     if(error)throw error;
-    // Tell connected devices to clear the deleted token; database revocation blocks sleeping/offline devices too.
     if(realtimeChannel){try{await realtimeChannel.send({type:"broadcast",event:"deleted",payload:{at:Date.now()}})}catch(e){}try{await sb.removeChannel(realtimeChannel)}catch(e){}}
     realtimeChannel=null;realtimeToken=null;clearTimeout(cloudTimer);cloudReady=false;
     await waitForCloudIdle();
@@ -1190,7 +1174,6 @@ document.getElementById("confirmNewSession").onclick=async()=>{
   const oldToken=getSessionToken();
   const newToken=randomToken();
   warning.hidden=true;
-  // Clear the current browser session completely, but never delete the old cloud session.
   state={tasks:[]};
   localStorage.setItem(STORAGE,JSON.stringify(state));
   localStorage.removeItem(DRAFT_KEY);
@@ -1213,7 +1196,6 @@ document.getElementById("confirmNewSession").onclick=async()=>{
 document.getElementById("connectToken").onclick=async()=>{
   const input=document.getElementById("sessionImportToken").value.trim();
   if(!input){toast("Paste a session token first");return;}
-  // Do not touch B until A has been successfully fetched and decrypted.
   const previousToken=getSessionToken();
   const ok=await pullCloud(input);
   if(ok){
@@ -1261,7 +1243,6 @@ function setHeightMode(dynamic, persist=true){
     panel.style.flexDirection="column";
     panel.style.minHeight="0";
     if(enabled){
-      // Dynamic means the column follows its task content; no viewport-height cap.
       panel.style.height="auto";
       panel.style.minHeight="0";
       panel.style.maxHeight="none";
@@ -1335,7 +1316,6 @@ lastSavedSnapshot=JSON.stringify(state);
 initDrafts();
 applyTheme(localStorage.getItem(THEME_KEY)||"Paper",false);
 render();
-// Lock in the current browser token before any asynchronous cloud work starts.
 const bootSessionToken=getSessionToken();
 const tokenField=document.getElementById("sessionToken");
 if(tokenField)tokenField.value=bootSessionToken;
@@ -1379,63 +1359,101 @@ const UTC_OFFSETS=[
   ["+12:00","Gilbert Islands, Fiji, Kamchatka"],["+13:00","Phoenix Islands, Tonga, Tokelau"],["+14:00","Line Islands, Kiribati"]
 ];
 const TIME_PREF_KEY="daily-sort-time-zone-pref-v1";
-let onlineUtcEpoch=0,onlineClockStarted=0,onlineClockSynced=false,clockDisplayMode="system",clockDisplayZone="UTC",clockDisplayOffset="+05:30";
+let onlineUtcEpoch=0,onlineClockStarted=0,onlineClockSynced=false,clockDisplayMode="system",clockDisplayZone="UTC",clockDisplayOffset="+05:30",clockUsesWallTime=true,clockSyncPromise=null;
 function offsetMinutes(value){const m=String(value).match(/^([+-])(\d{2}):(\d{2})$/);return m?(m[1]==="-"?-1:1)*(Number(m[2])*60+Number(m[3])):0;}
-function clockNow(){return onlineUtcEpoch?onlineUtcEpoch+(performance.now()-onlineClockStarted):Date.now();}
+function clockNow(){return onlineClockSynced?onlineUtcEpoch+(performance.now()-onlineClockStarted):Date.now();}
 function getClockPreference(){
   let pref={mode:"system",offset:"+05:30"};
   try{pref={...pref,...JSON.parse(localStorage.getItem(TIME_PREF_KEY)||"{}")}}catch(e){}
   return pref;
 }
+function formatClockDate(date,zone){
+  return new Intl.DateTimeFormat("en-GB",{timeZone:zone,hour12:false,year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(date);
+}
 function renderClock(){
   const el=document.getElementById("localClock");if(!el)return;
-  const now=new Date(clockNow());
-  if(onlineClockSynced){
-    // onlineUtcEpoch stores the provider's requested-zone wall time as UTC components.
-    el.textContent=new Intl.DateTimeFormat("en-GB",{timeZone:"UTC",hour12:false,year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(now)+" · "+(clockDisplayMode==="custom"?"UTC "+clockDisplayOffset:clockDisplayZone);
-  }else{
-    const pref=getClockPreference();
-    if(pref.mode==="custom"){
+  const now=new Date(clockNow()),pref=getClockPreference();
+  try{
+    if(onlineClockSynced){
+      const zone=clockDisplayMode==="custom"||clockUsesWallTime?"UTC":clockDisplayZone;
+      el.textContent=formatClockDate(now,zone)+" · "+(clockDisplayMode==="custom"?"UTC "+clockDisplayOffset:clockDisplayZone);
+    }else if(pref.mode==="custom"){
       const shifted=new Date(now.getTime()+offsetMinutes(pref.offset||"+05:30")*60000);
       el.textContent=shifted.toISOString().slice(0,19).replace("T"," ")+" · UTC "+(pref.offset||"+05:30");
     }else{
       const zone=Intl.DateTimeFormat().resolvedOptions().timeZone||"System";
-      try{el.textContent=new Intl.DateTimeFormat("en-GB",{timeZone:zone,hour12:false,year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(now)+" · "+zone;}
-      catch(e){el.textContent=now.toLocaleString()+" · System time";}
+      el.textContent=formatClockDate(now,zone)+" · "+zone;
     }
+  }catch(e){el.textContent=now.toLocaleString()+" · Device time";}
+}
+function timePayloadEpoch(data){
+  const values=[data.year,data.month,data.day,data.hour,data.minute,data.seconds??data.second];
+  if(values.every(v=>v!==undefined&&Number.isFinite(Number(v)))){
+    return Date.UTC(Number(values[0]),Number(values[1])-1,Number(values[2]),Number(values[3]),Number(values[4]),Number(values[5]));
   }
+  const raw=data.dateTime||data.currentLocalTime||data.datetime||data.utc_datetime;
+  if(raw){
+    const m=String(raw).match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})/);
+    if(m)return Date.UTC(Number(m[1]),Number(m[2])-1,Number(m[3]),Number(m[4]),Number(m[5]),Number(m[6]));
+    const parsed=Date.parse(raw);if(Number.isFinite(parsed))return parsed;
+  }
+  throw new Error("Unrecognized time response");
+}
+async function requestOnlineTime(zone){
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),7000);
+  try{
+    const url="https://timeapi.io/api/time/current/zone?timeZone="+encodeURIComponent(zone);
+    const response=await fetch(url,{cache:"no-store",signal:controller.signal,mode:"cors"});
+    if(!response.ok)throw new Error("Time provider HTTP "+response.status);
+    return timePayloadEpoch(await response.json());
+  }finally{clearTimeout(timeout);}
+}
+async function requestFallbackTime(zone){
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),7000);
+  try{
+    const response=await fetch("https://worldtimeapi.org/api/timezone/"+encodeURIComponent(zone),{cache:"no-store",signal:controller.signal,mode:"cors"});
+    if(!response.ok)throw new Error("Fallback time provider HTTP "+response.status);
+    const data=await response.json();
+    if(Number.isFinite(Number(data.unixtime)))return Number(data.unixtime)*1000;
+    const parsed=Date.parse(data.datetime||data.utc_datetime||"");
+    if(Number.isFinite(parsed))return parsed;
+    throw new Error("Unrecognized fallback time response");
+  }finally{clearTimeout(timeout);}
 }
 async function syncOnlineClock(){
-  const status=document.getElementById("timeZoneStatus");
-  if(status)status.textContent="Syncing online clock…";
-  const pref=getClockPreference();
-  const custom=pref.mode==="custom";
-  const zone=custom?"UTC":(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC");
-  const url="https://timeapi.io/api/Time/current/zone?timeZone="+encodeURIComponent(zone);
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),6000);
-  try{
-    const response=await fetch(url,{cache:"no-store",signal:controller.signal});
-    if(!response.ok)throw new Error("HTTP "+response.status);
-    const data=await response.json();
-    const parts=[data.year,data.month,data.day,data.hour,data.minute,data.seconds];
-    if(parts.some(v=>!Number.isFinite(Number(v))))throw new Error("Invalid time response");
-    // Treat the returned wall-clock components as UTC components. This preserves
-    // the requested zone's displayed time without relying on ambiguous dateTime parsing.
-    let wallEpoch=Date.UTC(Number(data.year),Number(data.month)-1,Number(data.day),Number(data.hour),Number(data.minute),Number(data.seconds));
-    if(custom)wallEpoch+=offsetMinutes(pref.offset||"+05:30")*60000;
-    onlineUtcEpoch=wallEpoch;
-    onlineClockStarted=performance.now();
-    onlineClockSynced=true;
-    clockDisplayMode=custom?"custom":"system";
-    clockDisplayZone=custom?"UTC "+(pref.offset||"+05:30"):zone;
-    clockDisplayOffset=pref.offset||"+05:30";
-    if(status)status.textContent="Online clock synced · "+(custom?"UTC "+clockDisplayOffset:zone);
-    renderClock();
-  }catch(err){
-    if(status)status.textContent="Online clock unavailable · displaying device time";
-    renderClock();
-  }finally{clearTimeout(timeout);}
+  if(clockSyncPromise)return clockSyncPromise;
+  clockSyncPromise=(async()=>{
+    const status=document.getElementById("timeZoneStatus");
+    if(status)status.textContent="Syncing online clock…";
+    const pref=getClockPreference(),custom=pref.mode==="custom";
+    const zone=custom?"UTC":(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC");
+    try{
+      let epoch,wall=true,displayZone=zone;
+      try{epoch=await requestOnlineTime(zone);}
+      catch(primaryError){
+        try{epoch=await requestFallbackTime(zone);wall=false;}
+        catch(fallbackError){
+          if(custom)throw fallbackError;
+          epoch=await requestOnlineTime("UTC");wall=false;
+        }
+      }
+      if(custom){epoch+=offsetMinutes(pref.offset||"+05:30")*60000;wall=true;}
+      onlineUtcEpoch=epoch;
+      onlineClockStarted=performance.now();
+      onlineClockSynced=true;
+      clockDisplayMode=custom?"custom":"system";
+      clockDisplayZone=custom?"UTC "+(pref.offset||"+05:30"):displayZone;
+      clockDisplayOffset=pref.offset||"+05:30";
+      clockUsesWallTime=wall||custom;
+      if(status)status.textContent="Online clock synced · "+(custom?"UTC "+clockDisplayOffset:zone);
+      renderClock();
+    }catch(error){
+      onlineClockSynced=false;
+      if(status)status.textContent="Online clock unavailable · device clock shown";
+      renderClock();
+    }
+  })().finally(()=>{clockSyncPromise=null;});
+  return clockSyncPromise;
 }
 function initTimeZoneSettings(){
   const mode=document.getElementById("timeZoneMode"),offset=document.getElementById("customUtcOffset");
@@ -1452,3 +1470,7 @@ renderClock();
 syncOnlineClock();
 setInterval(renderClock,1000);
 setInterval(syncOnlineClock,15*60*1000);
+let lastClockVisibilitySync=0;
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-lastClockVisibilitySync>30000){lastClockVisibilitySync=Date.now();syncOnlineClock();}});
+window.addEventListener("pageshow",()=>syncOnlineClock());
+window.addEventListener("online",()=>syncOnlineClock());
