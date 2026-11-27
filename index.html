@@ -1480,7 +1480,7 @@ body[data-theme-motion="rain"]::before{opacity:.3!important;background-image:rep
 
 
 
-/* v38: deliberate 3×3 theme grids and continuous gradient emulsion (no flashing, no particles). */
+/* v39: deliberate 3×3 theme grids and continuous gradient emulsion (no flashing, no particles). */
 .theme-family .theme-mode .theme-grid{
   display:grid!important;
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
@@ -1745,7 +1745,7 @@ body.dynamic-panels .cards{min-height:0!important;height:auto!important;max-heig
 }
 
 
-/* v38: content-sized task cards + independently scrollable columns in both height modes. */
+/* v39: content-sized task cards + independently scrollable columns in both height modes. */
 .card{height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important;overflow:visible!important}
 .cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important}
 .cards>.card{width:100%!important;flex:0 0 auto!important;margin:0!important}
@@ -1801,7 +1801,7 @@ body.dynamic-panels .panel>.cards{flex:1 1 auto!important;height:0!important;min
 
 
 
-/* v38: definitive task-card grid. Keep text in the flexible middle column. */
+/* v39: definitive task-card grid. Keep text in the flexible middle column. */
 .card-main{
   display:grid!important;
   grid-template-columns:20px minmax(0,1fr) 40px!important;
@@ -1848,6 +1848,83 @@ body.show-task-numbers .card-main>.card-tools{grid-area:tools!important;grid-col
   .card-main{grid-template-columns:20px minmax(0,1fr) 36px!important}
   body.show-task-numbers .card-main{grid-template-columns:22px 18px minmax(0,1fr) 36px!important}
 }
+
+
+/* v39: task cards are classified by rendered title lines; one source of truth. */
+.card{position:relative!important;height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important;overflow:visible!important}
+.card>.card-main{
+  position:relative!important;display:grid!important;box-sizing:border-box!important;
+  width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;
+  align-items:start!important;justify-content:stretch!important;gap:8px!important;
+  padding:10px 12px!important;overflow:visible!important;
+}
+.card>.card-main>.task-number,.card>.card-main>.check,.card>.card-main>.task-body,.card>.card-main>.card-tools{
+  position:relative!important;inset:auto!important;float:none!important;transform:none!important;
+  min-width:0!important;max-width:none!important;box-sizing:border-box!important;
+}
+.card>.card-main>.check{align-self:start!important;justify-self:center!important;margin:3px 0 0!important}
+.card>.card-main>.task-body{display:block!important;width:100%!important;min-width:0!important;min-height:0!important;overflow:visible!important;align-self:start!important}
+.card>.card-main>.task-body>.task-title-edit{
+  display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;
+  height:auto!important;min-height:24px!important;max-height:none!important;resize:none!important;
+  box-sizing:border-box!important;white-space:pre-wrap!important;overflow-wrap:break-word!important;
+  word-break:normal!important;line-height:1.42!important;padding:2px 3px!important;
+}
+.card>.card-main>.card-tools{
+  display:flex!important;align-items:center!important;justify-content:flex-start!important;
+  gap:4px!important;margin:0!important;padding:0!important;
+}
+.card>.card-main>.card-tools button,
+.card>.card-main>.card-tools input{
+  box-sizing:border-box!important;flex:0 0 auto!important;margin:0!important;
+}
+.card>.card-main>.card-tools .icon-btn,
+.card>.card-main>.card-tools .insert-below,
+.card>.card-main>.card-tools .expand{
+  display:grid!important;place-items:center!important;text-align:center!important;
+  line-height:1!important;padding:0!important;transform:none!important;
+}
+.card>.card-main>.card-tools .icon-btn{width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important}
+.card>.card-main>.card-tools .insert-below{width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important}
+.card>.card-main>.card-tools .expand{width:30px!important;height:24px!important;min-width:30px!important;min-height:24px!important}
+.card>.card-main>.card-tools .select-task{width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important}
+.card.is-single-line>.card-main{
+  grid-template-columns:20px minmax(0,1fr) auto!important;
+  grid-template-areas:"check body tools"!important;
+  align-items:center!important;min-height:68px!important;padding:10px 12px!important;
+}
+.card.is-single-line>.card-main>.check{grid-area:check!important;align-self:center!important;margin:0!important}
+.card.is-single-line>.card-main>.task-body{grid-area:body!important;align-self:center!important}
+.card.is-single-line>.card-main>.card-tools{
+  grid-area:tools!important;flex-direction:row!important;justify-content:flex-end!important;
+  align-self:center!important;width:auto!important;max-width:none!important;
+}
+.card.is-multiline>.card-main{
+  grid-template-columns:20px minmax(0,1fr) 42px!important;
+  grid-template-areas:"check body tools"!important;
+  align-items:start!important;min-height:0!important;padding:12px!important;
+}
+.card.is-multiline>.card-main>.check{grid-area:check!important}
+.card.is-multiline>.card-main>.task-body{grid-area:body!important}
+.card.is-multiline>.card-main>.card-tools{
+  grid-area:tools!important;flex-direction:column!important;align-items:center!important;
+  justify-content:flex-start!important;width:42px!important;min-width:42px!important;max-width:42px!important;
+}
+body.show-task-numbers .card.is-single-line>.card-main{
+  grid-template-columns:24px 20px minmax(0,1fr) auto!important;
+  grid-template-areas:"number check body tools"!important;
+}
+body.show-task-numbers .card.is-multiline>.card-main{
+  grid-template-columns:24px 20px minmax(0,1fr) 42px!important;
+  grid-template-areas:"number check body tools"!important;
+}
+.card>.card-main>.task-number{display:none!important}
+body.show-task-numbers .card>.card-main>.task-number{
+  display:grid!important;grid-area:number!important;place-items:center!important;
+  width:24px!important;height:24px!important;min-width:24px!important;
+}
+.cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important}
+.cards>.card{width:100%!important;margin:0!important;flex:0 0 auto!important}
 </style>
 
 </head>
@@ -3548,7 +3625,7 @@ setTimeout(scheduleLandscapeFit,80);
 </script>
 
 <script>
-/* v38: Escape closes the Settings / session dialog. */
+/* v39: Escape closes the Settings / session dialog. */
 document.addEventListener("keydown", function(event) {
   if (event.key !== "Escape") return;
   const settingsDialog = document.getElementById("sessionModal");
@@ -3558,6 +3635,50 @@ document.addEventListener("keydown", function(event) {
     if (typeof closeSession === "function") closeSession();
   }
 }, true);
+</script>
+
+<script>
+/* v39: classify cards by actual rendered line count, not character count. */
+(function(){
+  function classifyCard(card){
+    const editor=card.querySelector('.task-title-edit');
+    const body=card.querySelector('.task-body');
+    if(!body) return;
+    let multiline=false;
+    if(editor){
+      const style=getComputedStyle(editor);
+      const lineHeight=parseFloat(style.lineHeight)||22;
+      const text=editor.value||'';
+      const explicitLines=(text.match(/\n/g)||[]).length+1;
+      const renderedLines=Math.max(explicitLines,Math.round((editor.scrollHeight-parseFloat(style.paddingTop||0)-parseFloat(style.paddingBottom||0))/lineHeight));
+      multiline=renderedLines>1;
+    } else {
+      multiline=!!card.querySelector('.toggle-list-heading') && !card.querySelector('.toggle-list-collapse[aria-expanded="false"]');
+    }
+    card.classList.toggle('is-multiline',multiline);
+    card.classList.toggle('is-single-line',!multiline);
+  }
+  function scan(root){
+    (root||document).querySelectorAll('.card').forEach(classifyCard);
+  }
+  document.addEventListener('input',e=>{
+    if(e.target.matches('.task-title-edit')) classifyCard(e.target.closest('.card'));
+  },true);
+  document.addEventListener('click',e=>{
+    if(e.target.closest('[data-action="expand"],[data-action="toggle-list-collapse"]')){
+      requestAnimationFrame(()=>scan(document));
+    }
+  },true);
+  const observer=new MutationObserver(()=>scan(document));
+  function start(){
+    scan(document);
+    const board=document.querySelector('.board')||document.body;
+    observer.observe(board,{childList:true,subtree:true});
+    window.addEventListener('resize',()=>scan(document),{passive:true});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
 </script>
 </body>
 </html>
