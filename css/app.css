@@ -2239,3 +2239,110 @@ body:not(.dynamic-panels) .panel>.cards{
  .card>.card-main>.task-body{clip-path:polygon(0 0,calc(100% - 228px) 0,calc(100% - 228px) 64px,100% 64px,100% 100%,0 100%)!important}
  .card>.card-main>.card-tools{width:180px!important;min-width:180px!important;max-width:calc(72% - 8px)!important}
 }
+
+
+/* v45: actual notched task editor; toolbar is a separate, fixed five-control strip. */
+.card{overflow:hidden!important}
+.card>.card-main{
+  display:block!important;position:relative!important;isolation:isolate!important;
+  width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;
+  padding:0!important;overflow:visible!important;background:transparent!important;
+}
+.card>.card-main::before{display:none!important;content:none!important}
+
+/* The editable task field itself owns the notched silhouette — not a decorative background. */
+.card>.card-main>.task-body{
+  position:relative!important;z-index:1!important;display:block!important;
+  width:100%!important;min-width:0!important;max-width:none!important;
+  height:auto!important;min-height:116px!important;max-height:none!important;
+  margin:0!important;padding:14px 18px 14px 58px!important;
+  box-sizing:border-box!important;overflow:visible!important;
+  background:var(--panel)!important;
+  border:1px solid var(--line)!important;border-radius:16px!important;
+  clip-path:polygon(0 0,calc(100% - 340px) 0,calc(100% - 340px) 70px,100% 70px,100% 100%,0 100%)!important;
+}
+.card>.card-main>.task-body>.task-title-edit{
+  display:block!important;position:relative!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  height:auto!important;min-height:28px!important;max-height:none!important;
+  margin:0!important;padding:2px 3px!important;box-sizing:border-box!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  color:var(--text)!important;box-shadow:none!important;
+  resize:none!important;white-space:pre-wrap!important;
+  overflow-wrap:anywhere!important;word-break:normal!important;
+  line-height:1.45!important;outline:none!important;
+}
+
+/* Completion control sits beside the first line of text. */
+.card>.card-main>.check{
+  position:absolute!important;z-index:4!important;
+  top:16px!important;left:16px!important;right:auto!important;bottom:auto!important;
+  display:block!important;float:none!important;transform:none!important;
+  margin:0!important;align-self:auto!important;
+}
+
+/* Five fixed slots: up, down, move, select, expand. Each is centered in its slot. */
+.card>.card-main>.card-tools{
+  position:absolute!important;z-index:5!important;
+  top:8px!important;right:10px!important;left:auto!important;bottom:auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(5,44px)!important;
+  grid-template-rows:44px!important;
+  place-items:center!important;
+  width:220px!important;min-width:220px!important;max-width:none!important;
+  height:44px!important;min-height:44px!important;
+  gap:0!important;margin:0!important;padding:0!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-sizing:border-box!important;overflow:visible!important;
+}
+.card>.card-main>.card-tools>.insert-below{display:none!important}
+.card>.card-main>.card-tools>.reorder-arrow,
+.card>.card-main>.card-tools>.zone-arrow,
+.card>.card-main>.card-tools>.expand{
+  position:static!important;inset:auto!important;float:none!important;transform:none!important;
+  display:grid!important;place-items:center!important;align-self:center!important;justify-self:center!important;
+  flex:none!important;width:36px!important;height:36px!important;
+  min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;
+  margin:0!important;padding:0!important;line-height:1!important;text-align:center!important;
+  box-sizing:border-box!important;
+}
+.card>.card-main>.card-tools>.select-task{
+  position:static!important;display:block!important;align-self:center!important;justify-self:center!important;
+  flex:none!important;width:20px!important;height:20px!important;
+  min-width:20px!important;min-height:20px!important;margin:0!important;padding:0!important;
+  transform:none!important;
+}
+.card>.card-main>.card-tools>.expand{
+  width:28px!important;min-width:28px!important;max-width:28px!important;
+  height:30px!important;min-height:30px!important;max-height:30px!important;
+}
+.card.is-single-line>.card-main>.task-body{min-height:88px!important}
+.card.is-multiline>.card-main>.task-body{min-height:116px!important}
+.card>.details{position:relative!important;z-index:6!important}
+
+@media(max-width:700px){
+ .card>.card-main>.task-body{
+   min-height:104px!important;padding:12px 10px 12px 48px!important;
+   clip-path:polygon(0 0,calc(100% - 280px) 0,calc(100% - 280px) 64px,100% 64px,100% 100%,0 100%)!important;
+ }
+ .card>.card-main>.card-tools{
+   top:6px!important;right:6px!important;
+   grid-template-columns:repeat(5,40px)!important;
+   grid-template-rows:40px!important;width:200px!important;min-width:200px!important;height:40px!important;
+ }
+ .card>.card-main>.card-tools>.reorder-arrow,
+ .card>.card-main>.card-tools>.zone-arrow{width:33px!important;height:33px!important;min-width:33px!important;min-height:33px!important}
+ .card>.card-main>.card-tools>.expand{width:26px!important;min-width:26px!important;max-width:26px!important}
+ .card>.card-main>.check{top:13px!important;left:12px!important}
+}
+@media(max-width:420px){
+ .card>.card-main>.task-body{
+   clip-path:polygon(0 0,calc(100% - 250px) 0,calc(100% - 250px) 64px,100% 64px,100% 100%,0 100%)!important;
+ }
+ .card>.card-main>.card-tools{
+   grid-template-columns:repeat(5,36px)!important;
+   grid-template-rows:36px!important;width:180px!important;min-width:180px!important;height:36px!important;
+ }
+ .card>.card-main>.card-tools>.reorder-arrow,
+ .card>.card-main>.card-tools>.zone-arrow{width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important}
+}
