@@ -1,5 +1,6 @@
+
 if("serviceWorker" in navigator && location.protocol==="https:"){
-  const DS_SW_BUILD="2026-11-27-v50";
+  const DS_SW_BUILD="2026-11-27-v53";
   let dsRegistration=null,dsLastFreshCheck=0;
   let dsHadController=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{
