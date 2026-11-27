@@ -261,10 +261,8 @@ function taskToolbar(t,number){
     <div class="tool-cell"><button class="icon-btn reorder-arrow" data-action="up" title="Move task up" aria-label="Move task up">↑</button></div>
     <div class="tool-cell"><button class="icon-btn reorder-arrow" data-action="down" title="Move task down" aria-label="Move task down">↓</button></div>
     <div class="tool-cell"><input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task for bulk actions" title="Select task for bulk actions"></div>
-    <div class="tool-cell tool-cell-pair">
-      <button class="icon-btn zone-arrow" data-action="move-later" title="${destination}" aria-label="${destination}">${direction}</button>
-      <button class="expand" data-action="expand" title="${t.open?"Collapse":"Expand"} details" aria-label="${t.open?"Collapse":"Expand"} details">${t.open?"🔼":"🔽"}</button>
-    </div>
+    <div class="tool-cell tool-cell-move"><button class="icon-btn zone-arrow" data-action="move-later" title="${destination}" aria-label="${destination}">${direction}</button></div>
+    <div class="tool-cell tool-cell-expand"><button class="expand" data-action="expand" title="${t.open?"Collapse":"Expand"} details" aria-label="${t.open?"Collapse":"Expand"} details">${t.open?"🔼":"🔽"}</button></div>
   </div>`;
 }
 function taskCard(t,number){

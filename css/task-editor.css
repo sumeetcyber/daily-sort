@@ -61,7 +61,7 @@
 #laterCards .card-main>.task-body>.card-tools{
   order:99!important;flex:0 0 48px!important;
   display:grid!important;position:relative!important;inset:auto!important;float:none!important;
-  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
   grid-template-rows:48px!important;grid-auto-flow:row!important;
   align-items:stretch!important;justify-items:stretch!important;gap:0!important;
   width:100%!important;min-width:0!important;max-width:100%!important;
@@ -124,7 +124,7 @@
 #laterCards .card .card-tools .tool-cell-number{display:none!important}
 body.show-task-numbers #todayCards .card .card-tools,
 body.show-task-numbers #laterCards .card .card-tools{
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-columns:repeat(7,minmax(0,1fr))!important;
 }
 body.show-task-numbers #todayCards .card .card-tools .tool-cell-number,
 body.show-task-numbers #laterCards .card .card-tools .tool-cell-number{display:flex!important}
@@ -134,12 +134,19 @@ body.show-task-numbers #laterCards .card .card-tools .toolbar-task-number{displa
 #laterCards .card .card-tools .reorder-arrow{font-size:21px!important;font-weight:700!important}
 #todayCards .card .card-tools .zone-arrow,
 #laterCards .card .card-tools .zone-arrow{font-size:19px!important;font-weight:700!important}
-#todayCards .card .card-tools .tool-cell-pair,
-#laterCards .card .card-tools .tool-cell-pair{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:5px!important}
-#todayCards .card .card-tools .tool-cell-pair .expand,
-#laterCards .card .card-tools .tool-cell-pair .expand{
+#todayCards .card .card-tools>.tool-cell-move,
+#laterCards .card .card-tools>.tool-cell-move{border-right:1px solid var(--line)!important}
+#todayCards .card .card-tools>.tool-cell-expand,
+#laterCards .card .card-tools>.tool-cell-expand{border-right:0!important}
+#todayCards .card .card-tools .tool-cell-expand .expand,
+#laterCards .card .card-tools .tool-cell-expand .expand{
   flex:0 0 28px!important;width:28px!important;min-width:28px!important;height:32px!important;min-height:32px!important;
   font-size:17px!important;
+}
+.panel-head-actions .dump-btn{
+  display:grid!important;place-items:center!important;flex:0 0 40px!important;
+  width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important;
+  padding:0!important;line-height:1!important;box-sizing:border-box!important;
 }
 #todayCards .card.is-single-line .task-title-edit,
 #laterCards .card.is-single-line .task-title-edit{min-height:48px!important}
