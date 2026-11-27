@@ -308,3 +308,157 @@ body.show-task-numbers #laterCards .card .toolbar-task-number{display:grid!impor
     height:32px!important;min-height:32px!important;max-height:32px!important;
   }
 }
+
+
+/* v55 — correct layout on the real nesting:
+   card-main > task-body > task-title / insert button / card-tools.
+   The task body owns the two rows; toolbar cells stay intact. */
+#todayCards .card::before,#todayCards .card::after,
+#laterCards .card::before,#laterCards .card::after,
+#todayCards .card>.card-main::before,#todayCards .card>.card-main::after,
+#laterCards .card>.card-main::before,#laterCards .card>.card-main::after,
+#todayCards .card>.card-main>.task-body::before,#todayCards .card>.card-main>.task-body::after,
+#laterCards .card>.card-main>.task-body::before,#laterCards .card>.card-main>.task-body::after,
+#todayCards .card .card-tools::before,#todayCards .card .card-tools::after,
+#laterCards .card .card-tools::before,#laterCards .card .card-tools::after{
+  content:none!important;display:none!important;position:static!important;
+  inset:auto!important;width:0!important;height:0!important;min-width:0!important;
+  min-height:0!important;max-width:0!important;max-height:0!important;
+  border:0!important;border-radius:0!important;background:none!important;
+  box-shadow:none!important;pointer-events:none!important;
+}
+#todayCards .card,#laterCards .card{
+  display:block!important;position:relative!important;width:100%!important;
+  height:auto!important;min-height:0!important;max-height:none!important;
+  margin:0 0 10px!important;padding:0!important;flex:none!important;
+  overflow:hidden!important;box-sizing:border-box!important;
+}
+#todayCards .card>.card-main,#laterCards .card>.card-main{
+  display:block!important;position:relative!important;isolation:auto!important;
+  width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+  margin:0!important;padding:0!important;overflow:visible!important;
+  border:0!important;border-radius:inherit!important;background:transparent!important;
+  box-sizing:border-box!important;
+}
+#todayCards .card>.card-main>.task-number,
+#laterCards .card>.card-main>.task-number,
+#todayCards .card>.card-main>.check,
+#laterCards .card>.card-main>.check{display:none!important}
+#todayCards .card>.card-main>.task-body,
+#laterCards .card>.card-main>.task-body{
+  display:grid!important;position:relative!important;isolation:auto!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto 50px!important;grid-auto-flow:row!important;
+  align-items:stretch!important;justify-items:stretch!important;gap:0!important;
+  width:100%!important;height:auto!important;min-width:0!important;max-width:100%!important;
+  min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;
+  overflow:visible!important;box-sizing:border-box!important;background:transparent!important;
+}
+#todayCards .card .task-title-edit,#laterCards .card .task-title-edit,
+#todayCards .card .toggle-list-heading,#laterCards .card .toggle-list-heading,
+#todayCards .card .toggle-list,#laterCards .card .toggle-list{
+  grid-column:1!important;grid-row:1!important;align-self:stretch!important;
+  justify-self:stretch!important;width:100%!important;min-width:0!important;max-width:100%!important;
+  height:auto!important;min-height:48px!important;max-height:none!important;
+  margin:0!important;padding:14px 16px!important;box-sizing:border-box!important;
+  overflow-wrap:anywhere!important;word-break:normal!important;white-space:pre-wrap!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+}
+#todayCards .card .task-title-edit,#laterCards .card .task-title-edit{
+  display:block!important;position:relative!important;resize:none!important;overflow:visible!important;
+  line-height:1.45!important;outline:none!important;box-shadow:none!important;
+}
+#todayCards .card .task-text-content,#laterCards .card .task-text-content{
+  display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;
+  white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;
+}
+#todayCards .card .card-tools,#laterCards .card .card-tools{
+  grid-column:1!important;grid-row:2!important;
+  display:grid!important;position:relative!important;inset:auto!important;float:none!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:50px!important;
+  align-items:stretch!important;justify-items:stretch!important;gap:0!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  height:50px!important;min-height:50px!important;max-height:50px!important;
+  margin:0!important;padding:0!important;overflow:hidden!important;
+  box-sizing:border-box!important;background:transparent!important;
+  border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;
+  box-shadow:none!important;transform:none!important;
+}
+#todayCards .card .tool-cell,#laterCards .card .tool-cell{
+  display:flex!important;position:relative!important;inset:auto!important;float:none!important;
+  align-items:center!important;justify-content:center!important;justify-self:stretch!important;
+  align-self:stretch!important;min-width:0!important;min-height:0!important;
+  width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;
+  margin:0!important;padding:4px!important;gap:0!important;
+  border:0!important;border-right:1px solid var(--line)!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;transform:none!important;
+  box-sizing:border-box!important;overflow:visible!important;
+}
+#todayCards .card .tool-cell:last-child,#laterCards .card .tool-cell:last-child{border-right:0!important}
+#todayCards .card .tool-cell button,#todayCards .card .tool-cell input,
+#laterCards .card .tool-cell button,#laterCards .card .tool-cell input{
+  display:grid!important;position:static!important;inset:auto!important;float:none!important;
+  place-items:center!important;align-self:center!important;justify-self:center!important;
+  flex:0 0 36px!important;width:36px!important;min-width:36px!important;max-width:36px!important;
+  height:36px!important;min-height:36px!important;max-height:36px!important;
+  margin:0!important;padding:0!important;transform:none!important;
+  line-height:1!important;text-align:center!important;box-sizing:border-box!important;
+}
+#todayCards .card .tool-cell .check,#laterCards .card .tool-cell .check{
+  border:2px solid var(--muted)!important;border-radius:50%!important;background:transparent!important;
+}
+#todayCards .card.done .tool-cell .check,#laterCards .card.done .tool-cell .check{
+  background:var(--accent)!important;border-color:var(--accent)!important;
+}
+#todayCards .card .tool-cell .toolbar-task-number,
+#laterCards .card .tool-cell .toolbar-task-number{
+  display:none!important;place-items:center!important;flex:0 0 30px!important;
+  width:30px!important;min-width:30px!important;height:30px!important;min-height:30px!important;
+  border-radius:50%!important;background:var(--accent-soft)!important;color:var(--accent)!important;
+  font-size:14px!important;font-weight:800!important;line-height:1!important;
+}
+#todayCards .card .tool-number-cell,#laterCards .card .tool-number-cell{display:none!important}
+#todayCards .card .tool-cell .select-task,#laterCards .card .tool-cell .select-task{
+  appearance:none!important;-webkit-appearance:none!important;
+  flex:0 0 22px!important;width:22px!important;min-width:22px!important;
+  height:22px!important;min-height:22px!important;border:1px solid var(--line)!important;
+  border-radius:5px!important;background:var(--panel)!important;cursor:pointer!important;
+}
+#todayCards .card .tool-cell .select-task:checked,
+#laterCards .card .tool-cell .select-task:checked{background:var(--accent)!important;border-color:var(--accent)!important}
+#todayCards .card .tool-cell .reorder-arrow,#laterCards .card .tool-cell .reorder-arrow,
+#todayCards .card .tool-cell .zone-arrow,#laterCards .card .tool-cell .zone-arrow{
+  font-size:21px!important;font-weight:700!important;
+}
+#todayCards .card .tool-cell-pair,#laterCards .card .tool-cell-pair{
+  display:flex!important;flex-direction:row!important;align-items:center!important;
+  justify-content:center!important;gap:8px!important;
+}
+#todayCards .card .tool-cell-pair .expand,#laterCards .card .tool-cell-pair .expand{
+  flex:0 0 30px!important;width:30px!important;min-width:30px!important;
+  height:34px!important;min-height:34px!important;font-size:17px!important;
+}
+#todayCards .card .task-body>.insert-below,
+#laterCards .card .task-body>.insert-below{display:none!important}
+body.show-task-numbers #todayCards .card .card-tools,
+body.show-task-numbers #laterCards .card .card-tools{
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+}
+body.show-task-numbers #todayCards .card .tool-number-cell,
+body.show-task-numbers #laterCards .card .tool-number-cell{display:flex!important}
+body.show-task-numbers #todayCards .card .toolbar-task-number,
+body.show-task-numbers #laterCards .card .toolbar-task-number{display:grid!important}
+#todayCards .card .details,#laterCards .card .details{position:relative!important;z-index:1!important}
+@media(max-width:700px){
+  #todayCards .card>.card-main>.task-body,#laterCards .card>.card-main>.task-body{grid-template-rows:auto 46px!important}
+  #todayCards .card .card-tools,#laterCards .card .card-tools{
+    grid-template-rows:46px!important;height:46px!important;min-height:46px!important;max-height:46px!important;
+  }
+  #todayCards .card .task-title-edit,#laterCards .card .task-title-edit{padding:12px 13px!important;font-size:14px!important}
+  #todayCards .card .tool-cell button,#laterCards .card .tool-cell button{
+    flex-basis:32px!important;width:32px!important;min-width:32px!important;height:32px!important;min-height:32px!important;
+  }
+  #todayCards .card .tool-cell-pair .expand,#laterCards .card .tool-cell-pair .expand{
+    flex-basis:28px!important;width:28px!important;min-width:28px!important;
+  }
+}
