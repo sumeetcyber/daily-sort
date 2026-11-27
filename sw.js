@@ -1,5 +1,5 @@
-/* Daily Sort v39 service worker */
-const CACHE_NAME = 'daily-sort-shell-v39';
+/* Daily Sort v40 service worker */
+const CACHE_NAME = 'daily-sort-shell-v40';
 const APP_SCOPE = self.registration.scope;
 self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate', event => {
