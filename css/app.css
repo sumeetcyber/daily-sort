@@ -2445,3 +2445,109 @@ body:not(.dynamic-panels) .panel>.cards{
    grid-template-columns:repeat(5,36px)!important;
  }
 }
+
+
+/* v47 — authoritative card layout. Higher specificity intentionally overrides
+   legacy mobile and show-task-numbers rules earlier in this stylesheet. */
+body .card>.card-main{
+  display:block!important;position:relative!important;isolation:isolate!important;
+  width:100%!important;min-width:0!important;min-height:0!important;height:auto!important;
+  margin:0!important;padding:0!important;overflow:visible!important;
+  background:transparent!important;border:0!important;box-sizing:border-box!important;
+}
+body .card>.card-main>.task-number{display:none!important}
+body .card>.card-main>.check{
+  position:absolute!important;z-index:12!important;
+  top:14px!important;left:14px!important;right:auto!important;bottom:auto!important;
+  display:block!important;float:none!important;transform:none!important;
+  margin:0!important;align-self:auto!important;justify-self:auto!important;
+}
+body .card>.card-main>.task-body{
+  display:block!important;position:relative!important;z-index:1!important;
+  width:100%!important;min-width:0!important;max-width:none!important;
+  height:auto!important;min-height:0!important;margin:0!important;padding:0!important;
+  overflow:visible!important;background:transparent!important;border:0!important;
+  box-sizing:border-box!important;clip-path:none!important;
+}
+body .card>.card-main>.task-body>.task-title-edit{
+  display:block!important;position:relative!important;z-index:1!important;
+  width:100%!important;min-width:0!important;max-width:none!important;
+  height:auto!important;min-height:86px!important;max-height:none!important;
+  margin:0!important;padding:13px 238px 13px 54px!important;
+  box-sizing:border-box!important;resize:vertical!important;
+  background:var(--panel)!important;color:var(--text)!important;
+  border:1px solid var(--line)!important;border-radius:16px!important;
+  box-shadow:none!important;outline:none!important;
+  white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;
+  line-height:1.45!important;
+  clip-path:polygon(0 0,calc(100% - 238px) 0,calc(100% - 238px) 54px,100% 54px,100% 100%,0 100%)!important;
+}
+body .card.is-single-line>.card-main>.task-body>.task-title-edit{min-height:76px!important}
+body .card.is-multiline>.card-main>.task-body>.task-title-edit{
+  min-height:112px!important;
+  clip-path:polygon(0 0,calc(100% - 238px) 0,calc(100% - 238px) 54px,100% 54px,100% 100%,0 100%)!important;
+}
+body .card>.card-main>.task-body>.task-title-edit:focus{
+  border-color:var(--accent)!important;box-shadow:0 0 0 1px var(--accent-soft)!important;
+}
+body .card>.card-main>.card-tools{
+  position:absolute!important;z-index:15!important;
+  top:6px!important;right:7px!important;left:auto!important;bottom:auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(5,40px)!important;
+  grid-template-rows:40px!important;grid-auto-flow:column!important;
+  place-items:center!important;align-items:center!important;justify-content:center!important;
+  width:200px!important;min-width:200px!important;max-width:200px!important;
+  height:40px!important;min-height:40px!important;max-height:40px!important;
+  margin:0!important;padding:0!important;gap:0!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  overflow:visible!important;box-sizing:border-box!important;
+  flex-direction:row!important;flex-wrap:nowrap!important;
+}
+body .card>.card-main>.card-tools>.insert-below{display:none!important}
+body .card>.card-main>.card-tools>.reorder-arrow,
+body .card>.card-main>.card-tools>.zone-arrow,
+body .card>.card-main>.card-tools>.expand{
+  position:static!important;inset:auto!important;float:none!important;transform:none!important;
+  display:grid!important;place-items:center!important;align-self:center!important;justify-self:center!important;
+  flex:none!important;width:33px!important;height:33px!important;
+  min-width:33px!important;min-height:33px!important;max-width:33px!important;max-height:33px!important;
+  margin:0!important;padding:0!important;line-height:1!important;text-align:center!important;
+  box-sizing:border-box!important;
+}
+body .card>.card-main>.card-tools>.select-task{
+  position:static!important;display:block!important;align-self:center!important;justify-self:center!important;
+  flex:none!important;width:19px!important;height:19px!important;
+  min-width:19px!important;min-height:19px!important;margin:0!important;padding:0!important;
+  transform:none!important;
+}
+body .card>.card-main>.card-tools>.expand{
+  width:25px!important;height:29px!important;min-width:25px!important;min-height:29px!important;
+  max-width:25px!important;max-height:29px!important;
+}
+body .card>.details{position:relative!important;z-index:20!important}
+@media(max-width:700px){
+ body .card>.card-main>.task-body>.task-title-edit{
+   min-height:98px!important;padding:11px 218px 11px 47px!important;
+   clip-path:polygon(0 0,calc(100% - 218px) 0,calc(100% - 218px) 52px,100% 52px,100% 100%,0 100%)!important;
+ }
+ body .card.is-single-line>.card-main>.task-body>.task-title-edit{min-height:76px!important}
+ body .card>.card-main>.card-tools{
+   top:5px!important;right:5px!important;width:190px!important;min-width:190px!important;max-width:190px!important;
+   grid-template-columns:repeat(5,38px)!important;grid-template-rows:38px!important;
+   height:38px!important;min-height:38px!important;max-height:38px!important;
+ }
+ body .card>.card-main>.card-tools>.reorder-arrow,
+ body .card>.card-main>.card-tools>.zone-arrow{width:31px!important;height:31px!important;min-width:31px!important;min-height:31px!important}
+ body .card>.card-main>.check{top:12px!important;left:11px!important}
+}
+@media(max-width:390px){
+ body .card>.card-main>.task-body>.task-title-edit{
+   padding-right:198px!important;
+   clip-path:polygon(0 0,calc(100% - 198px) 0,calc(100% - 198px) 52px,100% 52px,100% 100%,0 100%)!important;
+ }
+ body .card>.card-main>.card-tools{
+   width:180px!important;min-width:180px!important;max-width:180px!important;
+   grid-template-columns:repeat(5,36px)!important;
+ }
+}
