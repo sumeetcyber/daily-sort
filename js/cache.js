@@ -1,4 +1,3 @@
-
 if("serviceWorker" in navigator && location.protocol==="https:"){
   const DS_SW_BUILD="2026-11-27-v53";
   let dsRegistration=null,dsLastFreshCheck=0;
