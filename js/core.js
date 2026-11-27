@@ -265,7 +265,7 @@ function taskCard(t,number){
           <button class="icon-btn reorder-arrow" data-action="down" title="Move task down" aria-label="Move task down">↓</button>
           <button class="icon-btn zone-arrow" data-action="move-later" title="${t.zone==="later"?"Move to Today":"Move to Not Today"}" aria-label="${t.zone==="later"?"Move to Today":"Move to Not Today"}">${t.zone==="later"?"⇦":"⇨"}</button>
           <input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task for bulk actions" title="Select task for bulk actions">
-          <button class="expand" data-action="expand" title="Expand">${t.open?"⌃":"⌄"}</button>
+          <button class="expand" data-action="expand" title="Expand">${t.open?"🔼":"🔽"}</button>
         </div><span class="task-text-content" data-task-text>${escapeHtml(parseColorSyntax(t.text).body).replace(/\n/g,"<br>")}</span></div>`}
       </div>
     </div>
