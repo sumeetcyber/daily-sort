@@ -1,19 +1,238 @@
-.card{overflow:visible!important;min-width:0!important}
-.card-main{display:block!important;position:relative!important;min-width:0!important;min-height:0!important;height:auto!important;padding:0!important;margin:0!important;overflow:visible!important;background:transparent!important;border:0!important}
+/* Daily Sort task editor — real text flow around a compact top-right toolbar. */
+.card{
+  min-width:0!important;
+  overflow:visible!important;
+}
+.card-main{
+  display:block!important;
+  position:relative!important;
+  isolation:isolate!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  border:0!important;
+  box-sizing:border-box!important;
+}
 .card-main>.task-number{display:none!important}
-.card-main>.check{position:absolute!important;z-index:8!important;top:15px!important;left:15px!important;right:auto!important;bottom:auto!important;margin:0!important;float:none!important;transform:none!important}
-.card-main>.task-body{display:block!important;position:relative!important;width:100%!important;min-width:0!important;max-width:none!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;overflow:visible!important;flex:none!important;background:transparent!important;border:0!important}
-.task-title-edit{display:block!important;position:relative!important;isolation:isolate!important;width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:76px!important;max-height:none!important;margin:0!important;padding:10px 12px 12px 52px!important;box-sizing:border-box!important;overflow:visible!important;resize:none!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.45!important;font:inherit!important;font-size:15px!important;color:var(--text)!important;background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:17px!important;outline:none!important;box-shadow:none!important;cursor:text!important}
-.task-title-edit:focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent-soft)!important}
-.task-title-edit .card-tools{float:right!important;position:relative!important;z-index:4!important;display:flex!important;flex-flow:row nowrap!important;align-items:center!important;justify-content:center!important;gap:3px!important;width:246px!important;min-width:246px!important;height:48px!important;margin:-10px -12px 5px 8px!important;padding:4px 6px!important;box-sizing:border-box!important;background:var(--panel)!important;border-left:1px solid var(--line)!important;border-bottom:1px solid var(--line)!important;border-bottom-left-radius:13px!important;border-top:0!important;border-right:0!important;overflow:visible!important}
-.task-title-edit .card-tools .insert-below{display:none!important}
-.task-title-edit .card-tools .reorder-arrow,.task-title-edit .card-tools .zone-arrow,.task-title-edit .card-tools .expand{position:static!important;display:grid!important;place-items:center!important;align-items:center!important;justify-content:center!important;flex:0 0 38px!important;width:38px!important;min-width:38px!important;max-width:38px!important;height:36px!important;min-height:36px!important;max-height:36px!important;margin:0!important;padding:0!important;line-height:1!important;text-align:center!important;transform:none!important;float:none!important;box-sizing:border-box!important}
-.task-title-edit .card-tools .select-task{position:static!important;display:block!important;flex:0 0 19px!important;width:19px!important;min-width:19px!important;height:19px!important;min-height:19px!important;margin:0 2px!important;padding:0!important;transform:none!important;align-self:center!important}
-.task-title-edit .card-tools .expand{flex-basis:27px!important;width:27px!important;min-width:27px!important;max-width:27px!important}
-.task-text-content{display:inline!important;position:relative!important;z-index:1!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;min-width:0!important}
-.task-title-edit .card-tools button{cursor:pointer!important}
-.card.is-single-line .task-title-edit{min-height:76px!important}
-.card.is-multiline .task-title-edit{min-height:96px!important}
+.card-main>.check{
+  position:absolute!important;
+  z-index:8!important;
+  top:13px!important;
+  left:13px!important;
+  right:auto!important;
+  bottom:auto!important;
+  margin:0!important;
+  float:none!important;
+  transform:none!important;
+}
+.card-main>.task-body{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  min-height:0!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  flex:none!important;
+  background:transparent!important;
+  border:0!important;
+  box-sizing:border-box!important;
+}
+
+/* The editor is the card surface. Its first child floats at the top-right;
+   following text wraps beside it, then naturally spans the full width below. */
+.task-title-edit{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:auto!important;
+  min-height:72px!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:10px 12px 11px 48px!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+  resize:none!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+  line-height:1.42!important;
+  font:inherit!important;
+  font-size:15px!important;
+  color:var(--text)!important;
+  background:var(--panel)!important;
+  border:1px solid var(--line)!important;
+  border-radius:17px!important;
+  outline:none!important;
+  box-shadow:none!important;
+  cursor:text!important;
+}
+.task-title-edit:focus{
+  border-color:var(--accent)!important;
+  box-shadow:0 0 0 2px var(--accent-soft)!important;
+}
+
+/* IMPORTANT: static positioning is required for float to participate in text flow.
+   The toolbar is right-aligned, not absolutely positioned or centered in the card. */
+.task-title-edit>.card-tools{
+  float:right!important;
+  position:static!important;
+  inset:auto!important;
+  z-index:4!important;
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+  width:228px!important;
+  min-width:228px!important;
+  max-width:228px!important;
+  height:42px!important;
+  min-height:42px!important;
+  max-height:42px!important;
+  margin:-2px -4px 5px 8px!important;
+  padding:2px 3px!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:visible!important;
+}
+.task-title-edit>.card-tools>.insert-below{display:none!important}
+
+/* Three arrows and expand each get a same-sized box; glyphs are centered. */
+.task-title-edit>.card-tools>.reorder-arrow,
+.task-title-edit>.card-tools>.zone-arrow,
+.task-title-edit>.card-tools>.expand{
+  position:static!important;
+  display:grid!important;
+  place-items:center!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 36px!important;
+  width:36px!important;
+  min-width:36px!important;
+  max-width:36px!important;
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:1!important;
+  text-align:center!important;
+  transform:none!important;
+  float:none!important;
+  box-sizing:border-box!important;
+  border-radius:9px!important;
+}
+.task-title-edit>.card-tools>.select-task{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  position:static!important;
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 24px!important;
+  width:24px!important;
+  min-width:24px!important;
+  max-width:24px!important;
+  height:24px!important;
+  min-height:24px!important;
+  max-height:24px!important;
+  margin:0 1px!important;
+  padding:0!important;
+  transform:none!important;
+  align-self:center!important;
+  border:1px solid var(--line)!important;
+  border-radius:6px!important;
+  background:var(--input,var(--panel))!important;
+  box-sizing:border-box!important;
+  cursor:pointer!important;
+}
+.task-title-edit>.card-tools>.select-task:checked{
+  background:var(--accent)!important;
+  border-color:var(--accent)!important;
+}
+.task-title-edit>.card-tools>.select-task:checked::after{
+  content:"✓";
+  color:var(--accent-contrast,#fff);
+  font-size:15px;
+  font-weight:800;
+  line-height:1;
+}
+.task-title-edit>.card-tools>.expand{
+  flex-basis:28px!important;
+  width:28px!important;
+  min-width:28px!important;
+  max-width:28px!important;
+  font-size:17px!important;
+  background:var(--input,var(--panel))!important;
+  border:1px solid var(--line)!important;
+  color:var(--text)!important;
+}
+.task-text-content{
+  display:inline!important;
+  position:relative!important;
+  z-index:1!important;
+  white-space:pre-wrap!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+  min-width:0!important;
+}
+.task-title-edit>.card-tools button{cursor:pointer!important}
+.card.is-single-line .task-title-edit{min-height:72px!important}
+.card.is-multiline .task-title-edit{min-height:92px!important}
 .card .details{position:relative!important;z-index:5!important}
-@media(max-width:700px){.card-main>.check{top:12px!important;left:11px!important}.task-title-edit{min-height:76px!important;padding:9px 9px 10px 46px!important;font-size:14px!important}.task-title-edit .card-tools{width:218px!important;min-width:218px!important;height:44px!important;margin:-9px -9px 5px 7px!important;gap:2px!important;padding:3px 4px!important}.task-title-edit .card-tools .reorder-arrow,.task-title-edit .card-tools .zone-arrow{flex-basis:34px!important;width:34px!important;min-width:34px!important;height:34px!important;min-height:34px!important}.task-title-edit .card-tools .expand{flex-basis:25px!important;width:25px!important;min-width:25px!important}}
-@media(max-width:390px){.task-title-edit .card-tools{width:202px!important;min-width:202px!important}.task-title-edit .card-tools .reorder-arrow,.task-title-edit .card-tools .zone-arrow{flex-basis:31px!important;width:31px!important;min-width:31px!important}}
+
+@media(max-width:700px){
+  .card-main>.check{top:11px!important;left:11px!important}
+  .task-title-edit{
+    min-height:70px!important;
+    padding:9px 9px 10px 43px!important;
+    font-size:14px!important;
+  }
+  .task-title-edit>.card-tools{
+    width:218px!important;
+    min-width:218px!important;
+    max-width:218px!important;
+    height:40px!important;
+    min-height:40px!important;
+    max-height:40px!important;
+    gap:3px!important;
+    margin:-1px -3px 4px 7px!important;
+    padding:1px 2px!important;
+  }
+  .task-title-edit>.card-tools>.reorder-arrow,
+  .task-title-edit>.card-tools>.zone-arrow{
+    flex-basis:34px!important;
+    width:34px!important;
+    min-width:34px!important;
+    height:34px!important;
+    min-height:34px!important;
+  }
+  .task-title-edit>.card-tools>.select-task{
+    flex-basis:22px!important;width:22px!important;min-width:22px!important;
+    height:22px!important;min-height:22px!important;
+  }
+  .task-title-edit>.card-tools>.expand{
+    flex-basis:26px!important;width:26px!important;min-width:26px!important;
+  }
+}
+@media(max-width:390px){
+  .task-title-edit>.card-tools{
+    width:202px!important;min-width:202px!important;max-width:202px!important;
+  }
+  .task-title-edit>.card-tools>.reorder-arrow,
+  .task-title-edit>.card-tools>.zone-arrow{
+    flex-basis:31px!important;width:31px!important;min-width:31px!important;
+  }
+}
