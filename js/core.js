@@ -252,11 +252,12 @@ function toggleListMarkup(t){
       <span class="toggle-row-tools"><button type="button" data-action="item-up" aria-label="Move item up" title="Move up" ${i===0?"disabled":""}>↑</button><button type="button" data-action="item-down" aria-label="Move item down" title="Move down" ${i===parsed.length-1?"disabled":""}>↓</button></span>
     </div>`).join("")}</div>`;
 }
-function taskToolbar(t){
+function taskToolbar(t,number){
   const direction=t.zone==="later"?"⇦":"⇨";
   const destination=t.zone==="later"?"Move to Today":"Move to Not Today";
   return `<div class="card-tools" contenteditable="false">
     <div class="tool-cell"><button class="check" data-action="complete" title="Complete" aria-label="Complete task"></button></div>
+    <div class="tool-cell tool-cell-number"><span class="toolbar-task-number">${number}</span></div>
     <div class="tool-cell"><button class="icon-btn reorder-arrow" data-action="up" title="Move task up" aria-label="Move task up">↑</button></div>
     <div class="tool-cell"><button class="icon-btn reorder-arrow" data-action="down" title="Move task down" aria-label="Move task down">↓</button></div>
     <div class="tool-cell"><input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task for bulk actions" title="Select task for bulk actions"></div>
@@ -274,7 +275,7 @@ function taskCard(t,number){
     ? `<div class="toggle-list-heading"><button class="toggle-list-collapse" data-action="toggle-list-collapse" aria-expanded="${!t.listCollapsed}" title="${t.listCollapsed?"Expand":"Collapse"} list">${t.listCollapsed?"▸":"▾"}</button><input class="toggle-list-title-edit" data-action="toggle-list-title" type="text" value="${escapeHtml(checklist.title)}" aria-label="Edit checklist title" title="Edit checklist title"><span class="toggle-list-count">${checklist.length} items</span></div>${t.listCollapsed?"":toggleListMarkup(t)}`
     : `<div class="task-title-edit" data-action="title" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Task title" spellcheck="false"><span class="task-text-content" data-task-text>${title}</span></div>`;
   return `<article class="card ${t.done?"done":""} ${t.open?"open":""} ${selectedTaskIds.has(t.id)?"selected":""}" draggable="true" data-id="${t.id}" ${color?`data-task-color style="--task-color:${color}"`:""}>
-    <div class="card-main"><span class="task-number" aria-hidden="true">${number}</span><div class="task-body">${content}<button class="insert-below" data-action="insert-below" type="button" title="Add task below" aria-label="Add task below">＋</button>${taskToolbar(t)}</div></div>
+    <div class="card-main"><span class="task-number" aria-hidden="true">${number}</span><div class="task-body">${content}<button class="insert-below" data-action="insert-below" type="button" title="Add task below" aria-label="Add task below">＋</button>${taskToolbar(t,number)}</div></div>
     <div class="details"><textarea data-action="notes" placeholder="Notes…">${escapeHtml(t.notes)}</textarea><div class="details-row"><button class="btn" data-action="move-later">${t.zone==="later"?"Move to Today":"Not Today"}</button><button class="btn" data-action="delete">Delete</button></div></div>
   </article>`;
 }

@@ -1,182 +1,13 @@
-.card{display:flex!important;flex-direction:column!important;height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important;min-width:0!important;overflow:hidden!important}
-.card-main{display:block!important;position:relative!important;width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important;background:transparent!important;border:0!important;box-sizing:border-box!important}
-.card-main::before,.card-main::after{content:none!important;display:none!important}
-.card-main>.task-number{display:none!important}
-.card-main>.check{display:none!important}
-.task-body{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important;box-sizing:border-box!important}
-.task-title-edit{display:block!important;position:relative!important;order:0!important;width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:40px!important;max-height:none!important;margin:0!important;padding:14px 16px!important;box-sizing:border-box!important;resize:none!important;overflow:visible!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.45!important;font:inherit!important;color:var(--text)!important;background:var(--panel)!important;border:0!important;border-radius:0!important;outline:none!important;box-shadow:none!important;cursor:text!important}
-.task-title-edit:focus{outline:none!important;box-shadow:inset 0 0 0 1px var(--accent)!important}
-.task-text-content{display:block!important;width:100%!important;min-width:0!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important}
-.card-tools{order:2!important;position:relative!important;inset:auto!important;float:none!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:48px!important;align-items:stretch!important;justify-items:stretch!important;gap:0!important;width:100%!important;min-width:0!important;max-width:100%!important;height:48px!important;min-height:48px!important;max-height:48px!important;margin:0!important;padding:0!important;box-sizing:border-box!important;background:var(--panel)!important;border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;overflow:hidden!important}
-.tool-cell{display:flex!important;position:relative!important;align-items:center!important;justify-content:center!important;min-width:0!important;min-height:0!important;padding:4px!important;border-right:1px solid var(--line)!important;box-sizing:border-box!important}
-.tool-cell:last-child{border-right:0!important}
-.tool-cell-pair{gap:8px!important}
-.tool-cell button,.tool-cell input{position:static!important;float:none!important;transform:none!important;display:grid!important;place-items:center!important;align-self:center!important;justify-self:center!important;flex:0 0 34px!important;width:34px!important;min-width:34px!important;max-width:34px!important;height:34px!important;min-height:34px!important;max-height:34px!important;margin:0!important;padding:0!important;line-height:1!important;text-align:center!important;box-sizing:border-box!important}
-.tool-cell .check{border-radius:50%!important;border:2px solid var(--muted)!important;background:transparent!important}
-.card.done .tool-cell .check{background:var(--accent)!important;border-color:var(--accent)!important}
-.tool-cell .select-task{appearance:none!important;-webkit-appearance:none!important;flex:0 0 23px!important;width:23px!important;min-width:23px!important;max-width:23px!important;height:23px!important;min-height:23px!important;max-height:23px!important;border:1px solid var(--line)!important;border-radius:6px!important;background:var(--input,var(--panel))!important;cursor:pointer!important}
-.tool-cell .select-task:checked{background:var(--accent)!important;border-color:var(--accent)!important}
-.tool-cell .select-task:checked::after{content:"✓";color:var(--accent-contrast,#fff);font-size:15px;font-weight:800;line-height:1}
-.tool-cell .reorder-arrow,.tool-cell .zone-arrow{font-size:21px!important;font-weight:700!important}
-.tool-cell-pair .expand{font-size:18px!important;flex-basis:30px!important;width:30px!important;min-width:30px!important;height:34px!important;min-height:34px!important}
-.tool-cell .toolbar-task-number{display:none;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:14px;font-weight:800;line-height:1}
-body.show-task-numbers .tool-cell-number{display:flex!important}
-body.show-task-numbers .toolbar-task-number{display:flex!important}
-body.show-task-numbers .card-tools{grid-template-columns:repeat(6,minmax(0,1fr))!important}
-.card-tools .insert-below{display:none!important}
-.card.is-single-line .task-title-edit{min-height:40px!important}
-.card.is-multiline .task-title-edit{min-height:58px!important}
-.card .details{position:relative!important}
-.toggle-list-heading,.toggle-list{margin:10px 14px!important}
-.task-body>.insert-below{position:absolute!important;z-index:4!important;top:7px!important;right:9px!important;display:grid!important;place-items:center!important;width:27px!important;height:27px!important;min-width:27px!important;min-height:27px!important;padding:0!important;border-radius:50%!important;opacity:0!important;pointer-events:none!important;line-height:1!important}
-.card:hover .task-body>.insert-below,.card:focus-within .task-body>.insert-below{opacity:1!important;pointer-events:auto!important}
-@media(hover:none){.task-body>.insert-below{opacity:1!important;pointer-events:auto!important}}
-@media(max-width:700px){
- .task-title-edit{padding:12px 13px!important;font-size:14px!important}
- .card-tools{grid-template-rows:46px!important;height:46px!important;min-height:46px!important;max-height:46px!important}
- .tool-cell{padding:3px!important}
- .tool-cell button{flex-basis:32px!important;width:32px!important;min-width:32px!important;height:32px!important;min-height:32px!important}
- .tool-cell .select-task{flex-basis:21px!important;width:21px!important;min-width:21px!important;height:21px!important;min-height:21px!important}
- .tool-cell .toolbar-task-number{width:27px;height:27px;font-size:13px}
-}
-
-
-/* v53: final card layout override. The older app stylesheet contains
-   high-specificity notch/side-toolbar rules; these selectors intentionally
-   override them on the actual nested DOM structure. */
-#todayCards .card>.card-main::before,
-#todayCards .card>.card-main::after,
-#laterCards .card>.card-main::before,
-#laterCards .card>.card-main::after{
-  content:none!important;display:none!important;position:static!important;
-  width:0!important;height:0!important;border:0!important;background:none!important;
-}
+/* Daily Sort task card layout — single authoritative layout layer */
 #todayCards .card,
 #laterCards .card{
-  display:flex!important;flex-direction:column!important;align-items:stretch!important;
-  width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
-  flex:0 0 auto!important;overflow:hidden!important;box-sizing:border-box!important;
-}
-#todayCards .card>.card-main,
-#laterCards .card>.card-main{
-  display:block!important;position:relative!important;isolation:auto!important;
-  width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
-  margin:0!important;padding:0!important;overflow:visible!important;
-  border:0!important;border-radius:inherit!important;box-sizing:border-box!important;
-  grid-template-columns:none!important;grid-template-rows:none!important;grid-template-areas:none!important;
-}
-#todayCards .card>.card-main>.task-number,
-#laterCards .card>.card-main>.task-number,
-#todayCards .card>.card-main>.check,
-#laterCards .card>.card-main>.check{display:none!important}
-#todayCards .card>.card-main>.task-body,
-#laterCards .card>.card-main>.task-body{
-  display:flex!important;position:relative!important;flex-direction:column!important;
-  align-items:stretch!important;justify-content:flex-start!important;gap:0!important;
-  width:100%!important;min-width:0!important;max-width:100%!important;
-  height:auto!important;min-height:0!important;max-height:none!important;
-  margin:0!important;padding:0!important;overflow:visible!important;
-  box-sizing:border-box!important;grid-area:auto!important;
-}
-#todayCards .card .task-title-edit,
-#laterCards .card .task-title-edit{
-  display:block!important;position:relative!important;order:0!important;flex:0 0 auto!important;
-  width:100%!important;min-width:0!important;max-width:100%!important;
-  height:auto!important;min-height:48px!important;max-height:none!important;
-  margin:0!important;padding:14px 16px!important;overflow:visible!important;
-  box-sizing:border-box!important;resize:none!important;
-  white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;
-  line-height:1.45!important;border:0!important;border-radius:0!important;
-}
-#todayCards .card .task-text-content,
-#laterCards .card .task-text-content{
-  display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;
-  white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;
-}
-#todayCards .card .card-tools,
-#laterCards .card .card-tools{
-  order:2!important;position:relative!important;inset:auto!important;float:none!important;
-  display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
-  grid-auto-flow:row!important;grid-template-rows:48px!important;
-  align-items:stretch!important;justify-items:stretch!important;gap:0!important;
-  width:100%!important;min-width:0!important;max-width:100%!important;
-  height:48px!important;min-height:48px!important;max-height:48px!important;
-  margin:0!important;padding:0!important;transform:none!important;
+  display:block!important;position:relative!important;
+  width:100%!important;min-width:0!important;height:auto!important;
+  min-height:0!important;max-height:none!important;flex:0 0 auto!important;
+  align-self:stretch!important;margin:0 0 10px!important;padding:0!important;
   overflow:hidden!important;box-sizing:border-box!important;
-  border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;
-  background:var(--panel)!important;
+  clip-path:none!important;-webkit-clip-path:none!important;
 }
-#todayCards .card .tool-cell,
-#laterCards .card .tool-cell{
-  display:flex!important;position:relative!important;align-items:center!important;
-  justify-content:center!important;justify-self:stretch!important;align-self:stretch!important;
-  min-width:0!important;min-height:0!important;margin:0!important;padding:4px!important;
-  border:0!important;border-right:1px solid var(--line)!important;
-  box-sizing:border-box!important;overflow:hidden!important;
-}
-#todayCards .card .tool-cell:last-child,
-#laterCards .card .tool-cell:last-child{border-right:0!important}
-#todayCards .card .tool-cell button,
-#laterCards .card .tool-cell button{
-  position:static!important;inset:auto!important;float:none!important;transform:none!important;
-  display:grid!important;place-items:center!important;align-self:center!important;justify-self:center!important;
-  flex:0 0 34px!important;width:34px!important;min-width:34px!important;max-width:34px!important;
-  height:34px!important;min-height:34px!important;max-height:34px!important;
-  margin:0!important;padding:0!important;line-height:1!important;text-align:center!important;
-  box-sizing:border-box!important;
-}
-#todayCards .card .tool-cell .check,
-#laterCards .card .tool-cell .check{
-  border:2px solid var(--muted)!important;border-radius:50%!important;background:transparent!important;
-}
-#todayCards .card.done .tool-cell .check,
-#laterCards .card.done .tool-cell .check{background:var(--accent)!important;border-color:var(--accent)!important}
-#todayCards .card .tool-cell input.select-task,
-#laterCards .card .tool-cell input.select-task{
-  display:block!important;appearance:none!important;-webkit-appearance:none!important;
-  flex:0 0 22px!important;width:22px!important;min-width:22px!important;max-width:22px!important;
-  height:22px!important;min-height:22px!important;max-height:22px!important;
-  margin:0!important;padding:0!important;align-self:center!important;justify-self:center!important;
-}
-#todayCards .card .tool-cell .toolbar-task-number,
-#laterCards .card .tool-cell .toolbar-task-number{
-  display:none!important;align-items:center!important;justify-content:center!important;
-  width:30px!important;height:30px!important;border-radius:50%!important;
-  background:var(--accent-soft)!important;color:var(--accent)!important;
-  font-size:14px!important;font-weight:800!important;line-height:1!important;
-}
-body.show-task-numbers #todayCards .card .tool-number-cell,
-body.show-task-numbers #laterCards .card .tool-number-cell{display:flex!important}
-body.show-task-numbers #todayCards .card .toolbar-task-number,
-body.show-task-numbers #laterCards .card .toolbar-task-number{display:flex!important}
-body.show-task-numbers #todayCards .card .card-tools,
-body.show-task-numbers #laterCards .card .card-tools{grid-template-columns:repeat(6,minmax(0,1fr))!important}
-#todayCards .card .tool-cell-pair,
-#laterCards .card .tool-cell-pair{display:flex!important;flex-direction:row!important;gap:6px!important}
-#todayCards .card .tool-cell-pair .expand,
-#laterCards .card .tool-cell-pair .expand{
-  flex:0 0 30px!important;width:30px!important;min-width:30px!important;max-width:30px!important;
-  height:34px!important;min-height:34px!important;max-height:34px!important;font-size:17px!important;
-}
-#todayCards .card .task-body>.insert-below,
-#laterCards .card .task-body>.insert-below{display:none!important}
-#todayCards .card .details,
-#laterCards .card .details{position:relative!important;order:3!important}
-#todayCards .card.is-single-line .task-title-edit,
-#laterCards .card.is-single-line .task-title-edit{min-height:48px!important}
-#todayCards .card.is-multiline .task-title-edit,
-#laterCards .card.is-multiline .task-title-edit{min-height:58px!important}
-@media(max-width:700px){
-  #todayCards .card .task-title-edit,#laterCards .card .task-title-edit{padding:12px 13px!important;font-size:14px!important}
-  #todayCards .card .card-tools,#laterCards .card .card-tools{grid-template-rows:46px!important;height:46px!important;min-height:46px!important;max-height:46px!important}
-  #todayCards .card .tool-cell button,#laterCards .card .tool-cell button{flex-basis:32px!important;width:32px!important;min-width:32px!important;height:32px!important;min-height:32px!important}
-}
-
-
-/* v54 — rebuild the card using its real nested DOM:
-   .card-main > .task-body > (.task-title-edit + .card-tools).
-   The toolbar wrappers become layout-transparent so every control is a
-   direct grid item in one integrated bottom strip. */
 #todayCards .card::before,#todayCards .card::after,
 #laterCards .card::before,#laterCards .card::after,
 #todayCards .card-main::before,#todayCards .card-main::after,
@@ -185,280 +16,142 @@ body.show-task-numbers #laterCards .card .card-tools{grid-template-columns:repea
 #laterCards .task-body::before,#laterCards .task-body::after,
 #todayCards .card-tools::before,#todayCards .card-tools::after,
 #laterCards .card-tools::before,#laterCards .card-tools::after{
-  content:none!important;display:none!important;position:static!important;
-  inset:auto!important;width:0!important;height:0!important;min-width:0!important;
-  min-height:0!important;max-width:0!important;max-height:0!important;
-  border:0!important;border-radius:0!important;background:none!important;
-  box-shadow:none!important;pointer-events:none!important;
+  content:none!important;display:none!important;
 }
-#todayCards .card,#laterCards .card{
-  display:block!important;width:100%!important;min-width:0!important;
-  height:auto!important;min-height:0!important;max-height:none!important;
-  margin:0 0 10px!important;padding:0!important;flex:none!important;
-  overflow:hidden!important;box-sizing:border-box!important;
-}
-#todayCards .card>.card-main,#laterCards .card>.card-main{
-  display:grid!important;position:relative!important;isolation:auto!important;
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
-  grid-template-rows:auto 50px!important;grid-auto-flow:row!important;
-  align-items:stretch!important;justify-items:stretch!important;gap:0!important;
-  width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
-  margin:0!important;padding:0!important;overflow:hidden!important;
-  border:0!important;border-radius:inherit!important;background:transparent!important;
+#todayCards .card-main,#laterCards .card-main{
+  display:block!important;position:relative!important;isolation:auto!important;
+  width:100%!important;min-width:0!important;height:auto!important;
+  min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;
+  overflow:visible!important;background:transparent!important;border:0!important;
+  border-radius:inherit!important;clip-path:none!important;-webkit-clip-path:none!important;
   box-sizing:border-box!important;
 }
-#todayCards .card>.card-main>.task-body,
-#laterCards .card>.card-main>.task-body{
-  display:contents!important;position:static!important;inset:auto!important;
-  width:auto!important;min-width:0!important;max-width:none!important;
+#todayCards .card-main>.task-number,#laterCards .card-main>.task-number,
+#todayCards .card-main>.check,#laterCards .card-main>.check{display:none!important}
+#todayCards .card-main>.task-body,#laterCards .card-main>.task-body{
+  display:flex!important;flex-direction:column!important;position:relative!important;isolation:auto!important;
+  align-items:stretch!important;justify-content:flex-start!important;gap:0!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
   height:auto!important;min-height:0!important;max-height:none!important;
   margin:0!important;padding:0!important;overflow:visible!important;
+  background:transparent!important;border:0!important;clip-path:none!important;
+  -webkit-clip-path:none!important;box-sizing:border-box!important;
 }
-#todayCards .card .task-title-edit,#laterCards .card .task-title-edit{
-  display:block!important;position:relative!important;grid-column:1/-1!important;grid-row:1!important;
-  order:0!important;align-self:stretch!important;justify-self:stretch!important;
-  width:100%!important;min-width:0!important;max-width:none!important;
+#todayCards .card-main>.task-body>.task-title-edit,
+#laterCards .card-main>.task-body>.task-title-edit,
+#todayCards .card-main>.task-body>.toggle-list-heading,
+#laterCards .card-main>.task-body>.toggle-list-heading{
+  order:0!important;align-self:stretch!important;
+  justify-self:stretch!important;display:block!important;position:relative!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
   height:auto!important;min-height:48px!important;max-height:none!important;
-  margin:0!important;padding:14px 16px!important;overflow:visible!important;
-  resize:none!important;box-sizing:border-box!important;
-  border:0!important;border-radius:0!important;outline:none!important;
-  background:transparent!important;box-shadow:none!important;
-  white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;
+  margin:0!important;padding:13px 16px!important;box-sizing:border-box!important;
+  overflow:visible!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;
+  word-break:normal!important;clip-path:none!important;-webkit-clip-path:none!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
   line-height:1.45!important;
 }
 #todayCards .card .task-text-content,#laterCards .card .task-text-content{
   display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;
   white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;
 }
-#todayCards .card .card-tools,#laterCards .card .card-tools,
-#todayCards .card .tool-cell,#laterCards .card .tool-cell,
-#todayCards .card .tool-cell-pair,#laterCards .card .tool-cell-pair{
-  display:contents!important;position:static!important;inset:auto!important;
-  width:auto!important;min-width:0!important;max-width:none!important;
-  height:auto!important;min-height:0!important;max-height:none!important;
-  margin:0!important;padding:0!important;gap:0!important;
-  border:0!important;border-radius:0!important;background:transparent!important;
-  box-shadow:none!important;transform:none!important;overflow:visible!important;
-}
-#todayCards .card .card-tools .insert-below,
-#laterCards .card .card-tools .insert-below,
-#todayCards .card .task-body>.insert-below,
-#laterCards .card .task-body>.insert-below{display:none!important}
-#todayCards .card .card-tools .check,
-#laterCards .card .card-tools .check,
-#todayCards .card .card-tools .toolbar-task-number,
-#laterCards .card .card-tools .toolbar-task-number,
-#todayCards .card .card-tools .reorder-arrow,
-#laterCards .card .card-tools .reorder-arrow,
-#todayCards .card .card-tools .select-task,
-#laterCards .card .card-tools .select-task,
-#todayCards .card .card-tools .zone-arrow,
-#laterCards .card .card-tools .zone-arrow,
-#todayCards .card .card-tools .expand,
-#laterCards .card .card-tools .expand{
-  display:grid!important;position:static!important;inset:auto!important;float:none!important;
-  place-items:center!important;align-self:center!important;justify-self:center!important;
-  flex:none!important;transform:none!important;float:none!important;
-  width:36px!important;min-width:36px!important;max-width:36px!important;
-  height:36px!important;min-height:36px!important;max-height:36px!important;
-  margin:0!important;padding:0!important;line-height:1!important;text-align:center!important;
-  box-sizing:border-box!important;
-}
-#todayCards .card .card-tools .check,
-#laterCards .card .card-tools .check{
-  border:2px solid var(--muted)!important;border-radius:50%!important;background:transparent!important;
-}
-#todayCards .card.done .card-tools .check,
-#laterCards .card.done .card-tools .check{background:var(--accent)!important;border-color:var(--accent)!important}
-#todayCards .card .card-tools .select-task,
-#laterCards .card .card-tools .select-task{
-  appearance:none!important;-webkit-appearance:none!important;
-  width:22px!important;min-width:22px!important;max-width:22px!important;
-  height:22px!important;min-height:22px!important;max-height:22px!important;
-  border:1px solid var(--line)!important;border-radius:5px!important;background:var(--panel)!important;
-}
-#todayCards .card .card-tools .toolbar-task-number,
-#laterCards .card .card-tools .toolbar-task-number{
-  display:none!important;width:30px!important;min-width:30px!important;max-width:30px!important;
-  height:30px!important;min-height:30px!important;max-height:30px!important;
-  border-radius:50%!important;background:var(--accent-soft)!important;color:var(--accent)!important;
-  font-size:14px!important;font-weight:800!important;line-height:1!important;
-}
-body.show-task-numbers #todayCards .card>.card-main,
-body.show-task-numbers #laterCards .card>.card-main{
-  grid-template-columns:repeat(7,minmax(0,1fr))!important;
-}
-body.show-task-numbers #todayCards .card .toolbar-task-number,
-body.show-task-numbers #laterCards .card .toolbar-task-number{display:grid!important}
-#todayCards .card .card-tools .reorder-arrow,
-#laterCards .card .card-tools .reorder-arrow{font-size:20px!important;font-weight:700!important}
-#todayCards .card .card-tools .zone-arrow,
-#laterCards .card .card-tools .zone-arrow{font-size:19px!important;font-weight:700!important}
-#todayCards .card .card-tools .expand,
-#laterCards .card .card-tools .expand{font-size:17px!important}
-#todayCards .card .details,#laterCards .card .details{position:relative!important;z-index:1!important}
-@media(max-width:700px){
-  #todayCards .card>.card-main,#laterCards .card>.card-main{grid-template-rows:auto 46px!important}
-  #todayCards .card .task-title-edit,#laterCards .card .task-title-edit{padding:12px 13px!important;font-size:14px!important}
-  #todayCards .card .card-tools .check,#laterCards .card .card-tools .check,
-  #todayCards .card .card-tools .reorder-arrow,#laterCards .card .card-tools .reorder-arrow,
-  #todayCards .card .card-tools .zone-arrow,#laterCards .card .card-tools .zone-arrow,
-  #todayCards .card .card-tools .expand,#laterCards .card .card-tools .expand{
-    width:32px!important;min-width:32px!important;max-width:32px!important;
-    height:32px!important;min-height:32px!important;max-height:32px!important;
-  }
-}
-
-
-/* v55 — correct layout on the real nesting:
-   card-main > task-body > task-title / insert button / card-tools.
-   The task body owns the two rows; toolbar cells stay intact. */
-#todayCards .card::before,#todayCards .card::after,
-#laterCards .card::before,#laterCards .card::after,
-#todayCards .card>.card-main::before,#todayCards .card>.card-main::after,
-#laterCards .card>.card-main::before,#laterCards .card>.card-main::after,
-#todayCards .card>.card-main>.task-body::before,#todayCards .card>.card-main>.task-body::after,
-#laterCards .card>.card-main>.task-body::before,#laterCards .card>.card-main>.task-body::after,
-#todayCards .card .card-tools::before,#todayCards .card .card-tools::after,
-#laterCards .card .card-tools::before,#laterCards .card .card-tools::after{
-  content:none!important;display:none!important;position:static!important;
-  inset:auto!important;width:0!important;height:0!important;min-width:0!important;
-  min-height:0!important;max-width:0!important;max-height:0!important;
-  border:0!important;border-radius:0!important;background:none!important;
-  box-shadow:none!important;pointer-events:none!important;
-}
-#todayCards .card,#laterCards .card{
-  display:block!important;position:relative!important;width:100%!important;
-  height:auto!important;min-height:0!important;max-height:none!important;
-  margin:0 0 10px!important;padding:0!important;flex:none!important;
-  overflow:hidden!important;box-sizing:border-box!important;
-}
-#todayCards .card>.card-main,#laterCards .card>.card-main{
-  display:block!important;position:relative!important;isolation:auto!important;
-  width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
-  margin:0!important;padding:0!important;overflow:visible!important;
-  border:0!important;border-radius:inherit!important;background:transparent!important;
-  box-sizing:border-box!important;
-}
-#todayCards .card>.card-main>.task-number,
-#laterCards .card>.card-main>.task-number,
-#todayCards .card>.card-main>.check,
-#laterCards .card>.card-main>.check{display:none!important}
-#todayCards .card>.card-main>.task-body,
-#laterCards .card>.card-main>.task-body{
-  display:grid!important;position:relative!important;isolation:auto!important;
-  grid-template-columns:minmax(0,1fr)!important;
-  grid-template-rows:auto 50px!important;grid-auto-flow:row!important;
-  align-items:stretch!important;justify-items:stretch!important;gap:0!important;
-  width:100%!important;height:auto!important;min-width:0!important;max-width:100%!important;
-  min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;
-  overflow:visible!important;box-sizing:border-box!important;background:transparent!important;
-}
-#todayCards .card .task-title-edit,#laterCards .card .task-title-edit,
-#todayCards .card .toggle-list-heading,#laterCards .card .toggle-list-heading,
-#todayCards .card .toggle-list,#laterCards .card .toggle-list{
-  grid-column:1!important;grid-row:1!important;align-self:stretch!important;
-  justify-self:stretch!important;width:100%!important;min-width:0!important;max-width:100%!important;
-  height:auto!important;min-height:48px!important;max-height:none!important;
-  margin:0!important;padding:14px 16px!important;box-sizing:border-box!important;
-  overflow-wrap:anywhere!important;word-break:normal!important;white-space:pre-wrap!important;
-  background:transparent!important;border:0!important;border-radius:0!important;
-}
-#todayCards .card .task-title-edit,#laterCards .card .task-title-edit{
-  display:block!important;position:relative!important;resize:none!important;overflow:visible!important;
-  line-height:1.45!important;outline:none!important;box-shadow:none!important;
-}
-#todayCards .card .task-text-content,#laterCards .card .task-text-content{
-  display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;
-  white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;
-}
-#todayCards .card .card-tools,#laterCards .card .card-tools{
-  grid-column:1!important;grid-row:2!important;
+#todayCards .card-main>.task-body>.insert-below,
+#laterCards .card-main>.task-body>.insert-below{display:none!important}
+#todayCards .card-main>.task-body>.card-tools,
+#laterCards .card-main>.task-body>.card-tools{
+  order:99!important;flex:0 0 48px!important;
   display:grid!important;position:relative!important;inset:auto!important;float:none!important;
-  grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:50px!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  grid-template-rows:48px!important;grid-auto-flow:row!important;
   align-items:stretch!important;justify-items:stretch!important;gap:0!important;
   width:100%!important;min-width:0!important;max-width:100%!important;
-  height:50px!important;min-height:50px!important;max-height:50px!important;
+  height:48px!important;min-height:48px!important;max-height:48px!important;
   margin:0!important;padding:0!important;overflow:hidden!important;
-  box-sizing:border-box!important;background:transparent!important;
-  border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;
-  box-shadow:none!important;transform:none!important;
+  box-sizing:border-box!important;transform:none!important;
+  background:transparent!important;border:0!important;border-top:1px solid var(--line)!important;
+  border-radius:0!important;box-shadow:none!important;clip-path:none!important;
+  -webkit-clip-path:none!important;
 }
-#todayCards .card .tool-cell,#laterCards .card .tool-cell{
+#todayCards .card .card-tools>.tool-cell,
+#laterCards .card .card-tools>.tool-cell{
   display:flex!important;position:relative!important;inset:auto!important;float:none!important;
   align-items:center!important;justify-content:center!important;justify-self:stretch!important;
   align-self:stretch!important;min-width:0!important;min-height:0!important;
   width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;
-  margin:0!important;padding:4px!important;gap:0!important;
-  border:0!important;border-right:1px solid var(--line)!important;border-radius:0!important;
-  background:transparent!important;box-shadow:none!important;transform:none!important;
-  box-sizing:border-box!important;overflow:visible!important;
+  margin:0!important;padding:3px!important;gap:0!important;
+  box-sizing:border-box!important;overflow:hidden!important;transform:none!important;
+  background:transparent!important;border:0!important;border-right:1px solid var(--line)!important;
+  border-radius:0!important;box-shadow:none!important;
 }
-#todayCards .card .tool-cell:last-child,#laterCards .card .tool-cell:last-child{border-right:0!important}
-#todayCards .card .tool-cell button,#todayCards .card .tool-cell input,
-#laterCards .card .tool-cell button,#laterCards .card .tool-cell input{
+#todayCards .card .card-tools>.tool-cell:last-child,
+#laterCards .card .card-tools>.tool-cell:last-child{border-right:0!important}
+#todayCards .card .card-tools .tool-cell button,
+#todayCards .card .card-tools .tool-cell input,
+#laterCards .card .card-tools .tool-cell button,
+#laterCards .card .card-tools .tool-cell input{
   display:grid!important;position:static!important;inset:auto!important;float:none!important;
   place-items:center!important;align-self:center!important;justify-self:center!important;
-  flex:0 0 36px!important;width:36px!important;min-width:36px!important;max-width:36px!important;
-  height:36px!important;min-height:36px!important;max-height:36px!important;
+  flex:0 0 34px!important;width:34px!important;min-width:34px!important;max-width:34px!important;
+  height:34px!important;min-height:34px!important;max-height:34px!important;
   margin:0!important;padding:0!important;transform:none!important;
   line-height:1!important;text-align:center!important;box-sizing:border-box!important;
 }
-#todayCards .card .tool-cell .check,#laterCards .card .tool-cell .check{
+#todayCards .card .card-tools .check,#laterCards .card .card-tools .check{
   border:2px solid var(--muted)!important;border-radius:50%!important;background:transparent!important;
 }
-#todayCards .card.done .tool-cell .check,#laterCards .card.done .tool-cell .check{
+#todayCards .card.done .card-tools .check,#laterCards .card.done .card-tools .check{
   background:var(--accent)!important;border-color:var(--accent)!important;
 }
-#todayCards .card .tool-cell .toolbar-task-number,
-#laterCards .card .tool-cell .toolbar-task-number{
-  display:none!important;place-items:center!important;flex:0 0 30px!important;
-  width:30px!important;min-width:30px!important;height:30px!important;min-height:30px!important;
+#todayCards .card .card-tools .select-task,#laterCards .card .card-tools .select-task{
+  appearance:none!important;-webkit-appearance:none!important;
+  flex:0 0 22px!important;width:22px!important;min-width:22px!important;max-width:22px!important;
+  height:22px!important;min-height:22px!important;max-height:22px!important;
+  border:1px solid var(--line)!important;border-radius:5px!important;
+  background:var(--panel)!important;cursor:pointer!important;
+}
+#todayCards .card .card-tools .select-task:checked,
+#laterCards .card .card-tools .select-task:checked{
+  background:var(--accent)!important;border-color:var(--accent)!important;
+}
+#todayCards .card .card-tools .toolbar-task-number,
+#laterCards .card .card-tools .toolbar-task-number{
+  display:none!important;place-items:center!important;flex:0 0 28px!important;
+  width:28px!important;min-width:28px!important;height:28px!important;min-height:28px!important;
   border-radius:50%!important;background:var(--accent-soft)!important;color:var(--accent)!important;
   font-size:14px!important;font-weight:800!important;line-height:1!important;
 }
-#todayCards .card .tool-number-cell,#laterCards .card .tool-number-cell{display:none!important}
-#todayCards .card .tool-cell .select-task,#laterCards .card .tool-cell .select-task{
-  appearance:none!important;-webkit-appearance:none!important;
-  flex:0 0 22px!important;width:22px!important;min-width:22px!important;
-  height:22px!important;min-height:22px!important;border:1px solid var(--line)!important;
-  border-radius:5px!important;background:var(--panel)!important;cursor:pointer!important;
-}
-#todayCards .card .tool-cell .select-task:checked,
-#laterCards .card .tool-cell .select-task:checked{background:var(--accent)!important;border-color:var(--accent)!important}
-#todayCards .card .tool-cell .reorder-arrow,#laterCards .card .tool-cell .reorder-arrow,
-#todayCards .card .tool-cell .zone-arrow,#laterCards .card .tool-cell .zone-arrow{
-  font-size:21px!important;font-weight:700!important;
-}
-#todayCards .card .tool-cell-pair,#laterCards .card .tool-cell-pair{
-  display:flex!important;flex-direction:row!important;align-items:center!important;
-  justify-content:center!important;gap:8px!important;
-}
-#todayCards .card .tool-cell-pair .expand,#laterCards .card .tool-cell-pair .expand{
-  flex:0 0 30px!important;width:30px!important;min-width:30px!important;
-  height:34px!important;min-height:34px!important;font-size:17px!important;
-}
-#todayCards .card .task-body>.insert-below,
-#laterCards .card .task-body>.insert-below{display:none!important}
+#todayCards .card .card-tools .tool-cell-number,
+#laterCards .card .card-tools .tool-cell-number{display:none!important}
 body.show-task-numbers #todayCards .card .card-tools,
 body.show-task-numbers #laterCards .card .card-tools{
   grid-template-columns:repeat(6,minmax(0,1fr))!important;
 }
-body.show-task-numbers #todayCards .card .tool-number-cell,
-body.show-task-numbers #laterCards .card .tool-number-cell{display:flex!important}
-body.show-task-numbers #todayCards .card .toolbar-task-number,
-body.show-task-numbers #laterCards .card .toolbar-task-number{display:grid!important}
+body.show-task-numbers #todayCards .card .card-tools .tool-cell-number,
+body.show-task-numbers #laterCards .card .card-tools .tool-cell-number{display:flex!important}
+body.show-task-numbers #todayCards .card .card-tools .toolbar-task-number,
+body.show-task-numbers #laterCards .card .card-tools .toolbar-task-number{display:grid!important}
+#todayCards .card .card-tools .reorder-arrow,
+#laterCards .card .card-tools .reorder-arrow{font-size:21px!important;font-weight:700!important}
+#todayCards .card .card-tools .zone-arrow,
+#laterCards .card .card-tools .zone-arrow{font-size:19px!important;font-weight:700!important}
+#todayCards .card .card-tools .tool-cell-pair,
+#laterCards .card .card-tools .tool-cell-pair{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:5px!important}
+#todayCards .card .card-tools .tool-cell-pair .expand,
+#laterCards .card .card-tools .tool-cell-pair .expand{
+  flex:0 0 28px!important;width:28px!important;min-width:28px!important;height:32px!important;min-height:32px!important;
+  font-size:17px!important;
+}
+#todayCards .card.is-single-line .task-title-edit,
+#laterCards .card.is-single-line .task-title-edit{min-height:48px!important}
+#todayCards .card.is-multiline .task-title-edit,
+#laterCards .card.is-multiline .task-title-edit{min-height:58px!important}
 #todayCards .card .details,#laterCards .card .details{position:relative!important;z-index:1!important}
 @media(max-width:700px){
-  #todayCards .card>.card-main>.task-body,#laterCards .card>.card-main>.task-body{grid-template-rows:auto 46px!important}
-  #todayCards .card .card-tools,#laterCards .card .card-tools{
-    grid-template-rows:46px!important;height:46px!important;min-height:46px!important;max-height:46px!important;
+  #todayCards .card-main>.task-body>.card-tools,#laterCards .card-main>.task-body>.card-tools{
+    flex-basis:46px!important;grid-template-rows:46px!important;height:46px!important;min-height:46px!important;max-height:46px!important;
   }
   #todayCards .card .task-title-edit,#laterCards .card .task-title-edit{padding:12px 13px!important;font-size:14px!important}
-  #todayCards .card .tool-cell button,#laterCards .card .tool-cell button{
+  #todayCards .card .card-tools .tool-cell button,#laterCards .card .card-tools .tool-cell button{
     flex-basis:32px!important;width:32px!important;min-width:32px!important;height:32px!important;min-height:32px!important;
-  }
-  #todayCards .card .tool-cell-pair .expand,#laterCards .card .tool-cell-pair .expand{
-    flex-basis:28px!important;width:28px!important;min-width:28px!important;
   }
 }
