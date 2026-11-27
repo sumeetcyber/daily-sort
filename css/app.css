@@ -2346,3 +2346,102 @@ body:not(.dynamic-panels) .panel>.cards{
  .card>.card-main>.card-tools>.reorder-arrow,
  .card>.card-main>.card-tools>.zone-arrow{width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important}
 }
+
+
+/* v46 — reset the broken experimental layout and shape the actual textarea. */
+.card{min-width:0!important;overflow:visible!important}
+.card>.card-main{
+  display:block!important;position:relative!important;isolation:isolate!important;
+  width:100%!important;min-width:0!important;min-height:0!important;height:auto!important;
+  margin:0!important;padding:0!important;overflow:visible!important;
+  background:transparent!important;border:0!important;
+}
+.card>.card-main>.task-number{display:none}
+.card>.card-main>.check{
+  position:absolute!important;z-index:8!important;top:15px!important;left:15px!important;
+  right:auto!important;bottom:auto!important;margin:0!important;transform:none!important;
+}
+.card>.card-main>.task-body{
+  display:block!important;position:relative!important;z-index:1!important;
+  width:100%!important;min-width:0!important;max-width:none!important;
+  margin:0!important;padding:0!important;overflow:visible!important;
+  background:transparent!important;border:0!important;clip-path:none!important;
+}
+.card>.card-main>.task-body>.task-title-edit{
+  display:block!important;position:relative!important;z-index:1!important;
+  width:100%!important;min-width:0!important;max-width:none!important;
+  height:auto!important;min-height:112px!important;max-height:none!important;
+  margin:0!important;padding:13px 250px 13px 58px!important;
+  box-sizing:border-box!important;resize:vertical!important;
+  background:var(--card,var(--panel))!important;
+  color:var(--text)!important;border:1px solid var(--line)!important;
+  border-radius:15px!important;box-shadow:none!important;
+  white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;
+  line-height:1.45!important;outline:none!important;
+  clip-path:polygon(0 0,calc(100% - 250px) 0,calc(100% - 250px) 58px,100% 58px,100% 100%,0 100%)!important;
+}
+.card>.card-main>.task-body>.task-title-edit:focus{
+  border-color:var(--accent)!important;
+  background:var(--card,var(--panel))!important;
+}
+.card>.card-main>.card-tools{
+  position:absolute!important;z-index:10!important;
+  top:7px!important;right:8px!important;left:auto!important;bottom:auto!important;
+  display:grid!important;grid-template-columns:repeat(5,42px)!important;
+  grid-template-rows:42px!important;grid-auto-flow:column!important;
+  place-items:center!important;align-items:center!important;justify-content:center!important;
+  width:210px!important;min-width:210px!important;max-width:210px!important;
+  height:42px!important;min-height:42px!important;max-height:42px!important;
+  margin:0!important;padding:0!important;gap:0!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  overflow:visible!important;box-sizing:border-box!important;
+  flex-direction:row!important;flex-wrap:nowrap!important;
+}
+.card>.card-main>.card-tools>.insert-below{display:none!important}
+.card>.card-main>.card-tools>.reorder-arrow,
+.card>.card-main>.card-tools>.zone-arrow,
+.card>.card-main>.card-tools>.expand{
+  position:static!important;display:grid!important;place-items:center!important;
+  float:none!important;transform:none!important;align-self:center!important;justify-self:center!important;
+  width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;
+  max-width:34px!important;max-height:34px!important;flex:none!important;
+  margin:0!important;padding:0!important;line-height:1!important;text-align:center!important;
+  box-sizing:border-box!important;
+}
+.card>.card-main>.card-tools>.select-task{
+  position:static!important;display:block!important;align-self:center!important;justify-self:center!important;
+  width:19px!important;height:19px!important;min-width:19px!important;min-height:19px!important;
+  margin:0!important;padding:0!important;transform:none!important;flex:none!important;
+}
+.card>.card-main>.card-tools>.expand{
+  width:25px!important;height:30px!important;min-width:25px!important;min-height:30px!important;
+  max-width:25px!important;max-height:30px!important;
+}
+.card.is-single-line>.card-main>.task-body>.task-title-edit{min-height:88px!important}
+.card.is-multiline>.card-main>.task-body>.task-title-edit{min-height:116px!important}
+.card>.card-main>.task-body>.toggle-list-heading,
+.card>.card-main>.task-body>.toggle-list{position:relative;z-index:1}
+@media(max-width:700px){
+ .card>.card-main>.task-body>.task-title-edit{
+   min-height:104px!important;padding:11px 215px 11px 48px!important;
+   clip-path:polygon(0 0,calc(100% - 215px) 0,calc(100% - 215px) 54px,100% 54px,100% 100%,0 100%)!important;
+ }
+ .card>.card-main>.card-tools{
+   top:6px!important;right:5px!important;width:200px!important;min-width:200px!important;max-width:200px!important;
+   grid-template-columns:repeat(5,40px)!important;grid-template-rows:40px!important;
+   height:40px!important;min-height:40px!important;
+ }
+ .card>.card-main>.card-tools>.reorder-arrow,
+ .card>.card-main>.card-tools>.zone-arrow{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important}
+ .card>.card-main>.check{top:13px!important;left:12px!important}
+}
+@media(max-width:420px){
+ .card>.card-main>.task-body>.task-title-edit{
+   padding-right:190px!important;
+   clip-path:polygon(0 0,calc(100% - 190px) 0,calc(100% - 190px) 54px,100% 54px,100% 100%,0 100%)!important;
+ }
+ .card>.card-main>.card-tools{
+   width:180px!important;min-width:180px!important;max-width:180px!important;
+   grid-template-columns:repeat(5,36px)!important;
+ }
+}
