@@ -260,15 +260,13 @@ function taskCard(t,number){
       <span class="task-number" aria-hidden="true">${number}</span>
       <button class="check" data-action="complete" title="Complete"></button>
       <div class="task-body">
-        ${parseToggleList(t.text) ? `<div class="toggle-list-heading"><button class="toggle-list-collapse" data-action="toggle-list-collapse" aria-expanded="${!t.listCollapsed}" title="${t.listCollapsed?"Expand":"Collapse"} list">${t.listCollapsed?"▸":"▾"}</button><input class="toggle-list-title-edit" data-action="toggle-list-title" type="text" value="${escapeHtml(parseToggleList(t.text).title)}" aria-label="Toggle list title" title="Edit checklist title"><span class="toggle-list-count">${parseToggleList(t.text).length} items</span></div>${t.listCollapsed?"":toggleListMarkup(t)}` : `<textarea class="task-title-edit" data-action="title" rows="1" aria-label="Task title" spellcheck="false">${escapeHtml(parseColorSyntax(t.text).body)}</textarea>`}
-      </div>
-      <div class="card-tools">
-        <button class="insert-below" data-action="insert-below" aria-label="Add an empty task below" title="Add empty task below"></button>
-        <button class="icon-btn reorder-arrow" data-action="up" title="Move task up" aria-label="Move task up">↑</button>
-        <button class="icon-btn reorder-arrow" data-action="down" title="Move task down" aria-label="Move task down">↓</button>
-        <button class="icon-btn zone-arrow" data-action="move-later" title="${t.zone==="later"?"Move to Today":"Move to Not Today"}" aria-label="${t.zone==="later"?"Move to Today":"Move to Not Today"}">${t.zone==="later"?"⇦":"⇨"}</button>
-        <input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task for bulk actions" title="Select task for bulk actions">
-        <button class="expand" data-action="expand" title="Expand">${t.open?"⌃":"⌄"}</button>
+        ${parseToggleList(t.text) ? `<div class="toggle-list-heading"><button class="toggle-list-collapse" data-action="toggle-list-collapse" aria-expanded="${!t.listCollapsed}" title="${t.listCollapsed?"Expand":"Collapse"} list">${t.listCollapsed?"▸":"▾"}</button><input class="toggle-list-title-edit" data-action="toggle-list-title" type="text" value="${escapeHtml(parseToggleList(t.text).title)}" aria-label="Edit checklist title" title="Edit checklist title"><span class="toggle-list-count">${parseToggleList(t.text).length} items</span></div>${t.listCollapsed?"":toggleListMarkup(t)}` : `<div class="task-title-edit" data-action="title" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Task title" spellcheck="false"><div class="card-tools" contenteditable="false">
+          <button class="icon-btn reorder-arrow" data-action="up" title="Move task up" aria-label="Move task up">↑</button>
+          <button class="icon-btn reorder-arrow" data-action="down" title="Move task down" aria-label="Move task down">↓</button>
+          <button class="icon-btn zone-arrow" data-action="move-later" title="${t.zone==="later"?"Move to Today":"Move to Not Today"}" aria-label="${t.zone==="later"?"Move to Today":"Move to Not Today"}">${t.zone==="later"?"⇦":"⇨"}</button>
+          <input class="select-task" type="checkbox" data-action="select-task" ${selectedTaskIds.has(t.id)?"checked":""} aria-label="Select task for bulk actions" title="Select task for bulk actions">
+          <button class="expand" data-action="expand" title="Expand">${t.open?"⌃":"⌄"}</button>
+        </div><span class="task-text-content" data-task-text>${escapeHtml(parseColorSyntax(t.text).body).replace(/\n/g,"<br>")}</span></div>`}
       </div>
     </div>
     <div class="details">
@@ -401,6 +399,25 @@ function bindToggleRowControls(card,t,syncToggleText){
   });
 }
 
+function taskEditorText(editor){
+  const text=editor?.querySelector('[data-task-text]');
+  if(!text)return '';
+  return (text.innerText||text.textContent||'').replace(/\u00a0/g,' ').replace(/\r/g,'');
+}
+function insertTaskEditorBreak(editor){
+  const text=editor.querySelector('[data-task-text]');if(!text)return;
+  const selection=window.getSelection();let range;
+  if(selection&&selection.rangeCount&&text.contains(selection.anchorNode))range=selection.getRangeAt(0);
+  else{range=document.createRange();range.selectNodeContents(text);range.collapse(false);}
+  range.deleteContents();const br=document.createElement('br');range.insertNode(br);
+  range.setStartAfter(br);range.collapse(true);selection.removeAllRanges();selection.addRange(range);
+}
+function focusTaskEditor(editor){
+  editor?.focus();const text=editor?.querySelector('[data-task-text]');if(!text)return;
+  const range=document.createRange();range.selectNodeContents(text);range.collapse(false);
+  const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+}
+
 let lastArrowPointer=null;
 function bindActions(){
   document.querySelectorAll(".card").forEach(card=>{
@@ -428,7 +445,7 @@ function bindActions(){
       e.stopPropagation();t.listCollapsed=!t.listCollapsed;save();render();
     };
     // Keep native drag from hijacking caret placement and text selection in every editor.
-    card.querySelectorAll('input[type="text"], textarea').forEach(editor=>{
+    card.querySelectorAll('input[type="text"], textarea, [contenteditable="true"]').forEach(editor=>{
       editor.draggable=false;
       editor.addEventListener("pointerdown",e=>{
         card.draggable=false;
@@ -442,16 +459,13 @@ function bindActions(){
       control.addEventListener("pointerdown",e=>e.stopPropagation());
     });
     const titleEditor=card.querySelector('[data-action="title"]');
-    const fitTitle=()=>{if(!titleEditor)return;titleEditor.style.height="24px";titleEditor.style.height=Math.max(24,titleEditor.scrollHeight)+"px";};
+    const fitTitle=()=>{if(titleEditor)titleEditor.style.height="auto";};
     const fitTitleKeepingViewport=()=>{
-      if(!titleEditor)return;
-      const beforeTop=titleEditor.getBoundingClientRect().top;
-      const cardsScroller=card.closest(".cards");
-      fitTitle();
+      if(!titleEditor)return;const beforeTop=titleEditor.getBoundingClientRect().top;
+      const cardsScroller=card.closest(".cards");fitTitle();
       requestAnimationFrame(()=>{
-        const drift=titleEditor.getBoundingClientRect().top-beforeTop;
-        if(Math.abs(drift)<1)return;
-        if(cardsScroller && cardsScroller.scrollHeight>cardsScroller.clientHeight){
+        const drift=titleEditor.getBoundingClientRect().top-beforeTop;if(Math.abs(drift)<1)return;
+        if(cardsScroller&&cardsScroller.scrollHeight>cardsScroller.clientHeight){
           const before=cardsScroller.scrollTop;
           cardsScroller.scrollTop=Math.max(0,Math.min(cardsScroller.scrollHeight-cardsScroller.clientHeight,before+drift));
           const remainder=drift-(cardsScroller.scrollTop-before);
@@ -461,33 +475,34 @@ function bindActions(){
     };
     fitTitle();
     if(titleEditor)titleEditor.addEventListener("input",e=>{
-      const typedColor=parseColorSyntax(e.currentTarget.value);
-      const currentColor=parseColorSyntax(t.text).name;
-      t.text=typedColor.name?e.currentTarget.value:withColorSyntax(e.currentTarget.value,currentColor);fitTitleKeepingViewport();save();
+      const value=taskEditorText(e.currentTarget);
+      const typedColor=parseColorSyntax(value);const currentColor=parseColorSyntax(t.text).name;
+      t.text=typedColor.name?value:withColorSyntax(value,currentColor);
+      fitTitleKeepingViewport();save();
       const preview=card.querySelector('.toggle-list');
       const markup=toggleListMarkup(t);
       if(preview){if(markup)preview.outerHTML=markup;else preview.remove();}
       else if(markup)titleEditor.insertAdjacentHTML('afterend',markup);
     });
     if(titleEditor)titleEditor.addEventListener("keydown",e=>{
-      const mobileEnter=e.key==="Enter" && (window.matchMedia("(max-width: 640px)").matches || navigator.maxTouchPoints>0);
-      if(e.key==="Enter" && (e.altKey || mobileEnter)){
-        e.preventDefault();const el=e.currentTarget;const start=el.selectionStart,end=el.selectionEnd;
-        el.setRangeText("\n",start,end,"end");el.dispatchEvent(new Event("input",{bubbles:true}));return;
+      const mobileEnter=e.key==="Enter"&&(window.matchMedia("(max-width: 640px)").matches||navigator.maxTouchPoints>0);
+      if(e.key==="Enter"&&(e.altKey||mobileEnter)){
+        e.preventDefault();insertTaskEditorBreak(e.currentTarget);e.currentTarget.dispatchEvent(new Event("input",{bubbles:true}));return;
       }
       if(e.key==="Enter"){e.preventDefault();e.currentTarget.blur();}
     });
-    // Native dragging on the parent article can steal mouse clicks from the textarea,
-    // preventing caret placement and text selection. Disable parent dragging while editing.
-    if(titleEditor)titleEditor.addEventListener("pointerdown",e=>{
-      card.draggable=false;
-      e.stopPropagation();
+    if(titleEditor)titleEditor.addEventListener("paste",e=>{
+      e.preventDefault();const plain=(e.clipboardData||window.clipboardData).getData("text/plain");
+      const sel=window.getSelection();if(!sel||!sel.rangeCount)return;
+      const range=sel.getRangeAt(0);range.deleteContents();const frag=document.createDocumentFragment();
+      plain.split(/\r?\n/).forEach((line,i)=>{if(i)frag.appendChild(document.createElement("br"));frag.appendChild(document.createTextNode(line));});
+      range.insertNode(frag);sel.collapseToEnd();e.currentTarget.dispatchEvent(new Event("input",{bubbles:true}));
     });
     if(titleEditor){
+      titleEditor.addEventListener("pointerdown",e=>{if(e.target.closest('.card-tools'))return;card.draggable=false;e.stopPropagation();});
       titleEditor.addEventListener("focus",()=>{card.draggable=false;});
       titleEditor.addEventListener("blur",()=>{card.draggable=true;});
-      titleEditor.draggable=false;
-      titleEditor.addEventListener("dragstart",e=>e.preventDefault());
+      titleEditor.draggable=false;titleEditor.addEventListener("dragstart",e=>e.preventDefault());
     }
     card.querySelector('[data-action="notes"]').oninput=e=>{
       t.notes=e.target.value; save();
@@ -534,7 +549,7 @@ function bindActions(){
       const newPlus=newCard?.querySelector('[data-action="insert-below"]');
       if(newCard)newCard.classList.add("just-added");
       if(newPlus)newPlus.classList.add("fade-after-click");
-      if(next){next.focus();next.setSelectionRange(0,0);}
+      if(next)focusTaskEditor(next);
       toast("Added empty box ✨");
     };
   });
