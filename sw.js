@@ -1,4 +1,3 @@
-
 const CACHE_NAME = 'daily-sort-shell-v53';
 const APP_SCOPE = self.registration.scope;
 self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
