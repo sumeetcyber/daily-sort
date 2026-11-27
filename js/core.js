@@ -1240,23 +1240,40 @@ function setHeightMode(dynamic, persist=true){
   if(control){control.classList.toggle("is-dynamic",enabled);control.setAttribute("aria-pressed",enabled?"true":"false");control.dataset.mode=enabled?"dynamic":"fixed";}
   const label=document.getElementById("heightModeLabel");
   if(label)label.textContent=enabled?"Dynamic":"Fixed";
-  const compact=window.matchMedia("(max-width: 700px) and (orientation: portrait)").matches;
-  const available=Math.max(300,window.innerHeight-(compact?250:245));
-  const panelHeight=enabled?Math.round(available*.82):available;
   document.querySelectorAll(".panel").forEach(panel=>{
     const cards=panel.querySelector(".cards");
-    panel.style.height=panelHeight+"px";
-    panel.style.minHeight="0";
-    panel.style.maxHeight=panelHeight+"px";
     panel.style.display="flex";
     panel.style.flexDirection="column";
-    if(cards){
-      cards.style.height="0";
-      cards.style.minHeight="0";
-      cards.style.maxHeight="none";
-      cards.style.flex="1 1 auto";
-      cards.style.overflowY="auto";
-      cards.style.overscrollBehavior="contain";
+    panel.style.minHeight="0";
+    if(enabled){
+      // Dynamic means the column follows its task content; no viewport-height cap.
+      panel.style.height="auto";
+      panel.style.minHeight="0";
+      panel.style.maxHeight="none";
+      panel.style.overflow="visible";
+      if(cards){
+        cards.style.height="auto";
+        cards.style.minHeight="0";
+        cards.style.maxHeight="none";
+        cards.style.flex="0 0 auto";
+        cards.style.overflowY="visible";
+        cards.style.overscrollBehavior="auto";
+      }
+    }else{
+      const compact=window.matchMedia("(max-width: 700px) and (orientation: portrait)").matches;
+      const available=Math.max(300,window.innerHeight-(compact?250:245));
+      panel.style.height=available+"px";
+      panel.style.minHeight="0";
+      panel.style.maxHeight=available+"px";
+      panel.style.overflow="hidden";
+      if(cards){
+        cards.style.height="0";
+        cards.style.minHeight="0";
+        cards.style.maxHeight="none";
+        cards.style.flex="1 1 auto";
+        cards.style.overflowY="auto";
+        cards.style.overscrollBehavior="contain";
+      }
     }
   });
   if(persist)try{localStorage.setItem("daily-sort-panel-height",enabled?"dynamic":"fixed")}catch(e){}
@@ -1265,11 +1282,20 @@ function setHeightMode(dynamic, persist=true){
 document.getElementById("togglePanelHeight").addEventListener("click",e=>{e.preventDefault();e.stopPropagation();setHeightMode(document.body.dataset.panelHeight!=="dynamic");});
 window.addEventListener("resize",()=>{
   const dynamic=document.body.dataset.panelHeight==="dynamic";
+  if(dynamic){
+    document.querySelectorAll(".panel").forEach(panel=>{
+      panel.style.height="auto";
+      panel.style.maxHeight="none";
+      panel.style.overflow="visible";
+      const cards=panel.querySelector(".cards");
+      if(cards){cards.style.height="auto";cards.style.maxHeight="none";cards.style.flex="0 0 auto";cards.style.overflowY="visible";}
+    });
+    return;
+  }
   const compact=window.matchMedia("(max-width: 700px) and (orientation: portrait)").matches;
   const available=Math.max(300,window.innerHeight-(compact?250:245));
-  const panelHeight=dynamic?Math.round(available*.82):available;
   document.querySelectorAll(".panel").forEach(panel=>{
-    panel.style.height=panelHeight+"px";panel.style.maxHeight=panelHeight+"px";
+    panel.style.height=available+"px";panel.style.maxHeight=available+"px";
     const cards=panel.querySelector(".cards");
     if(cards){cards.style.height="0";cards.style.flex="1 1 auto";cards.style.overflowY="auto";}
   });
