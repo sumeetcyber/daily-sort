@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" id="themeColorMeta" content="#101f32">
-<meta name="daily-sort-build" content="2026-11-26-v35">
+<meta name="daily-sort-build" content="2026-11-27-v40">
 <link rel="manifest" id="appManifest" href="./manifest.webmanifest?v=32">
 <link rel="icon" id="dynamicFavicon" type="image/svg+xml" href="./icons/daily-sort.svg?v=32">
 <link rel="shortcut icon" href="./favicon.ico?v=32">
@@ -1480,7 +1480,7 @@ body[data-theme-motion="rain"]::before{opacity:.3!important;background-image:rep
 
 
 
-/* v39: deliberate 3×3 theme grids and continuous gradient emulsion (no flashing, no particles). */
+/* v40: deliberate 3×3 theme grids and continuous gradient emulsion (no flashing, no particles). */
 .theme-family .theme-mode .theme-grid{
   display:grid!important;
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
@@ -1745,7 +1745,7 @@ body.dynamic-panels .cards{min-height:0!important;height:auto!important;max-heig
 }
 
 
-/* v39: content-sized task cards + independently scrollable columns in both height modes. */
+/* v40: content-sized task cards + independently scrollable columns in both height modes. */
 .card{height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important;overflow:visible!important}
 .cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important}
 .cards>.card{width:100%!important;flex:0 0 auto!important;margin:0!important}
@@ -1801,7 +1801,7 @@ body.dynamic-panels .panel>.cards{flex:1 1 auto!important;height:0!important;min
 
 
 
-/* v39: definitive task-card grid. Keep text in the flexible middle column. */
+/* v40: definitive task-card grid. Keep text in the flexible middle column. */
 .card-main{
   display:grid!important;
   grid-template-columns:20px minmax(0,1fr) 40px!important;
@@ -1850,7 +1850,7 @@ body.show-task-numbers .card-main>.card-tools{grid-area:tools!important;grid-col
 }
 
 
-/* v39: task cards are classified by rendered title lines; one source of truth. */
+/* v40: task cards are classified by rendered title lines; one source of truth. */
 .card{position:relative!important;height:auto!important;min-height:0!important;flex:0 0 auto!important;align-self:stretch!important;overflow:visible!important}
 .card>.card-main{
   position:relative!important;display:grid!important;box-sizing:border-box!important;
@@ -1925,6 +1925,88 @@ body.show-task-numbers .card>.card-main>.task-number{
 }
 .cards{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:9px!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important}
 .cards>.card{width:100%!important;margin:0!important;flex:0 0 auto!important}
+
+
+/* v40: task card silhouette matches the top-right control-notch reference. */
+.card{overflow:hidden!important;border-radius:16px!important}
+.card>.card-main{
+  display:block!important;position:relative!important;isolation:isolate!important;
+  min-height:116px!important;height:auto!important;padding:0!important;
+  border-radius:inherit!important;overflow:hidden!important;
+  background:var(--panel)!important;
+}
+.card>.card-main::before{
+  content:"";position:absolute;z-index:0;top:0;right:0;
+  width:min(410px,46%);height:72px;
+  background:var(--bg)!important;
+  border-left:1px solid var(--line);border-bottom:1px solid var(--line);
+  border-bottom-left-radius:13px;
+  pointer-events:none;
+}
+.card>.card-main>.task-number{
+  position:absolute!important;z-index:2;left:12px;top:12px;
+}
+.card>.card-main>.check{
+  position:absolute!important;z-index:2;left:14px;top:88px;
+  margin:0!important;
+}
+.card>.card-main>.task-body{
+  display:block!important;position:relative!important;z-index:1;
+  width:100%!important;max-width:none!important;min-width:0!important;
+  min-height:116px!important;padding:82px 16px 14px 48px!important;
+  overflow:visible!important;box-sizing:border-box!important;
+}
+.card>.card-main>.task-body>.task-title-edit{
+  display:block!important;width:100%!important;max-width:100%!important;
+  min-width:0!important;height:auto!important;min-height:28px!important;
+  max-height:none!important;padding:3px 4px!important;margin:0!important;
+  resize:none!important;white-space:pre-wrap!important;overflow-wrap:break-word!important;
+  word-break:normal!important;line-height:1.45!important;box-sizing:border-box!important;
+}
+.card>.card-main>.card-tools{
+  position:absolute!important;z-index:3;top:8px!important;right:10px!important;
+  width:auto!important;min-width:0!important;max-width:calc(46% - 20px)!important;
+  height:48px!important;display:flex!important;flex-direction:row!important;
+  flex-wrap:nowrap!important;align-items:center!important;justify-content:center!important;
+  gap:9px!important;margin:0!important;padding:4px 8px!important;
+  border:1px solid var(--line)!important;border-radius:9px!important;
+  background:var(--panel)!important;box-sizing:border-box!important;
+}
+.card>.card-main>.card-tools .icon-btn,
+.card>.card-main>.card-tools .insert-below,
+.card>.card-main>.card-tools .expand{
+  display:grid!important;place-items:center!important;
+  flex:0 0 38px!important;width:38px!important;height:38px!important;
+  min-width:38px!important;min-height:38px!important;max-width:38px!important;
+  padding:0!important;margin:0!important;line-height:1!important;
+  text-align:center!important;box-sizing:border-box!important;
+}
+.card>.card-main>.card-tools .select-task{
+  flex:0 0 22px!important;width:22px!important;height:22px!important;
+  min-width:22px!important;min-height:22px!important;margin:0!important;
+}
+.card>.card-main>.card-tools .insert-below{display:none!important}
+.card>.card-main>.card-tools .expand{flex-basis:28px!important;width:28px!important;min-width:28px!important}
+.card>.details{position:relative;z-index:1}
+.card.is-single-line>.card-main{min-height:116px!important}
+.card.is-multiline>.card-main{min-height:180px!important}
+body.show-task-numbers .card>.card-main>.task-number{display:grid!important}
+@media(max-width:700px){
+  .card>.card-main::before{width:min(310px,58%);height:66px}
+  .card>.card-main>.card-tools{
+    top:7px!important;right:7px!important;max-width:calc(58% - 14px)!important;
+    height:46px!important;gap:4px!important;padding:3px 5px!important;
+  }
+  .card>.card-main>.card-tools .icon-btn{flex-basis:32px!important;width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important}
+  .card>.card-main>.card-tools .expand{flex-basis:24px!important;width:24px!important;min-width:24px!important}
+  .card>.card-main>.task-body{padding:76px 12px 12px 44px!important}
+  .card>.card-main>.check{top:80px!important;left:12px!important}
+}
+@media(max-width:390px){
+  .card>.card-main>.card-tools{max-width:calc(100% - 76px)!important;gap:2px!important}
+  .card>.card-main>.card-tools .icon-btn{flex-basis:29px!important;width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important}
+  .card>.card-main>.task-body{padding-left:40px!important}
+}
 </style>
 
 </head>
@@ -3578,7 +3660,7 @@ setInterval(syncOnlineClock,15*60*1000);
 <script>
 /* v28 cache freshness: check after tab return, focus, and page restore. */
 if("serviceWorker" in navigator && location.protocol==="https:"){
-  const DS_SW_BUILD="2026-11-26-v35";
+  const DS_SW_BUILD="2026-11-27-v40";
   let dsRegistration=null,dsLastFreshCheck=0;
   let dsHadController=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{
@@ -3625,7 +3707,7 @@ setTimeout(scheduleLandscapeFit,80);
 </script>
 
 <script>
-/* v39: Escape closes the Settings / session dialog. */
+/* v40: Escape closes the Settings / session dialog. */
 document.addEventListener("keydown", function(event) {
   if (event.key !== "Escape") return;
   const settingsDialog = document.getElementById("sessionModal");
@@ -3638,7 +3720,7 @@ document.addEventListener("keydown", function(event) {
 </script>
 
 <script>
-/* v39: classify cards by actual rendered line count, not character count. */
+/* v40: classify cards by actual rendered line count, not character count. */
 (function(){
   function classifyCard(card){
     const editor=card.querySelector('.task-title-edit');
