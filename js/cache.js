@@ -1,6 +1,5 @@
-/* v28 cache freshness: check after tab return, focus, and page restore. */
 if("serviceWorker" in navigator && location.protocol==="https:"){
-  const DS_SW_BUILD="2026-11-27-v41";
+  const DS_SW_BUILD="2026-11-27-v50";
   let dsRegistration=null,dsLastFreshCheck=0;
   let dsHadController=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{
@@ -23,8 +22,6 @@ if("serviceWorker" in navigator && location.protocol==="https:"){
   window.addEventListener("focus",()=>checkDailySortCache());
   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkDailySortCache(true);});
 }
-
-// Phone landscape: stretch both task columns to the visible viewport, leaving ~3 cm below.
 function fitLandscapeBoard(){
   const mq=window.matchMedia("(max-width: 900px) and (orientation: landscape)");
   if(!mq.matches || document.body.classList.contains("dynamic-panels"))return;
