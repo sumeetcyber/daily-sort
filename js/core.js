@@ -307,7 +307,7 @@ function renderCards(){
       else if(!q||[parseColorSyntax(item.text).body,item.notes||""].join("\n").toLocaleLowerCase().includes(q))group.items.push(item);
     });
     if(group.header||group.items.length)groups.push(group);
-    const markup=groups.map(g=>{if(!g.header&&!g.items.length)return "";const hi=g.header?parseColorSyntax(g.header.text):null;const h=g.header?`<div class="section-header-card ${selectedTaskIds.has(g.header.id)?"selected":""}" role="heading" aria-level="2" draggable="true" data-id="${g.header.id}" ${hi.color?`data-task-color style="--task-bg:${hi.color};--task-fg:${hi.textColor||"#fff"}"`:""}><span class="section-header-title" contenteditable="true" spellcheck="false" aria-label="Edit section header">${escapeHtml(hi.body)}</span></div>`:"";return `<section class="task-section">${h}${g.items.map(t=>taskCard(t,all.indexOf(t)+1)).join("")}</section>`;}).join("");
+    const markup=groups.map(g=>{if(!g.header&&!g.items.length)return "";const hi=g.header?parseColorSyntax(g.header.text):null;const h=g.header?`<div class="section-header-card ${selectedTaskIds.has(g.header.id)?"selected":""}" role="heading" aria-level="2" draggable="true" data-id="${g.header.id}" ${hi.color?`data-task-color style="--task-bg:${hi.color};--task-fg:${hi.textColor||"#fff"}"`:""}><span class="section-header-title" contenteditable="${selectedTaskIds.has(g.header.id)?"false":"true"}" spellcheck="false" aria-label="Edit section header">${escapeHtml(hi.body)}</span></div>`:"";return `<section class="task-section">${h}${g.items.map(t=>taskCard(t,all.indexOf(t)+1)).join("")}</section>`;}).join("");
     container.innerHTML=markup||(q?`<div class="empty search-empty">No ${zone==="today"?"Today":"Not Today"} tasks match “${escapeHtml(q)}”.</div>`:`<div class="empty">${zone==="today"?"No tasks for today.<br>Paste a bunch above and start sorting.":"Nothing parked here.<br>Drag a task here when it isn't today's problem."}</div>`);
   };
   renderZone("today",document.getElementById("todayCards"),todayAll);renderZone("later",document.getElementById("laterCards"),laterAll);
@@ -320,20 +320,35 @@ function bindHeaderActions(){
     const item=state.tasks.find(t=>t.id===hid);
     if(!item)return;
     const editor=header.querySelector(".section-header-title");
-    header.addEventListener("click",e=>{
-      if(e.target===editor)return;
-      if(selectedTaskIds.has(hid))selectedTaskIds.delete(hid);else selectedTaskIds.add(hid);
-      header.classList.toggle("selected",selectedTaskIds.has(hid));
+    const isSelected=()=>selectedTaskIds.has(hid);
+    const syncSelection=()=>{
+      const selected=isSelected();
+      header.classList.toggle("selected",selected);
+      editor.setAttribute("contenteditable",selected?"false":"true");
+      editor.setAttribute("aria-readonly",selected?"true":"false");
+      header.setAttribute("aria-selected",selected?"true":"false");
       updateSelectionCount();
+    };
+    header.addEventListener("click",e=>{
+      if(e.target===editor||editor.contains(e.target))return;
+      if(isSelected())selectedTaskIds.delete(hid);else selectedTaskIds.add(hid);
+      syncSelection();
     });
-    editor.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();editor.blur();}});
-    editor.addEventListener("blur",()=>{
-      const value=(editor.innerText||editor.textContent||"").trim();
+    editor.addEventListener("keydown",e=>{
+      if(e.key==="Enter"){e.preventDefault();editor.blur();}
+      if(e.key==="Escape"){e.preventDefault();editor.blur();}
+    });
+    editor.addEventListener("input",()=>{
+      const value=(editor.innerText||editor.textContent||"").replace(/\r/g,"").trim();
       const parsed=parseColorSyntax(item.text);
       item.text=withColorSyntax(value,parsed.name);
-      save();render();
     });
-    editor.addEventListener("input",()=>{item.text=withColorSyntax((editor.innerText||editor.textContent||"").trim(),parseColorSyntax(item.text).name);});
+    editor.addEventListener("blur",()=>{
+      const value=(editor.innerText||editor.textContent||"").replace(/\r/g,"").trim();
+      const parsed=parseColorSyntax(item.text);
+      item.text=withColorSyntax(value,parsed.name);
+      save();
+    });
     editor.addEventListener("pointerdown",e=>e.stopPropagation());
   });
 }

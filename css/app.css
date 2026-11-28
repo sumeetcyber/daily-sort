@@ -2074,3 +2074,27 @@ body:not(.dynamic-panels) .panel>.cards{
 @media(max-width:360px){
  .arrange-tools{grid-template-columns:minmax(0,1fr)!important}
 }
+
+/* v64: keep the Today / Not Today headings prominent in every layout. */
+.panel-head>div:first-child{
+  flex:1 1 auto!important;
+  min-width:0!important;
+}
+.panel-title{
+  font-size:32px!important;
+  font-weight:900!important;
+  line-height:1.08!important;
+  letter-spacing:-.8px!important;
+  white-space:normal!important;
+  overflow-wrap:normal!important;
+}
+.panel-head-actions{flex:0 0 auto!important}
+
+/* On phones, let a swipe pass through an empty or already-scrolled task list
+   to the document, rather than trapping the gesture inside the fixed panel. */
+@media(max-width:900px) and (pointer:coarse){
+  body:not(.dynamic-panels) .panel>.cards{
+    overscroll-behavior-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+  }
+}

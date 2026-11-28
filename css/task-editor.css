@@ -199,3 +199,22 @@ body.show-task-numbers #laterCards .card .card-tools .toolbar-task-number{displa
 .section-header-card[data-task-color]{background:var(--task-bg)!important;color:var(--task-fg)!important}
 .section-header-card[data-task-color] .section-header-title{color:var(--task-fg)!important}
 .section-header-card.drop-target{outline:3px dashed var(--accent);outline-offset:2px}
+
+/* Header selection locks editing and gives the whole capsule a clear selected state. */
+.section-header-card.selected{
+  outline:3px solid var(--accent,#78baff)!important;
+  outline-offset:3px;
+  box-shadow:0 0 0 5px color-mix(in srgb,var(--accent,#78baff) 26%,transparent),0 3px 14px rgba(0,0,0,.28)!important;
+  filter:saturate(1.18) brightness(1.08);
+}
+.section-header-card.selected .section-header-title{cursor:default;caret-color:transparent;pointer-events:none}
+.section-header-card:not(.selected) .section-header-title{
+  display:block;width:100%;min-width:0;max-width:100%;
+  overflow-x:auto;overflow-y:hidden;text-overflow:clip;
+  white-space:nowrap;text-align:center;user-select:text;
+  cursor:text;outline:none;caret-color:currentColor;
+  scrollbar-width:none;
+}
+.section-header-card:not(.selected) .section-header-title::-webkit-scrollbar{display:none}
+.section-header-card.selected{cursor:pointer}
+.section-header-card:not(.selected){cursor:grab}
