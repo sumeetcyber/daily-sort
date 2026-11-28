@@ -191,3 +191,11 @@ body.show-task-numbers #laterCards .card .card-tools .toolbar-task-number{displa
 #todayCards .card[data-task-color] .toggle-list-row input[type="text"],#laterCards .card[data-task-color] .toggle-list-row input[type="text"]{color:var(--task-fg)!important;background:color-mix(in srgb,var(--task-fg) 8%,var(--task-bg))!important;border-color:color-mix(in srgb,var(--task-fg) 25%,var(--task-bg))!important}
 #todayCards .card[data-task-color] .toggle-list-row input[type="checkbox"],#laterCards .card[data-task-color] .toggle-list-row input[type="checkbox"]{accent-color:var(--task-fg)!important}
 #todayCards .card[data-task-color] .details textarea,#laterCards .card[data-task-color] .details textarea{color:var(--task-fg)!important;background:color-mix(in srgb,var(--task-fg) 8%,var(--task-bg))!important}
+
+.section-header-card{cursor:grab;user-select:none}
+.section-header-card:active{cursor:grabbing}
+.section-header-card.selected{outline:3px solid var(--accent,#72b8ff);outline-offset:3px;box-shadow:0 0 0 5px color-mix(in srgb,var(--accent,#72b8ff) 20%,transparent)}
+.section-header-card[contenteditable],.section-header-title{user-select:text}
+.section-header-card[data-task-color]{background:var(--task-bg)!important;color:var(--task-fg)!important}
+.section-header-card[data-task-color] .section-header-title{color:var(--task-fg)!important}
+.section-header-card.drop-target{outline:3px dashed var(--accent);outline-offset:2px}

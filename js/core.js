@@ -103,14 +103,27 @@ function initDrafts(){
 }
 
 function parseBulkTasks(input){
-  const source=String(input||"");const tasks=[];
+  const source=String(input||"");
+  const tasks=[];
   const pushUnwrapped=chunk=>{
     const lines=chunk.split(/\r?\n/);let plain=[];
     const flush=()=>{plain.map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));plain=[];};
     for(let i=0;i<lines.length;i++){
       const line=lines[i];
-      const header=line.match(/^\s*\(\(\(\(\(\(\(\((.*?)\)\)\)\)\)\)\)\)\s*$/);
-      if(header){flush();if(header[1].trim())tasks.push({__dailySortHeader:true,title:header[1].trim()});continue;}
+      const standalone=line.match(/^\s*\(\(\(\(\(\(\(\((.*?)\)\)\)\)\)\)\)\)\s*$/);
+      if(standalone){flush();if(standalone[1].trim())tasks.push({__dailySortHeader:true,title:standalone[1].trim()});continue;}
+      const open=line.match(/^\s*\(\(\(\(\(\(\(\((.*?)\s*$/);
+      if(open&&!/\)\)\)\)\)\)\)\)$/.test(open[1])){
+        let close=i+1;
+        while(close<lines.length&&!/^\s*\)\)\)\)\)\)\)\)\s*$/.test(lines[close]))close++;
+        if(close<lines.length){
+          flush();
+          const title=open[1].trim();
+          tasks.push({__dailySortHeader:true,title});
+          lines.slice(i+1,close).map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));
+          i=close;continue;
+        }
+      }
       const titled=/^\s*\+\+\+\+[ \t]+.+?[ \t]+\/\/\/\/\s*$/.test(line);
       if(titled){let end=i+1;while(end<lines.length&&lines[end].trim()!=="++++")end++;
         if(end<lines.length){flush();const content=lines.slice(i+1,end).join("\n").trim();const tm=line.match(/^\s*\+\+\+\+[ \t]+(.+?)[ \t]+\/\/\/\/\s*$/);tasks.push(`++++ ${tm[1].trim()} ////\n${content}\n++++`);i=end;continue;}
@@ -148,16 +161,33 @@ function addTasksFromText(zone="today"){
   toast((lines.length===1?"Added":""+lines.length+" added")+" to "+(zone==="later"?"Not Today":"Today")+" ✨");
 }
 function dumpZone(zone){
-  const selected=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
-  if(!selected.length){toast("No tasks to dump");return;}
+  const sequence=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
+  if(!sequence.length){toast("No tasks to dump");return;}
+  const output=[];let i=0;
+  while(i<sequence.length){
+    const item=sequence[i];
+    if(item.isHeader){
+      const children=[];let j=i+1;
+      while(j<sequence.length&&!sequence[j].isHeader){
+        const t=sequence[j],notes=String(t.notes??"").trim();
+        const body=notes?String(t.text??"")+"\n\n~~~~Notes:\n"+notes+"\n~~~~":String(t.text??"");
+        children.push(body.includes("\n")||body.includes("\r")?">>>>"+body+"<<<<":body);
+        j++;
+      }
+      if(children.length)output.push("(((((((( "+String(item.text??"")+"\n"+children.join("\n")+"\n))))))))");
+      else output.push("(((((((( "+String(item.text??"")+" ))))))))");
+      i=j;continue;
+    }
+    const notes=String(item.notes??"").trim();
+    const body=notes?String(item.text??"")+"\n\n~~~~Notes:\n"+notes+"\n~~~~":String(item.text??"");
+    output.push(body.includes("\n")||body.includes("\r")?">>>>"+body+"<<<<":body);i++;
+  }
   const box=document.getElementById("bulkInput");
-  const existing=box.value.trim();
-  box.value=[existing,...selected.map(t=>{if(t.isHeader)return "(((((((( "+String(t.text??"")+" ))))))))";const title=String(t.text??"");const notes=String(t.notes??"").trim();const combined=notes?title+"\n\n~~~~Notes:\n"+notes+"\n~~~~":title;return formatTaskForPaste(combined);})].filter(Boolean).join("\n");
+  box.value=[box.value.trim(),...output].filter(Boolean).join("\n");
   persistDraft();
-  const ids=new Set(selected.map(t=>t.id));
-  state.tasks=state.tasks.filter(t=>!ids.has(t.id));
-  save();render();box.focus();
-  toast(selected.length+" task titles moved to the paste box");
+  const ids=new Set(sequence.map(t=>t.id));state.tasks=state.tasks.filter(t=>!ids.has(t.id));
+  selectedTaskIds.clear();save();render();box.focus();
+  toast(sequence.length+" entries moved to the paste box");
 }
 
 const selectedTaskIds = new Set();
@@ -277,16 +307,39 @@ function renderCards(){
       else if(!q||[parseColorSyntax(item.text).body,item.notes||""].join("\n").toLocaleLowerCase().includes(q))group.items.push(item);
     });
     if(group.header||group.items.length)groups.push(group);
-    const markup=groups.map(g=>{if(!g.header&&!g.items.length)return "";const h=g.header?`<div class="section-header-card" role="heading" aria-level="2"><span>${escapeHtml(g.header.text)}</span></div>`:"";return `<section class="task-section">${h}${g.items.map(t=>taskCard(t,all.indexOf(t)+1)).join("")}</section>`;}).join("");
+    const markup=groups.map(g=>{if(!g.header&&!g.items.length)return "";const hi=g.header?parseColorSyntax(g.header.text):null;const h=g.header?`<div class="section-header-card ${selectedTaskIds.has(g.header.id)?"selected":""}" role="heading" aria-level="2" draggable="true" data-id="${g.header.id}" ${hi.color?`data-task-color style="--task-bg:${hi.color};--task-fg:${hi.textColor||"#fff"}"`:""}><span class="section-header-title" contenteditable="true" spellcheck="false" aria-label="Edit section header">${escapeHtml(hi.body)}</span></div>`:"";return `<section class="task-section">${h}${g.items.map(t=>taskCard(t,all.indexOf(t)+1)).join("")}</section>`;}).join("");
     container.innerHTML=markup||(q?`<div class="empty search-empty">No ${zone==="today"?"Today":"Not Today"} tasks match “${escapeHtml(q)}”.</div>`:`<div class="empty">${zone==="today"?"No tasks for today.<br>Paste a bunch above and start sorting.":"Nothing parked here.<br>Drag a task here when it isn't today's problem."}</div>`);
   };
   renderZone("today",document.getElementById("todayCards"),todayAll);renderZone("later",document.getElementById("laterCards"),laterAll);
   document.getElementById("todayCount").textContent=todayAll.length;document.getElementById("laterCount").textContent=laterAll.length;
   const count=document.getElementById("searchResultCount");if(count)count.textContent=q?`${document.querySelectorAll("#todayCards .card").length+document.querySelectorAll("#laterCards .card").length} of ${todayAll.length+laterAll.length} tasks`:"All tasks";
 }
+function bindHeaderActions(){
+  document.querySelectorAll(".section-header-card").forEach(header=>{
+    const hid=header.dataset.id;
+    const item=state.tasks.find(t=>t.id===hid);
+    if(!item)return;
+    const editor=header.querySelector(".section-header-title");
+    header.addEventListener("click",e=>{
+      if(e.target===editor)return;
+      if(selectedTaskIds.has(hid))selectedTaskIds.delete(hid);else selectedTaskIds.add(hid);
+      header.classList.toggle("selected",selectedTaskIds.has(hid));
+      updateSelectionCount();
+    });
+    editor.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();editor.blur();}});
+    editor.addEventListener("blur",()=>{
+      const value=(editor.innerText||editor.textContent||"").trim();
+      const parsed=parseColorSyntax(item.text);
+      item.text=withColorSyntax(value,parsed.name);
+      save();render();
+    });
+    editor.addEventListener("input",()=>{item.text=withColorSyntax((editor.innerText||editor.textContent||"").trim(),parseColorSyntax(item.text).name);});
+    editor.addEventListener("pointerdown",e=>e.stopPropagation());
+  });
+}
 function render(){
   for(const sid of [...selectedTaskIds])if(!state.tasks.some(t=>t.id===sid))selectedTaskIds.delete(sid);
-  renderCards(); bindDnD(); bindActions(); updateSelectionCount();
+  renderCards(); bindDnD(); bindActions(); bindHeaderActions(); updateSelectionCount();
 }
 
 let movementNumberTimer=null;
@@ -540,9 +593,9 @@ function bindActions(){
 }
 
 function bindDnD(){
-  document.querySelectorAll(".card").forEach(card=>{
+  document.querySelectorAll(".card,.section-header-card").forEach(card=>{
     card.addEventListener("dragstart",e=>{
-      if(e.target.closest('input,textarea,button,select,[contenteditable="true"]')){e.preventDefault();return;}
+      if(e.target.closest('input,textarea,button,select,[contenteditable="true"]')&&!card.classList.contains("section-header-card")){e.preventDefault();return;}
       window.dragTaskId=card.dataset.id;
       e.dataTransfer.setData("text/plain",card.dataset.id);
       e.dataTransfer.effectAllowed="move";
@@ -551,7 +604,7 @@ function bindDnD(){
 
     card.addEventListener("dragend",()=>{
       card.classList.remove("dragging");
-      document.querySelectorAll(".card").forEach(c=>c.classList.remove("drop-target"));
+      document.querySelectorAll(".card,.section-header-card").forEach(c=>c.classList.remove("drop-target"));
     });
 
     card.addEventListener("dragover",e=>{
