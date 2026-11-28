@@ -104,37 +104,120 @@ function initDrafts(){
 
 function parseBulkTasks(input){
   const source=String(input||"");
+  const lines=source.split(/\r?\n/);
   const tasks=[];
-  const pushUnwrapped=chunk=>{
-    const lines=chunk.split(/\r?\n/);let plain=[];
-    const flush=()=>{plain.map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));plain=[];};
-    for(let i=0;i<lines.length;i++){
+  const sectionClose=/^\s*\){8}\s*$/;
+  const sectionOpen=/^\s*\({8}\s*(.*?)\s*$/;
+  const sectionWhole=/^\s*\({8}\s*(.*?)\s*\){8}\s*$/;
+  const toggleOpen=/^\s*\+\+\+\+[ \t]+(.+?)[ \t]+\/\/\/\/\s*$/;
+
+  // Locate a section's closing marker without mistaking text inside a >>>>...<<<<
+  // multiline task for the end of the section.
+  const findSectionEnd=(from,to)=>{
+    let insideWrappedTask=false;
+    for(let i=from;i<to;i++){
       const line=lines[i];
-      const standalone=line.match(/^\s*\(\(\(\(\(\(\(\((.*?)\)\)\)\)\)\)\)\)\s*$/);
-      if(standalone){flush();if(standalone[1].trim())tasks.push({__dailySortHeader:true,title:standalone[1].trim()});continue;}
-      const open=line.match(/^\s*\(\(\(\(\(\(\(\((.*?)\s*$/);
-      if(open&&!/\)\)\)\)\)\)\)\)$/.test(open[1])){
+      const openAt=line.indexOf(">>>>");
+      const closeAt=line.indexOf("<<<<");
+      if(insideWrappedTask){
+        if(closeAt>=0&&/^\s*$/.test(line.slice(closeAt+4)))insideWrappedTask=false;
+        continue;
+      }
+      if(openAt>=0){
+        if(closeAt<openAt||closeAt<0||!/^\s*$/.test(line.slice(closeAt+4)))insideWrappedTask=true;
+        continue;
+      }
+      if(sectionClose.test(line))return i;
+    }
+    return -1;
+  };
+
+  const parseRange=(from,to)=>{
+    let i=from;
+    while(i<to){
+      const line=lines[i];
+      if(!line.trim()){i++;continue;}
+
+      // A complete one-line marker creates a standalone section header.
+      const whole=line.match(sectionWhole);
+      if(whole){
+        tasks.push({__dailySortHeader:true,title:whole[1].trim()});
+        i++;continue;
+      }
+
+      // A section can contain ordinary tasks AND wrapped multiline tasks. Parse
+      // the entire section as one range, rather than splitting the input at each
+      // wrapped task first (which used to lose the DATES header).
+      const opening=line.match(sectionOpen);
+      if(opening&&!sectionClose.test(line)){
+        const closingIndex=findSectionEnd(i+1,to);
+        tasks.push({__dailySortHeader:true,title:opening[1].trim()});
+        if(closingIndex>=0){
+          parseRange(i+1,closingIndex);
+          i=closingIndex+1;
+        }else{
+          // Be forgiving if the final closing marker was omitted: retain the
+          // header and treat the rest of the pasted content as its tasks.
+          parseRange(i+1,to);
+          i=to;
+        }
+        continue;
+      }
+
+      // Ignore an orphan closing marker instead of creating it as a bogus task.
+      if(sectionClose.test(line)){i++;continue;}
+
+      // Preserve the established checklist syntax as one task.
+      const titled=line.match(toggleOpen);
+      if(titled){
         let close=i+1;
-        while(close<lines.length&&!/^\s*\)\)\)\)\)\)\)\)\s*$/.test(lines[close]))close++;
-        if(close<lines.length){
-          flush();
-          const title=open[1].trim();
-          tasks.push({__dailySortHeader:true,title});
-          lines.slice(i+1,close).map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));
-          i=close;continue;
+        while(close<to&&lines[close].trim()!=="++++")close++;
+        if(close<to){
+          const content=lines.slice(i+1,close).join("\n").trim();
+          tasks.push(`++++ ${titled[1].trim()} ////\n${content}\n++++`);
+          i=close+1;continue;
         }
       }
-      const titled=/^\s*\+\+\+\+[ \t]+.+?[ \t]+\/\/\/\/\s*$/.test(line);
-      if(titled){let end=i+1;while(end<lines.length&&lines[end].trim()!=="++++")end++;
-        if(end<lines.length){flush();const content=lines.slice(i+1,end).join("\n").trim();const tm=line.match(/^\s*\+\+\+\+[ \t]+(.+?)[ \t]+\/\/\/\/\s*$/);tasks.push(`++++ ${tm[1].trim()} ////\n${content}\n++++`);i=end;continue;}
+
+      // Wrapped multiline tasks are opaque to section parsing and remain a
+      // single task even when their closing <<<< appears on the final text line.
+      const wrappedAt=line.indexOf(">>>>");
+      if(wrappedAt>=0){
+        const prefix=line.slice(0,wrappedAt).trim();
+        if(prefix)tasks.push(prefix);
+        const firstPart=line.slice(wrappedAt+4);
+        const firstClose=firstPart.indexOf("<<<<");
+        if(firstClose>=0&&/^\s*$/.test(firstPart.slice(firstClose+4))){
+          tasks.push(firstPart.slice(0,firstClose).replace(/^\r?\n|\r?\n$/g,""));
+          i++;continue;
+        }
+        const content=[firstPart];
+        let close=i+1,found=false;
+        for(;close<to;close++){
+          const closeAt=lines[close].indexOf("<<<<");
+          if(closeAt>=0&&/^\s*$/.test(lines[close].slice(closeAt+4))){
+            content.push(lines[close].slice(0,closeAt));
+            found=true;break;
+          }
+          content.push(lines[close]);
+        }
+        if(found){
+          tasks.push(content.join("\n").replace(/^\r?\n|\r?\n$/g,""));
+          i=close+1;continue;
+        }
+        // Malformed wrapper: don't swallow the remaining paste; keep its
+        // opening line as ordinary text and continue parsing subsequent lines.
+        tasks.push(line.trim());
+        i++;continue;
       }
-      plain.push(line);
-    }flush();
+
+      tasks.push(line.trim());
+      i++;
+    }
   };
-  const wrapped=/>>>>([\s\S]*?)<<<<(?=\r?\n|$)/g;let cursor=0,m;
-  while((m=wrapped.exec(source))!==null){pushUnwrapped(source.slice(cursor,m.index));tasks.push(m[1].replace(/^\r?\n|\r?\n$/g,""));cursor=wrapped.lastIndex;}
-  pushUnwrapped(source.slice(cursor));
-  return tasks.filter(x=>typeof x==="object"||String(x).trim().length>0);
+
+  parseRange(0,lines.length);
+  return tasks.filter(item=>typeof item==="object"||String(item).trim().length>0);
 }
 function formatTaskForPaste(text){
   return String(text??"").includes("\n") || String(text??"").includes("\r") ? ">>>>"+text+"<<<<" : String(text??"");
