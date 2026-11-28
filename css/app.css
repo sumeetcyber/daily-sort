@@ -104,6 +104,9 @@
   }
   .cards{padding:14px;min-height:440px}
   .cards.dragover{background:#f2f7f4}
+  .task-section{margin:0 0 18px}
+  .task-section-heading{display:flex;align-items:center;gap:10px;margin:3px 2px 11px;padding:5px 6px 9px;border-bottom:1px solid var(--line);color:var(--text);font-size:19px;font-weight:850;line-height:1.25;letter-spacing:.01em;overflow-wrap:anywhere}
+  .task-section-heading::before{content:"";display:block;flex:none;width:5px;height:22px;border-radius:4px;background:var(--accent)}
   .empty{
     border:1px dashed #cfc8bd;
     border-radius:13px;
@@ -2157,3 +2160,22 @@ body:not(.dynamic-panels) .panel>.cards{
 /* v67: subtask reorder arrows must remain directly tappable inside draggable cards. */
 .toggle-list .toggle-row-tools{position:relative;z-index:6;opacity:1;pointer-events:auto}
 .toggle-list .toggle-row-tools button{position:relative;z-index:7;pointer-events:auto;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+
+
+/* v68: section labels stay pinned while their grouped tasks are being viewed.
+   The sticky element is constrained by .task-section, so it scrolls away as
+   soon as that section's final task has passed out of the scroll viewport. */
+.task-section{
+  position:relative!important;
+  overflow:visible!important;
+}
+.task-section-heading{
+  position:sticky!important;
+  top:0!important;
+  z-index:30!important;
+  background:var(--panel)!important;
+  margin-top:0!important;
+  padding-top:9px!important;
+  padding-bottom:9px!important;
+  box-shadow:0 2px 8px color-mix(in srgb,var(--text) 9%,transparent);
+}

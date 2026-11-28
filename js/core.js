@@ -111,8 +111,9 @@ function parseBulkTasks(input){
   const sectionWhole=/^\s*\({8}\s*(.*?)\s*\){8}\s*$/;
   const toggleOpen=/^\s*\+\+\+\+[ \t]+(.+?)[ \t]+\/\/\/\/\s*$/;
 
-  // Locate a section's closing marker without mistaking text inside a >>>>...<<<<
-  // multiline task for the end of the section.
+  // A section marker is metadata around tasks, not a task itself.
+  // Closing markers are retained as structural boundaries so following
+  // top-level tasks do not accidentally inherit the preceding section.
   const findSectionEnd=(from,to)=>{
     let insideWrappedTask=false;
     for(let i=from;i<to;i++){
@@ -132,44 +133,41 @@ function parseBulkTasks(input){
     return -1;
   };
 
+  const addHeader=(title)=>{
+    const label=String(title||"").trim();
+    if(label)tasks.push({__dailySortHeader:true,title:label});
+  };
+  const addHeaderEnd=()=>tasks.push({__dailySortHeaderEnd:true});
+
   const parseRange=(from,to)=>{
     let i=from;
     while(i<to){
       const line=lines[i];
       if(!line.trim()){i++;continue;}
-      // Ignore visual separators used between pasted task blocks.
       if(/^[-.]$/.test(line.trim())){i++;continue;}
 
-      // A complete one-line marker creates a standalone section header.
       const whole=line.match(sectionWhole);
-      if(whole){
-        // The label is a parsing marker, not a task or a visible board header.
-        i++;continue;
-      }
+      if(whole){addHeader(whole[1]);addHeaderEnd();i++;continue;}
 
-      // A section can contain ordinary tasks AND wrapped multiline tasks. Parse
-      // the entire section as one range, rather than splitting the input at each
-      // wrapped task first (which used to lose the DATES header).
       const opening=line.match(sectionOpen);
       if(opening&&!sectionClose.test(line)){
         const closingIndex=findSectionEnd(i+1,to);
-        // Keep only the enclosed tasks. The opening label is intentionally discarded.
+        addHeader(opening[1]);
         if(closingIndex>=0){
           parseRange(i+1,closingIndex);
+          addHeaderEnd();
           i=closingIndex+1;
         }else{
-          // Be forgiving if the final closing marker was omitted: retain the
-          // header and treat the rest of the pasted content as its tasks.
+          // Missing close: retain a section boundary through end-of-input.
           parseRange(i+1,to);
+          addHeaderEnd();
           i=to;
         }
         continue;
       }
 
-      // Ignore an orphan closing marker instead of creating it as a bogus task.
       if(sectionClose.test(line)){i++;continue;}
 
-      // Preserve the established checklist syntax as one task.
       const titled=line.match(toggleOpen);
       if(titled){
         let close=i+1;
@@ -181,8 +179,6 @@ function parseBulkTasks(input){
         }
       }
 
-      // Wrapped multiline tasks are opaque to section parsing and remain a
-      // single task even when their closing <<<< appears on the final text line.
       const wrappedAt=line.indexOf(">>>>");
       if(wrappedAt>=0){
         const prefix=line.slice(0,wrappedAt).trim();
@@ -207,8 +203,6 @@ function parseBulkTasks(input){
           tasks.push(content.join("\n").replace(/^\r?\n|\r?\n$/g,""));
           i=close+1;continue;
         }
-        // Malformed wrapper: don't swallow the remaining paste; keep its
-        // opening line as ordinary text and continue parsing subsequent lines.
         tasks.push(line.trim());
         i++;continue;
       }
@@ -219,8 +213,11 @@ function parseBulkTasks(input){
   };
 
   parseRange(0,lines.length);
-  return tasks.filter(item=>typeof item==="object"||String(item).trim().length>0);
+  return tasks.filter(item=>item&&typeof item==="object"||String(item??"").trim().length>0);
 }
+
+function isSectionMarker(task){return !!(task&&(task.isHeader||task.isHeaderEnd));}
+function isRegularTask(task){return !!task&&!isSectionMarker(task);}
 function formatTaskForPaste(text){
   return String(text??"").includes("\n") || String(text??"").includes("\r") ? ">>>>"+text+"<<<<" : String(text??"");
 }
@@ -235,15 +232,18 @@ function addTasksFromText(zone="today"){
   const lines=parseBulkTasks(box.value);
   if(!lines.length) return;
   persistDraft();
+  let addedTasks=0;
   lines.forEach(raw=>{
     if(raw&&raw.__dailySortHeader){state.tasks.push({id:id(),text:raw.title,zone,isHeader:true,created:Date.now()});return;}
+    if(raw&&raw.__dailySortHeaderEnd){state.tasks.push({id:id(),text:"",zone,isHeaderEnd:true,created:Date.now()});return;}
     const parsed=splitTaskNotes(raw);
     state.tasks.push({id:id(),text:parsed.text,notes:parsed.notes,zone,done:false,open:false,created:Date.now()});
+    addedTasks++;
   });
   box.value="";
   persistDraft(false);
   save(); render();
-  toast((lines.length===1?"Added":""+lines.length+" added")+" to "+(zone==="later"?"Not Today":"Today")+" ✨");
+  toast((addedTasks===1?"Added":""+addedTasks+" added")+" to "+(zone==="later"?"Not Today":"Today")+" ✨");
 }
 function dumpZone(zone){
   const sequence=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
@@ -253,16 +253,16 @@ function dumpZone(zone){
     const item=sequence[i];
     if(item.isHeader){
       const children=[];let j=i+1;
-      while(j<sequence.length&&!sequence[j].isHeader){
+      while(j<sequence.length&&!sequence[j].isHeader&&!sequence[j].isHeaderEnd){
         const t=sequence[j],notes=String(t.notes??"").trim();
         const body=notes?String(t.text??"")+"\n\n~~~~Notes:\n"+notes+"\n~~~~":String(t.text??"");
         children.push(body.includes("\n")||body.includes("\r")?">>>>"+body+"<<<<":body);
         j++;
       }
       if(children.length)output.push("(((((((( "+String(item.text??"")+"\n"+children.join("\n")+"\n))))))))");
-      else output.push("(((((((( "+String(item.text??"")+" ))))))))");
-      i=j;continue;
+      i=j+(sequence[j]?.isHeaderEnd?1:0);continue;
     }
+    if(item.isHeaderEnd){i++;continue;}
     const notes=String(item.notes??"").trim();
     const body=notes?String(item.text??"")+"\n\n~~~~Notes:\n"+notes+"\n~~~~":String(item.text??"");
     output.push(body.includes("\n")||body.includes("\r")?">>>>"+body+"<<<<":body);i++;
@@ -272,7 +272,7 @@ function dumpZone(zone){
   persistDraft();
   const ids=new Set(sequence.map(t=>t.id));state.tasks=state.tasks.filter(t=>!ids.has(t.id));
   selectedTaskIds.clear();save();render();box.focus();
-  toast(sequence.length+" entries moved to the paste box");
+  toast(sequence.filter(isRegularTask).length+" entries moved to the paste box");
 }
 
 const selectedTaskIds = new Set();
@@ -303,8 +303,8 @@ function updateMoveRange(){
   const target=document.getElementById("moveTargetZone");
   if(!input||!target)return;
   const zone=target.value;
-  const count=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone).length;
-  const selectedInTarget=state.tasks.filter(t=>selectedTaskIds.has(t.id)&&(t.zone==="later"?"later":"today")===zone).length;
+  const count=state.tasks.filter(t=>isRegularTask(t)&&(t.zone==="later"?"later":"today")===zone).length;
+  const selectedInTarget=state.tasks.filter(t=>isRegularTask(t)&&selectedTaskIds.has(t.id)&&(t.zone==="later"?"later":"today")===zone).length;
   const remaining=count-selectedInTarget;
   const max=Math.max(1,remaining+1);
   input.max=String(max);
@@ -383,24 +383,36 @@ function taskCard(t,number){
   </article>`;
 }
 function renderCards(){
-  const todayAll=state.tasks.filter(t=>!t.isHeader&&t.zone!=="later"),laterAll=state.tasks.filter(t=>!t.isHeader&&t.zone==="later");
+  const todayAll=state.tasks.filter(t=>isRegularTask(t)&&t.zone!=="later"),laterAll=state.tasks.filter(t=>isRegularTask(t)&&t.zone==="later");
   const q=(document.getElementById("taskSearch")?.value||"").trim().toLocaleLowerCase();
   const renderZone=(zone,container,all)=>{
-    const sequence=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);const groups=[];let group={header:null,items:[]};
+    const sequence=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
+    const groups=[];let group={header:null,items:[]};
+    const pushGroup=()=>{if(group.header||group.items.length)groups.push(group);};
     sequence.forEach(item=>{
-      if(item.isHeader){if(group.header||group.items.length)groups.push(group);group={header:item,items:[]};}
+      if(item.isHeader){pushGroup();group={header:item,items:[]};}
+      else if(item.isHeaderEnd){pushGroup();group={header:null,items:[]};}
       else if(!q||[parseColorSyntax(item.text).body,item.notes||""].join("\n").toLocaleLowerCase().includes(q))group.items.push(item);
     });
-    if(group.header||group.items.length)groups.push(group);
-    // Section markers are structural only: keep their boundaries in saved data
-    // so dumps can round-trip, but never render the label as a task/header card.
-    const markup=groups.map(g=>g.items.length?`<section class="task-section">${g.items.map(t=>taskCard(t,all.indexOf(t)+1)).join("")}</section>`:"").join("");
+    pushGroup();
+    const markup=groups.map(g=>{
+      if(!g.items.length)return "";
+      const cards=g.items.map(t=>taskCard(t,all.indexOf(t)+1)).join("");
+      // Section headings are scroll labels, not completion indicators. Keep a
+      // heading visible while its own tasks occupy the scroll area; CSS sticky
+      // constrains it to this section so it leaves when the final task scrolls
+      // past. Ungrouped tasks after a closing marker render as plain cards.
+      if(!g.header)return cards;
+      const heading=`<div class="task-section-heading" role="heading" aria-level="3">${escapeHtml(g.header.text)}</div>`;
+      return `<section class="task-section">${heading}${cards}</section>`;
+    }).join("");
     container.innerHTML=markup||(q?`<div class="empty search-empty">No ${zone==="today"?"Today":"Not Today"} tasks match “${escapeHtml(q)}”.</div>`:`<div class="empty">${zone==="today"?"No tasks for today.<br>Paste a bunch above and start sorting.":"Nothing parked here.<br>Drag a task here when it isn't today's problem."}</div>`);
   };
   renderZone("today",document.getElementById("todayCards"),todayAll);renderZone("later",document.getElementById("laterCards"),laterAll);
   document.getElementById("todayCount").textContent=todayAll.length;document.getElementById("laterCount").textContent=laterAll.length;
   const count=document.getElementById("searchResultCount");if(count)count.textContent=q?`${document.querySelectorAll("#todayCards .card").length+document.querySelectorAll("#laterCards .card").length} of ${todayAll.length+laterAll.length} tasks`:"All tasks";
 }
+
 function bindHeaderActions(){
   document.querySelectorAll(".section-header-card").forEach(header=>{
     const hid=header.dataset.id;
@@ -486,7 +498,7 @@ function moveTask(tid, direction, pointerPoint=null){
   const task=state.tasks[index];
   const sameZone=state.tasks
     .map((t,i)=>({t,i}))
-    .filter(x=>!x.t.isHeader&&(x.t.zone==="later"?"later":"today") === (task.zone==="later"?"later":"today"));
+    .filter(x=>isRegularTask(x.t)&&(x.t.zone==="later"?"later":"today") === (task.zone==="later"?"later":"today"));
   const pos=sameZone.findIndex(x=>x.i===index);
   const targetPos=pos+direction;
   if(targetPos<0 || targetPos>=sameZone.length)return;
@@ -704,7 +716,7 @@ function bindActions(){
     });
     card.querySelector('[data-action="delete"]').onclick=()=>{
       const deletedZone=t.zone==="later"?"Not Today":"Today";
-      state.tasks=state.tasks.filter(x=>x.id!==tid);save();render();
+      state.tasks=state.tasks.filter(x=>x.id!==tid);pruneEmptySectionMarkers();save();render();
       toast("Deleted from "+deletedZone+" 🗑️");
     };
     card.querySelector('[data-action="insert-below"]').onclick=e=>{
@@ -785,11 +797,11 @@ function bindDnD(){
 }
 
 function moveSelectedAbove(){
-  if(!selectedTaskIds.size){toast("Select at least one task");return;}
+  if(!selectedTaskIds.size){toast("Select task checkboxes first");return;}
   const zone=document.getElementById("moveTargetZone").value;
   const target=Number(document.getElementById("moveAboveNumber").value);
-  const destination=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);
-  const selected=state.tasks.filter(t=>selectedTaskIds.has(t.id));
+  const destination=state.tasks.filter(t=>isRegularTask(t)&&(t.zone==="later"?"later":"today")===zone);
+  const selected=state.tasks.filter(t=>isRegularTask(t)&&selectedTaskIds.has(t.id));
   if(!selected.length){toast("Select at least one task");return;}
   const selectedInDestination=selected.filter(t=>(t.zone==="later"?"later":"today")===zone).length;
   const max=Math.max(1,destination.length-selectedInDestination+1);
@@ -798,11 +810,15 @@ function moveSelectedAbove(){
   const moving=state.tasks.filter(t=>selectedIds.has(t.id));
   const rest=state.tasks.filter(t=>!selectedIds.has(t.id));
   moving.forEach(t=>t.zone=zone);
-  const destinationRest=rest.filter(t=>(t.zone==="later"?"later":"today")===zone);
-  const insertIndex=Math.min(target-1,destinationRest.length);
-  destinationRest.splice(insertIndex,0,...moving);
-  const otherZoneTasks=rest.filter(t=>(t.zone==="later"?"later":"today")!==zone);
-  state.tasks=[...destinationRest,...otherZoneTasks];
+  const destinationRest=rest.filter(t=>isRegularTask(t)&&(t.zone==="later"?"later":"today")===zone);
+  let insertIndex;
+  if(target<=destinationRest.length){insertIndex=rest.indexOf(destinationRest[target-1]);}
+  else{
+    const lastDestination=destinationRest[destinationRest.length-1];
+    insertIndex=lastDestination?rest.indexOf(lastDestination)+1:rest.length;
+  }
+  rest.splice(Math.max(0,insertIndex),0,...moving);
+  state.tasks=rest;
   save();render();toast(`${moving.length} task${moving.length===1?"":"s"} moved to ${zone==="today"?"Today":"Not Today"} · position ${target}`);
 }
 
@@ -835,10 +851,26 @@ function removeColorFromSelected(){
   });
   save();render();toast("Color removed from selected tasks");
 }
+function pruneEmptySectionMarkers(){
+  const result=[];let activeHeader=null,children=[];
+  const flush=(endMarker=null)=>{
+    if(activeHeader&&children.length)result.push(activeHeader,...children,...(endMarker?[endMarker]:[]));
+    else if(!activeHeader)result.push(...children);
+    activeHeader=null;children=[];
+  };
+  state.tasks.forEach(item=>{
+    if(item.isHeader){flush();activeHeader=item;}
+    else if(item.isHeaderEnd){flush(item);}
+    else if(activeHeader)children.push(item);
+    else result.push(item);
+  });
+  flush();
+  state.tasks=result;
+}
 function clearCompleted(){
-  const before=state.tasks.length;
+  const before=state.tasks.filter(isRegularTask).length;
   let removedItems=0;
-  state.tasks=state.tasks.filter(t=>t.isHeader||!t.done);
+  state.tasks=state.tasks.filter(t=>isSectionMarker(t)||!t.done);
   state.tasks.forEach(t=>{
     const parsed=parseToggleList(t.text);
     if(!parsed)return;
@@ -853,7 +885,8 @@ function clearCompleted(){
       t.text=colorInfo.name?withColorSyntax(rebuilt,colorInfo.name):rebuilt;
     }
   });
-  const removedTasks=before-state.tasks.length;
+  pruneEmptySectionMarkers();
+  const removedTasks=before-state.tasks.filter(isRegularTask).length;
   save();render();
   const total=removedTasks+removedItems;
   toast(total+" completed item"+(total===1?"":"s")+" cleared 🧹");
@@ -1237,6 +1270,7 @@ document.getElementById("deleteSelected").onclick=()=>{
   const count=selectedTaskIds.size;
   if(!window.confirm(`Delete ${count} selected task${count===1?"":"s"}? This cannot be undone from the task list.`))return;
   state.tasks=state.tasks.filter(t=>!selectedTaskIds.has(t.id));
+  pruneEmptySectionMarkers();
   selectedTaskIds.clear();save();render();toast(`🗑️ Deleted ${count} selected task${count===1?"":"s"}`);
 };
 document.getElementById("exportData").onclick=exportData;
