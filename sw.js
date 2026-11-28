@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'daily-sort-shell-v58';
+const CACHE_NAME = 'daily-sort-shell-v59';
 const APP_SCOPE = self.registration.scope;
 self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate', event => event.waitUntil((async () => {
