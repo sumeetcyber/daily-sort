@@ -398,12 +398,13 @@ function renderCards(){
     const markup=groups.map(g=>{
       if(!g.items.length)return "";
       const cards=g.items.map(t=>taskCard(t,all.indexOf(t)+1)).join("");
-      // Section headings are scroll labels, not completion indicators. Keep a
-      // heading visible while its own tasks occupy the scroll area; CSS sticky
-      // constrains it to this section so it leaves when the final task scrolls
-      // past. Ungrouped tasks after a closing marker render as plain cards.
+      // Keep the original editable/selectable green capsule. It is sticky only
+      // within this task-section, so it remains visible while its grouped tasks
+      // are being viewed and leaves when the section's final task scrolls past.
+      // The explicit closing marker starts a fresh ungrouped group below.
       if(!g.header)return cards;
-      const heading=`<div class="task-section-heading" role="heading" aria-level="3">${escapeHtml(g.header.text)}</div>`;
+      const hi=parseColorSyntax(g.header.text);
+      const heading=`<div class="section-header-card ${selectedTaskIds.has(g.header.id)?"selected":""}" role="heading" aria-level="2" draggable="true" data-id="${g.header.id}" ${hi.color?`data-task-color style="--task-bg:${hi.color};--task-fg:${hi.textColor||"#fff"}"`:""}><span class="section-header-title" contenteditable="${selectedTaskIds.has(g.header.id)?"false":"true"}" spellcheck="false" aria-label="Edit section header">${escapeHtml(hi.body)}</span></div>`;
       return `<section class="task-section">${heading}${cards}</section>`;
     }).join("");
     container.innerHTML=markup||(q?`<div class="empty search-empty">No ${zone==="today"?"Today":"Not Today"} tasks match “${escapeHtml(q)}”.</div>`:`<div class="empty">${zone==="today"?"No tasks for today.<br>Paste a bunch above and start sorting.":"Nothing parked here.<br>Drag a task here when it isn't today's problem."}</div>`);
