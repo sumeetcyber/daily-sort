@@ -2153,3 +2153,7 @@ body:not(.dynamic-panels) .panel>.cards{
     justify-self:end!important;
   }
 }
+
+/* v67: subtask reorder arrows must remain directly tappable inside draggable cards. */
+.toggle-list .toggle-row-tools{position:relative;z-index:6;opacity:1;pointer-events:auto}
+.toggle-list .toggle-row-tools button{position:relative;z-index:7;pointer-events:auto;touch-action:manipulation;user-select:none;-webkit-user-select:none}

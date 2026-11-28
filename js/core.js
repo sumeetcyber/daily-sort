@@ -137,11 +137,13 @@ function parseBulkTasks(input){
     while(i<to){
       const line=lines[i];
       if(!line.trim()){i++;continue;}
+      // Ignore visual separators used between pasted task blocks.
+      if(/^[-.]$/.test(line.trim())){i++;continue;}
 
       // A complete one-line marker creates a standalone section header.
       const whole=line.match(sectionWhole);
       if(whole){
-        tasks.push({__dailySortHeader:true,title:whole[1].trim()});
+        // The label is a parsing marker, not a task or a visible board header.
         i++;continue;
       }
 
@@ -151,7 +153,7 @@ function parseBulkTasks(input){
       const opening=line.match(sectionOpen);
       if(opening&&!sectionClose.test(line)){
         const closingIndex=findSectionEnd(i+1,to);
-        tasks.push({__dailySortHeader:true,title:opening[1].trim()});
+        // Keep only the enclosed tasks. The opening label is intentionally discarded.
         if(closingIndex>=0){
           parseRange(i+1,closingIndex);
           i=closingIndex+1;
@@ -390,7 +392,9 @@ function renderCards(){
       else if(!q||[parseColorSyntax(item.text).body,item.notes||""].join("\n").toLocaleLowerCase().includes(q))group.items.push(item);
     });
     if(group.header||group.items.length)groups.push(group);
-    const markup=groups.map(g=>{if(!g.header&&!g.items.length)return "";const hi=g.header?parseColorSyntax(g.header.text):null;const h=g.header?`<div class="section-header-card ${selectedTaskIds.has(g.header.id)?"selected":""}" role="heading" aria-level="2" draggable="true" data-id="${g.header.id}" ${hi.color?`data-task-color style="--task-bg:${hi.color};--task-fg:${hi.textColor||"#fff"}"`:""}><span class="section-header-title" contenteditable="${selectedTaskIds.has(g.header.id)?"false":"true"}" spellcheck="false" aria-label="Edit section header">${escapeHtml(hi.body)}</span></div>`:"";return `<section class="task-section">${h}${g.items.map(t=>taskCard(t,all.indexOf(t)+1)).join("")}</section>`;}).join("");
+    // Section markers are structural only: keep their boundaries in saved data
+    // so dumps can round-trip, but never render the label as a task/header card.
+    const markup=groups.map(g=>g.items.length?`<section class="task-section">${g.items.map(t=>taskCard(t,all.indexOf(t)+1)).join("")}</section>`:"").join("");
     container.innerHTML=markup||(q?`<div class="empty search-empty">No ${zone==="today"?"Today":"Not Today"} tasks match “${escapeHtml(q)}”.</div>`:`<div class="empty">${zone==="today"?"No tasks for today.<br>Paste a bunch above and start sorting.":"Nothing parked here.<br>Drag a task here when it isn't today's problem."}</div>`);
   };
   renderZone("today",document.getElementById("todayCards"),todayAll);renderZone("later",document.getElementById("laterCards"),laterAll);
@@ -482,7 +486,7 @@ function moveTask(tid, direction, pointerPoint=null){
   const task=state.tasks[index];
   const sameZone=state.tasks
     .map((t,i)=>({t,i}))
-    .filter(x=>(x.t.zone==="later"?"later":"today") === (task.zone==="later"?"later":"today"));
+    .filter(x=>!x.t.isHeader&&(x.t.zone==="later"?"later":"today") === (task.zone==="later"?"later":"today"));
   const pos=sameZone.findIndex(x=>x.i===index);
   const targetPos=pos+direction;
   if(targetPos<0 || targetPos>=sameZone.length)return;
@@ -516,20 +520,50 @@ function moveTaskBefore(dragId, targetId){
 }
 
 function bindToggleRowControls(card,t,syncToggleText){
-  card.querySelectorAll('[data-action="item-up"],[data-action="item-down"]').forEach(button=>{
-    button.onclick=e=>{
-      e.preventDefault();e.stopPropagation();
-      const row=button.closest(".toggle-list-row");
-      const rows=[...card.querySelectorAll(".toggle-list-row")];
-      const index=rows.indexOf(row),direction=button.dataset.action==="item-up"?-1:1;
-      const target=rows[index+direction];
-      if(!row||!target)return;
-      if(direction<0)target.before(row);else target.after(row);
-      syncToggleText();
-      const list=card.querySelector(".toggle-list");
-      if(list)list.outerHTML=toggleListMarkup(t);
-      bindToggleRowControls(card,t,syncToggleText);
-    };
+  const list=card.querySelector(".toggle-list");
+  if(!list||list.dataset.reorderControlsBound==="true")return;
+  list.dataset.reorderControlsBound="true";
+
+  // Prevent the enclosing draggable task card from stealing a tap/press on a
+  // subtask arrow, especially on touch devices.
+  list.addEventListener("pointerdown",e=>{
+    const button=e.target.closest('[data-action="item-up"],[data-action="item-down"]');
+    if(!button)return;
+    e.stopPropagation();
+    const wasDraggable=card.draggable;
+    card.draggable=false;
+    const restore=()=>{card.draggable=wasDraggable;};
+    window.addEventListener("pointerup",restore,{once:true});
+    window.addEventListener("pointercancel",restore,{once:true});
+  },true);
+
+  // Delegate from the list so reordering does not depend on per-button
+  // handlers surviving DOM updates or mobile click synthesis.
+  list.addEventListener("click",e=>{
+    const button=e.target.closest('[data-action="item-up"],[data-action="item-down"]');
+    if(!button||!list.contains(button))return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(button.disabled)return;
+
+    const row=button.closest(".toggle-list-row");
+    if(!row)return;
+    const rows=[...list.querySelectorAll(":scope > .toggle-list-row")];
+    const index=rows.indexOf(row);
+    const direction=button.dataset.action==="item-up"?-1:1;
+    const target=rows[index+direction];
+    if(!target)return;
+
+    if(direction<0)target.before(row);else target.after(row);
+    const reordered=[...list.querySelectorAll(":scope > .toggle-list-row")];
+    reordered.forEach((item,i)=>{
+      item.dataset.listIndex=String(i);
+      const up=item.querySelector('[data-action="item-up"]');
+      const down=item.querySelector('[data-action="item-down"]');
+      if(up)up.disabled=i===0;
+      if(down)down.disabled=i===reordered.length-1;
+    });
+    syncToggleText();
   });
 }
 
