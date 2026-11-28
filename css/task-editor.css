@@ -175,3 +175,19 @@ body.show-task-numbers #laterCards .card .card-tools .toolbar-task-number{displa
   flex:0 0 40px!important;display:grid!important;place-items:center!important;
   padding:0!important;line-height:1!important;box-sizing:border-box!important;
 }
+
+/* Sticky section labels: 1.5 cm tall, single-line centered title. */
+#todayCards .task-section,#laterCards .task-section{position:relative;overflow:visible;display:flow-root}
+.section-header-card{position:sticky;top:0;z-index:12;display:flex;align-items:center;justify-content:center;width:100%;height:1.5cm;min-height:1.5cm;max-height:1.5cm;margin:0 0 10px;padding:0 14px;box-sizing:border-box;border-radius:999px;background:#20ad50;color:#fff;border:1px solid rgba(255,255,255,.16);text-align:center;font-size:clamp(15px,2vw,22px);font-weight:850;letter-spacing:.045em;line-height:1.1;overflow:hidden}
+.section-header-card span{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+.task-section>.card{margin-bottom:10px}
+#todayCards .card[data-task-color],#laterCards .card[data-task-color]{background:var(--task-bg)!important;color:var(--task-fg)!important;border-color:color-mix(in srgb,var(--task-bg) 75%,#fff)!important}
+#todayCards .card[data-task-color] .task-title-edit,#laterCards .card[data-task-color] .task-title-edit,#todayCards .card[data-task-color] .task-text-content,#laterCards .card[data-task-color] .task-text-content,#todayCards .card[data-task-color] .toggle-list-heading,#laterCards .card[data-task-color] .toggle-list-heading,#todayCards .card[data-task-color] .toggle-list-title-edit,#laterCards .card[data-task-color] .toggle-list-title-edit,#todayCards .card[data-task-color] .toggle-list-count,#laterCards .card[data-task-color] .toggle-list-count{color:var(--task-fg)!important}
+#todayCards .card[data-task-color] .task-title-edit,#laterCards .card[data-task-color] .task-title-edit{caret-color:var(--task-fg)!important}
+#todayCards .card[data-task-color] .card-tools,#laterCards .card[data-task-color] .card-tools{border-top-color:color-mix(in srgb,var(--task-fg) 22%,transparent)!important}
+#todayCards .card[data-task-color] .tool-cell,#laterCards .card[data-task-color] .tool-cell{border-right-color:color-mix(in srgb,var(--task-fg) 18%,transparent)!important}
+@media(max-width:700px){.section-header-card{font-size:16px;padding-inline:10px}}
+
+#todayCards .card[data-task-color] .toggle-list-row input[type="text"],#laterCards .card[data-task-color] .toggle-list-row input[type="text"]{color:var(--task-fg)!important;background:color-mix(in srgb,var(--task-fg) 8%,var(--task-bg))!important;border-color:color-mix(in srgb,var(--task-fg) 25%,var(--task-bg))!important}
+#todayCards .card[data-task-color] .toggle-list-row input[type="checkbox"],#laterCards .card[data-task-color] .toggle-list-row input[type="checkbox"]{accent-color:var(--task-fg)!important}
+#todayCards .card[data-task-color] .details textarea,#laterCards .card[data-task-color] .details textarea{color:var(--task-fg)!important;background:color-mix(in srgb,var(--task-fg) 8%,var(--task-bg))!important}

@@ -103,40 +103,25 @@ function initDrafts(){
 }
 
 function parseBulkTasks(input){
-  const source=String(input||"");
-  const tasks=[];
+  const source=String(input||"");const tasks=[];
   const pushUnwrapped=chunk=>{
-    const lines=chunk.split(/\r?\n/);
-    let plain=[];
+    const lines=chunk.split(/\r?\n/);let plain=[];
     const flush=()=>{plain.map(x=>x.trim()).filter(Boolean).forEach(x=>tasks.push(x));plain=[];};
     for(let i=0;i<lines.length;i++){
       const line=lines[i];
+      const header=line.match(/^\s*\(\(\(\(\(\(\(\((.*?)\)\)\)\)\)\)\)\)\s*$/);
+      if(header){flush();if(header[1].trim())tasks.push({__dailySortHeader:true,title:header[1].trim()});continue;}
       const titled=/^\s*\+\+\+\+[ \t]+.+?[ \t]+\/\/\/\/\s*$/.test(line);
-      if(titled){
-        let end=i+1;
-        while(end<lines.length&&lines[end].trim()!=="++++")end++;
-        if(end<lines.length){
-          flush();
-          const content=lines.slice(i+1,end).join("\n").trim();
-          const titleMatch=line.match(/^\s*\+\+\+\+[ \t]+(.+?)[ \t]+\/\/\/\/\s*$/);
-          tasks.push(`++++ ${titleMatch[1].trim()} ////\n${content}\n++++`);
-          i=end;
-          continue;
-        }
+      if(titled){let end=i+1;while(end<lines.length&&lines[end].trim()!=="++++")end++;
+        if(end<lines.length){flush();const content=lines.slice(i+1,end).join("\n").trim();const tm=line.match(/^\s*\+\+\+\+[ \t]+(.+?)[ \t]+\/\/\/\/\s*$/);tasks.push(`++++ ${tm[1].trim()} ////\n${content}\n++++`);i=end;continue;}
       }
       plain.push(line);
-    }
-    flush();
+    }flush();
   };
-  const wrapped=/>>>>([\s\S]*?)<<<</g;
-  let cursor=0,match;
-  while((match=wrapped.exec(source))!==null){
-    pushUnwrapped(source.slice(cursor,match.index));
-    tasks.push(match[1].replace(/^\r?\n|\r?\n$/g,""));
-    cursor=wrapped.lastIndex;
-  }
+  const wrapped=/>>>>([\s\S]*?)<<<<(?=\r?\n|$)/g;let cursor=0,m;
+  while((m=wrapped.exec(source))!==null){pushUnwrapped(source.slice(cursor,m.index));tasks.push(m[1].replace(/^\r?\n|\r?\n$/g,""));cursor=wrapped.lastIndex;}
   pushUnwrapped(source.slice(cursor));
-  return tasks.filter(x=>String(x).trim().length>0);
+  return tasks.filter(x=>typeof x==="object"||String(x).trim().length>0);
 }
 function formatTaskForPaste(text){
   return String(text??"").includes("\n") || String(text??"").includes("\r") ? ">>>>"+text+"<<<<" : String(text??"");
@@ -153,6 +138,7 @@ function addTasksFromText(zone="today"){
   if(!lines.length) return;
   persistDraft();
   lines.forEach(raw=>{
+    if(raw&&raw.__dailySortHeader){state.tasks.push({id:id(),text:raw.title,zone,isHeader:true,created:Date.now()});return;}
     const parsed=splitTaskNotes(raw);
     state.tasks.push({id:id(),text:parsed.text,notes:parsed.notes,zone,done:false,open:false,created:Date.now()});
   });
@@ -166,7 +152,7 @@ function dumpZone(zone){
   if(!selected.length){toast("No tasks to dump");return;}
   const box=document.getElementById("bulkInput");
   const existing=box.value.trim();
-  box.value=[existing,...selected.map(t=>{const title=String(t.text??"");const notes=String(t.notes??"").trim();const combined=notes?title+"\n\n~~~~Notes:\n"+notes+"\n~~~~":title;return formatTaskForPaste(combined);})].filter(Boolean).join("\n");
+  box.value=[existing,...selected.map(t=>{if(t.isHeader)return "(((((((( "+String(t.text??"")+" ))))))))";const title=String(t.text??"");const notes=String(t.notes??"").trim();const combined=notes?title+"\n\n~~~~Notes:\n"+notes+"\n~~~~":title;return formatTaskForPaste(combined);})].filter(Boolean).join("\n");
   persistDraft();
   const ids=new Set(selected.map(t=>t.id));
   state.tasks=state.tasks.filter(t=>!ids.has(t.id));
@@ -215,7 +201,9 @@ function updateMoveRange(){
   if(help)help.textContent=`${count} tasks in ${zone==="today"?"Today":"Not Today"} · valid positions 1–${max}`;
 }
 
-const TASK_COLORS={Purple:"#B78CFF",Blue:"#4D8DFF",Cyan:"#35C9E8",Teal:"#28B7A5",Green:"#35B96B",Lime:"#91C83E",Yellow:"#E3C34B",Orange:"#F09A45",Red:"#E45B63",Pink:"#E78ACB",Rose:"#D96B91",White:"#F4F4F4"};
+const TASK_PALETTES={Forest:{bg:"#244B3A",fg:"#E5F5E9"},Ocean:{bg:"#263D62",fg:"#E6F0FF"},Plum:{bg:"#49345D",fg:"#F3E8FF"},Amber:{bg:"#66452B",fg:"#FFF0D9"},Rose:{bg:"#63353D",fg:"#FFE9EC"},Slate:{bg:"#34434B",fg:"#EAF3F6"},Sage:{bg:"#DCEBDD",fg:"#203D2B"},Sand:{bg:"#F5E8CE",fg:"#49391F"},Purple:{bg:"#49345D",fg:"#F3E8FF"},Blue:{bg:"#263D62",fg:"#E6F0FF"},Cyan:{bg:"#164C58",fg:"#E0FAFF"},Teal:{bg:"#174D49",fg:"#DDF8F3"},Green:{bg:"#244B3A",fg:"#E5F5E9"},Lime:{bg:"#3E4D20",fg:"#F0F8D9"},Yellow:{bg:"#5B4B1D",fg:"#FFF6D6"},Orange:{bg:"#66452B",fg:"#FFF0D9"},Red:{bg:"#63353D",fg:"#FFE9EC"},Pink:{bg:"#633D59",fg:"#FFEAF7"},White:{bg:"#34434B",fg:"#F4F4F4"}};
+const TASK_COLORS=Object.fromEntries(Object.entries(TASK_PALETTES).map(([n,p])=>[n,p.bg]));
+const TASK_TEXT_COLORS=Object.fromEntries(Object.entries(TASK_PALETTES).map(([n,p])=>[n,p.fg]));
 function parseColorSyntax(text){
   const raw=String(text||"");
   const patterns=[
@@ -224,9 +212,9 @@ function parseColorSyntax(text){
   for(const re of patterns){
     const m=raw.match(re);if(!m)continue;
     const name=Object.keys(TASK_COLORS).find(k=>k.toLowerCase()===m[1].toLowerCase())||null;
-    return {color:name?TASK_COLORS[name]:(m[1].startsWith("#")?m[1]:null),name,body:m[2]};
+    return {color:name?TASK_COLORS[name]:(m[1].startsWith("#")?m[1]:null),textColor:name?TASK_TEXT_COLORS[name]:null,name,body:m[2]};
   }
-  return {color:null,name:null,body:raw};
+  return {color:null,textColor:null,name:null,body:raw};
 }
 function withColorSyntax(body,name){return name?`{{${name}}}\n${body}\n{{/Color}}`:body;}
 
@@ -266,36 +254,36 @@ function taskToolbar(t,number){
   </div>`;
 }
 function taskCard(t,number){
-  const color=t.colorHex||parseColorSyntax(t.text).color;
+  const colorInfo=parseColorSyntax(t.text);
+  const color=t.colorHex||colorInfo.color;
+  const textColor=t.textColorHex||colorInfo.textColor;
   const checklist=parseToggleList(t.text);
   const title=escapeHtml(parseColorSyntax(t.text).body).replace(/\n/g,"<br>");
   const content=checklist
     ? `<div class="toggle-list-heading"><button class="toggle-list-collapse" data-action="toggle-list-collapse" aria-expanded="${!t.listCollapsed}" title="${t.listCollapsed?"Expand":"Collapse"} list">${t.listCollapsed?"▸":"▾"}</button><input class="toggle-list-title-edit" data-action="toggle-list-title" type="text" value="${escapeHtml(checklist.title)}" aria-label="Edit checklist title" title="Edit checklist title"><span class="toggle-list-count">${checklist.length} items</span></div>${t.listCollapsed?"":toggleListMarkup(t)}`
     : `<div class="task-title-edit" data-action="title" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Task title" spellcheck="false"><span class="task-text-content" data-task-text>${title}</span></div>`;
-  return `<article class="card ${t.done?"done":""} ${t.open?"open":""} ${selectedTaskIds.has(t.id)?"selected":""}" draggable="true" data-id="${t.id}" ${color?`data-task-color style="--task-color:${color}"`:""}>
+  return `<article class="card ${t.done?"done":""} ${t.open?"open":""} ${selectedTaskIds.has(t.id)?"selected":""}" draggable="true" data-id="${t.id}" ${color?`data-task-color style="--task-color:${color};--task-bg:${color};--task-fg:${textColor||"#FFFFFF"}"`:""}>
     <div class="card-main"><span class="task-number" aria-hidden="true">${number}</span><div class="task-body">${content}<button class="insert-below" data-action="insert-below" type="button" title="Add task below" aria-label="Add task below">＋</button>${taskToolbar(t,number)}</div></div>
     <div class="details"><textarea data-action="notes" placeholder="Notes…">${escapeHtml(t.notes)}</textarea><div class="details-row"><button class="btn" data-action="move-later">${t.zone==="later"?"Move to Today":"Not Today"}</button><button class="btn" data-action="delete">Delete</button></div></div>
   </article>`;
 }
 function renderCards(){
-  const todayAll=state.tasks.filter(t=>t.zone!=="later");
-  const laterAll=state.tasks.filter(t=>t.zone==="later");
+  const todayAll=state.tasks.filter(t=>!t.isHeader&&t.zone!=="later"),laterAll=state.tasks.filter(t=>!t.isHeader&&t.zone==="later");
   const q=(document.getElementById("taskSearch")?.value||"").trim().toLocaleLowerCase();
-  const matches=t=>!q || [parseColorSyntax(t.text).body,t.notes||""].join("\n").toLocaleLowerCase().includes(q);
-  const today=todayAll.filter(matches),later=laterAll.filter(matches);
-  const tc=document.getElementById("todayCards");
-  const lc=document.getElementById("laterCards");
-
-  document.getElementById("todayCount").textContent=todayAll.length;
-  document.getElementById("laterCount").textContent=laterAll.length;
-  tc.innerHTML=today.length ? today.map(t=>taskCard(t,todayAll.indexOf(t)+1)).join("") :
-    (q?`<div class="empty search-empty">No Today tasks match “${escapeHtml(q)}”.</div>`:`<div class="empty">No tasks for today.<br>Paste a bunch above and start sorting.</div>`);
-  lc.innerHTML=later.length ? later.map(t=>taskCard(t,laterAll.indexOf(t)+1)).join("") :
-    (q?`<div class="empty search-empty">No Not Today tasks match “${escapeHtml(q)}”.</div>`:`<div class="empty">Nothing parked here.<br>Drag a task here when it isn't today's problem.</div>`);
-  const count=document.getElementById("searchResultCount");
-  if(count)count.textContent=q?`${today.length+later.length} of ${todayAll.length+laterAll.length} tasks`:"All tasks";
+  const renderZone=(zone,container,all)=>{
+    const sequence=state.tasks.filter(t=>(t.zone==="later"?"later":"today")===zone);const groups=[];let group={header:null,items:[]};
+    sequence.forEach(item=>{
+      if(item.isHeader){if(group.header||group.items.length)groups.push(group);group={header:item,items:[]};}
+      else if(!q||[parseColorSyntax(item.text).body,item.notes||""].join("\n").toLocaleLowerCase().includes(q))group.items.push(item);
+    });
+    if(group.header||group.items.length)groups.push(group);
+    const markup=groups.map(g=>{if(!g.header&&!g.items.length)return "";const h=g.header?`<div class="section-header-card" role="heading" aria-level="2"><span>${escapeHtml(g.header.text)}</span></div>`:"";return `<section class="task-section">${h}${g.items.map(t=>taskCard(t,all.indexOf(t)+1)).join("")}</section>`;}).join("");
+    container.innerHTML=markup||(q?`<div class="empty search-empty">No ${zone==="today"?"Today":"Not Today"} tasks match “${escapeHtml(q)}”.</div>`:`<div class="empty">${zone==="today"?"No tasks for today.<br>Paste a bunch above and start sorting.":"Nothing parked here.<br>Drag a task here when it isn't today's problem."}</div>`);
+  };
+  renderZone("today",document.getElementById("todayCards"),todayAll);renderZone("later",document.getElementById("laterCards"),laterAll);
+  document.getElementById("todayCount").textContent=todayAll.length;document.getElementById("laterCount").textContent=laterAll.length;
+  const count=document.getElementById("searchResultCount");if(count)count.textContent=q?`${document.querySelectorAll("#todayCards .card").length+document.querySelectorAll("#laterCards .card").length} of ${todayAll.length+laterAll.length} tasks`:"All tasks";
 }
-
 function render(){
   for(const sid of [...selectedTaskIds])if(!state.tasks.some(t=>t.id===sid))selectedTaskIds.delete(sid);
   renderCards(); bindDnD(); bindActions(); updateSelectionCount();
@@ -645,6 +633,7 @@ function applyColorToSelected(){
     const parsed=parseColorSyntax(t.text);
     t.text=withColorSyntax(parsed.body,colorName);
     t.colorHex=TASK_COLORS[colorName];
+    t.textColorHex=TASK_TEXT_COLORS[colorName];
     t.colorName=colorName;
     changed++;
   });
@@ -657,14 +646,14 @@ function removeColorFromSelected(){
     if(!selectedTaskIds.has(t.id))return;
     const parsed=parseColorSyntax(t.text);
     t.text=parsed.body;
-    delete t.colorHex;delete t.colorName;
+    delete t.colorHex;delete t.textColorHex;delete t.colorName;
   });
   save();render();toast("Color removed from selected tasks");
 }
 function clearCompleted(){
   const before=state.tasks.length;
   let removedItems=0;
-  state.tasks=state.tasks.filter(t=>!t.done);
+  state.tasks=state.tasks.filter(t=>t.isHeader||!t.done);
   state.tasks.forEach(t=>{
     const parsed=parseToggleList(t.text);
     if(!parsed)return;
